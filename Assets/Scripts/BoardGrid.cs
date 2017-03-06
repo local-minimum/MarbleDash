@@ -140,6 +140,11 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
+    public bool IsValidPosition(GridPos pos)
+    {
+        return pos.x >= 0 && pos.y >= 0 && pos.x < size && pos.y < size;
+    }
+
     public void Occupy(int x, int y, Occupancy occupancy)
     {
         gridOccupancy[x, y] = occupancy;
@@ -178,6 +183,7 @@ public class BoardGrid : MonoBehaviour {
 
     public bool IsFree(GridPos pos)
     {
+        //Debug.Log((int) gridOccupancy[pos.x, pos.y]);
         return gridOccupancy[pos.x, pos.y] == Occupancy.Free;
     }
 
@@ -204,8 +210,8 @@ public class BoardGrid : MonoBehaviour {
     
     public IEnumerable<GridPos> Neighbours(GridPos pos, Neighbourhood neighbourhood)
     {
-        int yMax = pos.y + 1;
-        for (int x = pos.x - 1, xMax = pos.x + 1, xOff = -1; xOff < 2; x++, xOff++)
+      
+        for (int x = pos.x - 1, xOff = -1; xOff < 2; x++, xOff++)
         {
             for (int y = pos.y - 1, yOff = -1; yOff < 2; y++, yOff++)
             {
@@ -234,5 +240,30 @@ public class BoardGrid : MonoBehaviour {
             }
 
         }
+    }
+
+    public void DebugPosition(GridPos pos)
+    {
+        var msg = string.Format("Context around {0}:\n", pos);
+
+        for (int yOff=1; yOff>-2; yOff--)
+        {
+            for (int xOff=-1; xOff<2; xOff++)
+            {
+                GridPos tmp = new GridPos(pos.x + xOff, pos.y + yOff);
+
+                msg += IsValidPosition(tmp) ? ((int) GetOccupancy(tmp)).ToString() : "-" ;
+
+                if (xOff == 1)
+                {
+                    msg += "\n";
+                } else
+                {
+                    msg += ", ";
+                }
+            }
+        }
+
+        Debug.Log(msg);
     }
 }
