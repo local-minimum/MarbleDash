@@ -41,8 +41,9 @@ public class BoardController : MonoBehaviour {
     {
         get
         {
-            return new Vector3(outerEulerAxis.y, outerEulerAxis.x) * rotationMagnitude * outerRotation + 
-                new Vector3(innerEulerAxis.y, innerEulerAxis.x) * rotationMagnitude * innerRotation;
+
+            return new Vector3(outerEulerAxis.y, 0, outerEulerAxis.x) * rotationMagnitude * outerRotation + 
+                new Vector3(innerEulerAxis.y, 0, innerEulerAxis.x) * rotationMagnitude * innerRotation;
         }
     }
 }
