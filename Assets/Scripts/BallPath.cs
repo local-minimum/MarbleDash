@@ -47,13 +47,16 @@ public class BallPath : MonoBehaviour {
             }
         }
 
-        target = path[-1];
+        target = path[path.Count - 1];
         path.Remove(target);
 
         List<Vector3> positions = new List<Vector3>();
         positions.Add(boardGrid.GetLocalPosition(source));
         positions.AddRange(path.Select(e => boardGrid.GetLocalPosition(e)));
-        positions.Add(target);
+        positions.Add(boardGrid.GetLocalPosition(target)
+            
+            
+            );
 
         lineRenderer.enabled = true;
         lineRenderer.numCapVertices = 1;
