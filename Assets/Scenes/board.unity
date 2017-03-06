@@ -275,6 +275,10 @@ Prefab:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 6cc70d76601ac624f8654b2e699d7664, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6cc70d76601ac624f8654b2e699d7664, type: 3}
   m_IsPrefabParent: 0
@@ -417,6 +421,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2025833197}
   - component: {fileID: 2025833196}
+  - component: {fileID: 2025833198}
+  - component: {fileID: 2025833199}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -455,6 +461,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!114 &2025833198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2025833195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23f6f98e439c3924b8ae4f0a8f95b877, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1006463548}
+  size: 16
+--- !u!114 &2025833199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2025833195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 957a4d0684dafe54b993b68b097972cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardGrid: {fileID: 2025833198}
+  connectPrevious: 1
+  minPath: 10
+  maxPath: 30
+  turnProb: 0.2
 --- !u!1 &2137439565
 GameObject:
   m_ObjectHideFlags: 0

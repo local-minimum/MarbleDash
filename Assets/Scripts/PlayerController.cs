@@ -13,7 +13,8 @@ public class PlayerController : MonoBehaviour {
 
 	void Start () {
         rb = GetComponent<Rigidbody>();
-	}
+        groundLayer = LayerMask.NameToLayer("ground");
+    }
 	
 	void Update () {
         if (grounded)
@@ -22,7 +23,7 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    int groundLayer = LayerMask.NameToLayer("ground");
+    int groundLayer;
 
     private void OnCollisionEnter(Collision collision)
     {
