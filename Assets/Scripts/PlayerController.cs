@@ -9,13 +9,24 @@ public class PlayerController : MonoBehaviour {
 
     Rigidbody rb;
 
-	// Use this for initialization
+    bool grounded = false;
+
 	void Start () {
         rb = GetComponent<Rigidbody>();
 	}
 	
-	// Update is called once per frame
 	void Update () {
-        rb.AddForce(board.Slope);
+        if (grounded)
+        {
+            rb.AddForce(board.Slope);
+        }
     }
+
+    int groundLayer = LayerMask.NameToLayer("ground");
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        grounded = groundLayer == collision.gameObject.layer;
+    }
+
 }
