@@ -1,16 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(BallPath))]
 public class BallPathEditor : Editor {
     public override void OnInspectorGUI()
     {
+        //Just pick one that is not a list
         var prop = serializedObject.FindProperty("boardGrid");
 
         prop.isExpanded = EditorGUILayout.Foldout(prop.isExpanded, "Settings");
-
         if (prop.isExpanded)
         {
             EditorGUI.indentLevel++;
@@ -21,8 +19,7 @@ public class BallPathEditor : Editor {
         if (GUILayout.Button("Generate New"))
         {
             BallPath myTarget = target as BallPath;
-            myTarget.GeneratePath(serializedObject.FindProperty("connectPrevious").boolValue);
-           
+            myTarget.GeneratePath(serializedObject.FindProperty("connectPrevious").boolValue);          
         }
     }
 }
