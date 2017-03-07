@@ -221,8 +221,16 @@ public class BallPath : MonoBehaviour {
         }
     }
 
+    [SerializeField]
+    bool drawGizmos = false;
+
     private void OnDrawGizmosSelected()
     {
+        if (!drawGizmos)
+        {
+            return;
+        }
+
         Gizmos.color = Color.blue;
         Gizmos.DrawSphere(boardGrid.GetWorldPosition(source), 0.5f);
 

@@ -69,6 +69,11 @@ public struct GridPos
     {
         return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
     }
+
+    public static int ShortestDimension(GridPos a, GridPos b)
+    {
+        return Mathf.Min(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
+    }
 }
 
 [ExecuteInEditMode]
@@ -138,6 +143,11 @@ public class BoardGrid : MonoBehaviour {
         {
             return new GridPos(Random.Range(0, size), Random.Range(0, size));
         }
+    }
+
+    public GridPos Clamp(GridPos pos)
+    {
+        return new GridPos(Mathf.Min(Mathf.Max(0, pos.x), size - 1), Mathf.Min(Mathf.Max(0, pos.y), size - 1));
     }
 
     public bool IsValidPosition(GridPos pos)
@@ -225,11 +235,18 @@ public class BoardGrid : MonoBehaviour {
                 yield return new GridPos(x, y);
             }
         }
-    } 
+    }
+
+    [SerializeField]
+    bool drawGizmos = false;
 
     private void OnDrawGizmosSelected()
     {
-        float halfSize = (size + 1) / 2.0f;
+        if (!drawGizmos)
+        {
+            return;
+        }
+
         Gizmos.color = Color.red;
         for (int x=0; x<size; x++)
         {
