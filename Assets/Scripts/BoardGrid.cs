@@ -197,6 +197,11 @@ public class BoardGrid : MonoBehaviour {
         return gridOccupancy[pos.x, pos.y] == Occupancy.Free;
     }
 
+    public bool IsFree(int x, int y)
+    {
+        return gridOccupancy[x, y] == Occupancy.Free;
+    }
+
     public Occupancy GetOccupancy(GridPos pos)
     {
         return gridOccupancy[pos.x, pos.y];

@@ -19,19 +19,29 @@ public class RoomMaker : MonoBehaviour {
     int size;
 
     [SerializeField]
-    Transform walls;
+    Wall wallPrefab;
 
     [SerializeField]
     Transform wallParent;
 
+    [SerializeField]
+    bool clearPreviousBoard;
+
     public void GenerateRooms()
     {
+        if (clearPreviousBoard)
+        {
+            boardGrid.FreeAll();
+        }
+
         size = boardGrid.Size;
         roomLayout = new int[size, size];
         SeedRooms();
         CountPrivates();
         RemoveRoomInRoom();
         SolidifyUncertain();
+        SnakeWalls();
+        PlaceWalls();
     }
 
     [SerializeField]
@@ -149,6 +159,97 @@ public class RoomMaker : MonoBehaviour {
         }
     }
 
+    public void PlaceWalls()
+    {
+        for (int i=0, l=wallParent.childCount; i<l; i++)
+        {
+            wallParent.GetChild(i).gameObject.SetActive(false);
+        }
+
+        int n = 0;
+        foreach(GridPos pos in boardGrid.Find(Occupancy.Wall))
+        {
+            Wall wall = GetWall(n);
+            wall.SetPosition(boardGrid, pos);
+            n++;
+        }
+    }
+
+    Wall GetWall(int n)
+    {
+
+        if (n < wallParent.childCount)
+        {
+            return wallParent.GetChild(n).GetComponent<Wall>();
+        } else
+        {
+            Wall wall = Instantiate(wallPrefab, wallParent);
+            return wall;
+        }
+    }
+
+    void SnakeWalls()
+    {
+        bool[,] walls = new bool[size, size];
+
+        for (int y = 0; y < size; y++)
+        {
+            int prevX = roomLayout[0, y];
+            for (int x = 0; x < size; x++)
+            {
+                int val = roomLayout[x, y];
+
+                if (val != prevX)
+                {
+                    if (val == 0 && boardGrid.IsFree(x, y))
+                    {
+                        boardGrid.Occupy(x, y, Occupancy.Wall);
+                        walls[x, y] = true;
+                    }
+                    else if (boardGrid.IsFree(x - 1, y) && (prevX == 0 || x > 0 && Random.value < 0.5f))
+                    {
+                        boardGrid.Occupy(x - 1, y, Occupancy.Wall);
+                        walls[x - 1, y] = true;
+                    }
+                    else if (boardGrid.IsFree(x, y))
+                    {
+                        boardGrid.Occupy(x, y, Occupancy.Wall);
+                        walls[x, y] = true;
+                    }
+
+                }
+                prevX = val;
+
+                if (y == 0)
+                {
+                    continue;
+                }
+
+                int prevY = roomLayout[x, y - 1];
+
+                if (val != prevY)
+                {
+                    if (val == 0 && boardGrid.IsFree(x, y))
+                    {
+                        boardGrid.Occupy(x, y, Occupancy.Wall);
+                        walls[x, y] = true;
+                    }
+                    else if ((prevY == 0 || Random.value < 0.5f) && boardGrid.IsFree(x, y - 1))
+                    {
+                        boardGrid.Occupy(x, y - 1, Occupancy.Wall);
+                        walls[x, y - 1] = true;
+                    }
+                    else if (boardGrid.IsFree(x, y))
+                    {
+                        boardGrid.Occupy(x, y, Occupancy.Wall);
+                        walls[x, y] = true;
+                    }
+
+                }
+            }
+        }
+    }
+
     static int BitCount(int val)
     {
         int count = 0;
@@ -199,9 +300,12 @@ public class RoomMaker : MonoBehaviour {
         return value & ~mask;
     }
 
+    [SerializeField]
+    bool drawGizmos;
+
     private void OnDrawGizmosSelected()
-    {
-        if (roomLayout == null)
+    {        
+        if (roomLayout == null || !drawGizmos)
         {
             return;
         }
