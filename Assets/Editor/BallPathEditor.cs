@@ -7,7 +7,17 @@ using UnityEditor;
 public class BallPathEditor : Editor {
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
+        var prop = serializedObject.FindProperty("boardGrid");
+
+        prop.isExpanded = EditorGUILayout.Foldout(prop.isExpanded, "Settings");
+
+        if (prop.isExpanded)
+        {
+            EditorGUI.indentLevel++;
+            base.OnInspectorGUI();
+            EditorGUI.indentLevel--;
+        }
+
         if (GUILayout.Button("Generate New"))
         {
             BallPath myTarget = target as BallPath;

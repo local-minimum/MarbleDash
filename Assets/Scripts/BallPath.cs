@@ -22,6 +22,10 @@ public class BallPath : MonoBehaviour {
 
     public int maxPath = 30;
 
+    [SerializeField, Range(0, 1)]
+    float minPathTolerance = 0.8f;
+
+
     private void Start()
     {
         lineRenderer.enabled = false;
@@ -33,7 +37,7 @@ public class BallPath : MonoBehaviour {
         {
             SetPathSource(connectPrevious);
             SetPath(Random.Range(minPath, maxPath));
-            if (path.Count < Mathf.FloorToInt(minPath * 0.8f))
+            if (path.Count < Mathf.FloorToInt(minPath * minPathTolerance))
             {
                 for (int i=0, n=path.Count; i<n; i++)
                 {
@@ -93,7 +97,7 @@ public class BallPath : MonoBehaviour {
         boardGrid.Occupy(source, Occupancy.BallPathSource);
     }
 
-    [SerializeField]
+    [SerializeField, Range(0, 1)]
     float turnProb = 0.4f;
 
 
