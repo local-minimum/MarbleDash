@@ -27,7 +27,18 @@ public class PlayerController : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        grounded = groundLayer == collision.gameObject.layer;
+        if (groundLayer == collision.gameObject.layer)
+        {
+            grounded = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (groundLayer == collision.gameObject.layer)
+        {
+            grounded = false;
+        }
     }
 
 }
