@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum Occupancy { Free, BallPathSource, BallPathTarget, BallPath, Wall, WallBreakable, WallIllusory, Hole};
+public enum Direction { None, North, South, West, East };
 
 public struct GridPos
 {
@@ -65,6 +66,25 @@ public struct GridPos
         return base.Equals(obj);
     }
 
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
+
+    public Direction AsMajorDirection()
+    {
+        if (Mathf.Abs(x) > Mathf.Abs(y))
+        {
+            return x > 0 ? Direction.East : Direction.West;
+        } else if (y != 0)
+        {
+            return y > 0 ? Direction.North : Direction.South;
+        } else
+        {
+            return Direction.None;
+        }
+    }
+
     public static int TaxiCabDistance(GridPos a, GridPos b)
     {
         return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
@@ -74,6 +94,7 @@ public struct GridPos
     {
         return Mathf.Min(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
     }
+
 }
 
 [ExecuteInEditMode]

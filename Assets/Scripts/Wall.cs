@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Direction { North, South, West, East};
-
 public class Wall : MonoBehaviour {
 
     GridPos pos;
@@ -74,8 +72,10 @@ public class Wall : MonoBehaviour {
                 return Direction.South;
             case Direction.South:
                 return Direction.North;
-            default:
+            case Direction.West:
                 return Direction.East;
+            default:
+                return Direction.None;
         }
     }
 

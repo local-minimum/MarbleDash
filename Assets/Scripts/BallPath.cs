@@ -39,7 +39,7 @@ public class BallPath : MonoBehaviour {
             SetPath(Random.Range(minPath, maxPath));
             if (path.Count < Mathf.FloorToInt(minPath * minPathTolerance))
             {
-                for (int i=0, n=path.Count; i<n; i++)
+                for (int i = 0, n = path.Count; i < n; i++)
                 {
                     boardGrid.Free(path[i]);
                 }
@@ -54,13 +54,32 @@ public class BallPath : MonoBehaviour {
         target = path[path.Count - 1];
         path.Remove(target);
 
+        ConstructMeshes();
+        ShowWithLineRenderer();
+    }
+
+    void ConstructMeshes()
+    {
+        ConstructStart();
+    }
+
+    [SerializeField]
+    GameObject startGO;
+
+
+    void ConstructStart()
+    {
+        Direction d = (path[0] - source).AsMajorDirection();
+        startGO.transform.position = boardGrid.GetLocalPosition(source);
+        
+    }
+
+    void ShowWithLineRenderer()
+    {
         List<Vector3> positions = new List<Vector3>();
         positions.Add(boardGrid.GetLocalPosition(source));
         positions.AddRange(path.Select(e => boardGrid.GetLocalPosition(e)));
-        positions.Add(boardGrid.GetLocalPosition(target)
-            
-            
-            );
+        positions.Add(boardGrid.GetLocalPosition(target));
 
         lineRenderer.enabled = true;
         lineRenderer.numCapVertices = 1;
