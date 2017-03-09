@@ -36,7 +36,6 @@ public class Wall : MonoBehaviour {
             m = new Mesh();
             m.name = "Generated Wall Segment";
             GetComponent<MeshFilter>().mesh = m;
-           
         }
         else
         {
@@ -50,6 +49,10 @@ public class Wall : MonoBehaviour {
         m.SetUVs(0, GetUV(shape, verts));
         m.RecalculateBounds();
         m.RecalculateNormals();
+        MeshCollider mc = GetComponent<MeshCollider>();
+        mc.sharedMesh = m;
+        mc.convex = true;
+
     }
 
     [SerializeField]
