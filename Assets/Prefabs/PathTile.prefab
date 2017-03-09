@@ -91,8 +91,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.2, y: 1.2, z: 1.2}
+  m_Center: {x: 0, y: 0, z: 0.5}
 --- !u!114 &114502735246651100
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -107,3 +107,5 @@ MonoBehaviour:
   startMat: {fileID: 2100000, guid: 8d2d86c0845d9fe4588c39c07fa592ee, type: 2}
   pathMat: {fileID: 2100000, guid: cc19a07f1b1b4104c88bc8bad51a5383, type: 2}
   middleWidth: 0.49
+  offColor: {r: 0, g: 0, b: 0, a: 0}
+  forshadowDecay: 0.125

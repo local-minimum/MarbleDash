@@ -52,6 +52,11 @@ public class BallPathTile : MonoBehaviour {
         previousTile = prev;
     }
 
+    Material activeMat;
+    Color refColor;
+    [SerializeField]
+    Color offColor;
+
     public void GenerateMesh()
     {
         float halfX = size.x / 2f;
@@ -67,12 +72,13 @@ public class BallPathTile : MonoBehaviour {
             entry = (previousTile.pos - pos).AsMajorDirection();
         }
 
-        GetComponent<MeshRenderer>().material = (previousTile == null) ? startMat : pathMat;
-
+        activeMat = Instantiate( (previousTile == null) ? startMat : pathMat);
+        GetComponent<MeshRenderer>().material = activeMat;
+        refColor = activeMat.color;
         m.Clear();
 
         if (previousTile == null)
-        {
+        {            
             GenerateStart(halfX, halfZ, exit);
         } else if (nextTile == null)
         {
@@ -80,6 +86,7 @@ public class BallPathTile : MonoBehaviour {
         } else
         {
             GenerateMiddle(halfX, halfZ, entry, exit);
+            activeMat.color = offColor;
         }
         m.RecalculateNormals();
         m.RecalculateBounds();
@@ -258,7 +265,44 @@ public class BallPathTile : MonoBehaviour {
 
             };
         }
+    }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!playerVisited && other.tag == "Player")
+        {
+            if (previousTile == null || previousTile.playerVisited)
+            {
+                playerVisited = true;
+                activeMat.color = refColor;
+
+                if (nextTile)
+                {
+                    nextTile.Foreshadow(1, foreshadowDecay);
+                }
+            }
+        }
+    }
+
+    [SerializeField, Range(0, 1)]
+    float foreshadowDecay = 0.125f;
+
+    [SerializeField, Range(0, 1)]
+    float foreshadowFactor = 0.4f;
+
+    void Foreshadow(float progress, float step)
+    {
+        if (activeMat == null)
+        {
+            return;
+        }
+        progress = Mathf.Clamp01(progress - step);
+        activeMat.color = Color.Lerp(offColor, refColor, progress * foreshadowFactor);
+
+        if (progress > 0 && nextTile)
+        {
+            nextTile.Foreshadow(progress, step);    
+        }
 
     }
 }
