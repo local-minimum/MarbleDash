@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Direction { North, South, West, East};
+
 public class Wall : MonoBehaviour {
 
     GridPos pos;
@@ -27,7 +29,8 @@ public class Wall : MonoBehaviour {
     {
         Vector2 shape = board.TileShape;
         context = board.GetOccupancyContext(pos, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory);
-
+        //board.DebugPosition(pos, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory);
+            
         if (m == null)
         {
             m = new Mesh();
@@ -58,6 +61,21 @@ public class Wall : MonoBehaviour {
     [SerializeField, Range(0, 1)]
     float innerSquareBase = .8f;
 
+    public static Direction Inverse(Direction direction)
+    {
+        switch (direction)
+        {
+            case Direction.East:
+                return Direction.West;
+            case Direction.North:
+                return Direction.South;
+            case Direction.South:
+                return Direction.North;
+            default:
+                return Direction.East;
+        }
+    }
+
     List<Vector3> GetVerts(Vector2 shape, out List<int> tris)
     {
         float halfX = shape.x / 2f;
@@ -70,32 +88,109 @@ public class Wall : MonoBehaviour {
         List<int> partTris;
         verts.AddRange(Center(halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
         tris.AddRange(partTris);
-        
+        int outs = 0;
+        List<Direction> outDirs = new List<Direction>();
 
         //Connect to north;
-        if (context[1, 0] == 1 || true)
+        if (context[1, 0] == 1)
         {
             
-            verts.AddRange(NorthOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            verts.AddRange(NorthOut(false, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            tris.AddRange(partTris);
+            outs++;
+            outDirs.Add(Direction.North);
+        }
+
+        if (context[1, 2] == 1)
+        {
+            verts.AddRange(SouthOut(false, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            tris.AddRange(partTris);
+            outs++;
+            outDirs.Add(Direction.South);
+        }
+
+        if (context[0, 1] == 1)
+        {
+            verts.AddRange(WestOut(false, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            tris.AddRange(partTris);
+            outs++;
+            outDirs.Add(Direction.West);
+        }
+
+        if (context[2, 1] == 1)
+        {
+            verts.AddRange(EastOut(false, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            tris.AddRange(partTris);
+            outs++;
+            outDirs.Add(Direction.East);
+        }
+
+        if (outs == 0)
+        {
+            float val = Random.value;
+            if (val < 0.25f)
+            {
+                verts.AddRange(NorthOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+                outDirs.Add(Direction.North);
+            } else if (val < 0.5f)
+            {
+                verts.AddRange(SouthOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+                outDirs.Add(Direction.South);
+            }
+            else if (val < 0.75f)
+            {
+                verts.AddRange(WestOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+                outDirs.Add(Direction.West);
+            }
+            else
+            {
+                verts.AddRange(EastOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+                outDirs.Add(Direction.East);
+            }
+            tris.AddRange(partTris);
+            outs++;
+        }
+
+        if (outs == 1)
+        {
+            Direction complimentDir = Inverse(outDirs[0]);
+            outDirs.Add(complimentDir);
+
+            if (complimentDir == Direction.North)
+            {
+                verts.AddRange(NorthOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            }
+            else if (complimentDir == Direction.South) 
+            {
+                verts.AddRange(SouthOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            }
+            else if (complimentDir == Direction.West)
+            {
+                verts.AddRange(WestOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            }
+            else
+            {
+                verts.AddRange(EastOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
+            }
+
             tris.AddRange(partTris);
         }
 
-        if (context[1, 2] == 1 || true)
+        if (!outDirs.Contains(Direction.North))
         {
-            verts.AddRange(SouthOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
-            tris.AddRange(partTris);
+            tris.AddRange(NorthIn());
         }
-
-        if (context[0, 1] == 1 || true)
+        if (!outDirs.Contains(Direction.South))
         {
-            verts.AddRange(WestOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
-            tris.AddRange(partTris);
+            tris.AddRange(SouthIn());
         }
-
-        if (context[0, 1] == 1 || true)
+        if (!outDirs.Contains(Direction.West))
         {
-            verts.AddRange(EastOut(true, verts.Count, halfX, halfZ, halfInnerTop, halfInnerBase, out partTris));
-            tris.AddRange(partTris);
+            tris.AddRange(WestIn());
+        }
+        if (!outDirs.Contains(Direction.East))
+        {
+            tris.AddRange(EastIn());
         }
 
         return verts;
@@ -124,6 +219,38 @@ public class Wall : MonoBehaviour {
                 });
 
         return verts;
+    }
+
+    List<int> WestIn()
+    {
+        return new List<int>() {
+            3, 5, 4,
+            3, 4, 2
+            };
+    }
+
+    List<int> EastIn()
+    {
+        return new List<int>() {
+            7, 1, 0,
+            7, 0, 6
+            };
+    }
+
+    List<int> NorthIn()
+    {
+        return new List<int>() {
+            1, 3, 2,
+            1, 2, 0
+            };
+    }
+
+    List<int> SouthIn()
+    {
+        return new List<int>() {
+            5, 7, 6,
+            5, 6, 4
+            };
     }
 
     List<Vector3> NorthOut(bool capped, int index, float halfX, float halfZ, float halfInnerTop, float halfInnerBase, out List<int> tris)

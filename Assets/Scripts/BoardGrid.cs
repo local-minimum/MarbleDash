@@ -266,14 +266,13 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
-    public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] trues)
+    public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] filter)
     {
-        int mask = 1 << (int) trues[0];
-        for (int i=0; i<trues.Length; i++)
+        int mask = 1 << (int) filter[0];
+        for (int i=0; i<filter.Length; i++)
         {
-            mask |= 1 << (int)trues[i];
+            mask |= 1 << (int)filter[i];
         }
-
         int[,] ret = new int[3, 3];
         for (int yOff = -1; yOff < 2; yOff++)
         {
@@ -281,7 +280,7 @@ public class BoardGrid : MonoBehaviour {
             {
                 GridPos cur = pos + new GridPos(xOff, yOff);
                 if (IsValidPosition(cur)) {
-                    ret[xOff + 1, yOff + 1] = ((int)gridOccupancy[cur.x, cur.y] & mask) != 0 ? 1 : 0;
+                    ret[xOff + 1, yOff + 1] = ((1 << (int)gridOccupancy[cur.x, cur.y]) & mask) != 0 ? 1 : 0;
                 } else
                 {
                     ret[xOff + 1, yOff + 1] = -1;
@@ -289,6 +288,31 @@ public class BoardGrid : MonoBehaviour {
             }
         }
         return ret;
+    }
+    public void DebugPosition(GridPos pos, params Occupancy[] filter)
+    {
+        int[,] context = GetOccupancyContext(pos, filter);
+        var msg = string.Format("Context around {0}:\n", pos);
+
+        for (int y = 2; y > -1; y--)
+        {
+            for (int x = 0; x < 3; x++)
+            {
+                msg += context[x, y];
+
+                if (x == 2)
+                {
+                    msg += "\n";
+                }
+                else
+                {
+                    msg += ", ";
+                }
+            }
+        }
+
+        Debug.Log(msg);
+
     }
 
     public void DebugPosition(GridPos pos)
