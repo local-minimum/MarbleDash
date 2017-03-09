@@ -611,7 +611,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 22, z: 1.3}
+  m_Size: {x: 1, y: 22, z: 2}
   m_Center: {x: -10.5, y: 0, z: 0.4}
 --- !u!65 &1053166058
 BoxCollider:
@@ -623,7 +623,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 22, z: 1.3}
+  m_Size: {x: 1, y: 22, z: 2}
   m_Center: {x: 10.5, y: 0, z: 0.4}
 --- !u!65 &1053166059
 BoxCollider:
@@ -635,7 +635,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 22, y: 1, z: 1.3}
+  m_Size: {x: 22, y: 1, z: 2}
   m_Center: {x: 0, y: -10.5, z: 0.4}
 --- !u!65 &1053166060
 BoxCollider:
@@ -647,7 +647,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 22, y: 1, z: 1.3}
+  m_Size: {x: 22, y: 1, z: 2}
   m_Center: {x: 0, y: 10.5, z: 0.4}
 --- !u!1 &1113420209
 GameObject:
@@ -759,6 +759,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 2025833196}
+  forceMultiplier: 1.5
 --- !u!1 &1549618987
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,6 +842,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startMat: {fileID: 2100000, guid: 8d2d86c0845d9fe4588c39c07fa592ee, type: 2}
   pathMat: {fileID: 2100000, guid: cc19a07f1b1b4104c88bc8bad51a5383, type: 2}
+  middleWidth: 0.5
 --- !u!1 &1825918469
 GameObject:
   m_ObjectHideFlags: 0
@@ -936,6 +938,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startMat: {fileID: 2100000, guid: 8d2d86c0845d9fe4588c39c07fa592ee, type: 2}
   pathMat: {fileID: 2100000, guid: cc19a07f1b1b4104c88bc8bad51a5383, type: 2}
+  middleWidth: 0.5
 --- !u!1 &2025833195
 GameObject:
   m_ObjectHideFlags: 0
@@ -1018,6 +1021,7 @@ MonoBehaviour:
   maxPath: 120
   minPathTolerance: 0.8
   startTile: {fileID: 1825918474}
+  endTile: {fileID: 1549618991}
   pathParent: {fileID: 188568497}
   pathTilePrefab: {fileID: 114502735246651100, guid: 18418101505ec9b43a771100fa0bd08c,
     type: 2}

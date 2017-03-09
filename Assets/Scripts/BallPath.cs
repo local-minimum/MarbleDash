@@ -14,8 +14,8 @@ public class BallPath : MonoBehaviour {
     [SerializeField]
     bool connectPrevious = true;
 
-    GridPos start;
-    GridPos target;
+    GridPos startPos;
+    GridPos endPos;
     List<GridPos> path = new List<GridPos>();
 
     public int minPath = 10;
@@ -51,20 +51,21 @@ public class BallPath : MonoBehaviour {
             }
         }
 
-        target = path[path.Count - 1];
-        path.Remove(target);
+        endPos = path[path.Count - 1];
+        path.Remove(endPos);
 
         ConstructPath();
         //ShowWithLineRenderer();
     }
 
-    void ConstructPath()
+    public void ConstructPath()
     {
-        startTile.SetPosition(boardGrid, start);
+        RemoveTiles();
+        startTile.SetPosition(boardGrid, startPos);
         BallPathTile next = null;
         BallPathTile prev = startTile;
-        
-        for (int i=0, l=path.Count; i<l; i++)
+
+        for (int i = 0, l = path.Count; i < l; i++)
         {
             next = GetTile(i);
             next.SetPosition(boardGrid, path[i]);
@@ -73,14 +74,28 @@ public class BallPath : MonoBehaviour {
             prev = next;
         }
 
+        endTile.SetPosition(boardGrid, endPos);
+       
         if (prev != null)
         {
+            prev.SetNextTile(endTile);
             prev.GenerateMesh();
+        }
+    }
+
+    void RemoveTiles()
+    {
+        for (int i = 0, l = pathParent.childCount; i < l; i++)
+        {
+            pathParent.GetChild(i).gameObject.SetActive(false);
         }
     }
 
     [SerializeField]
     BallPathTile startTile;
+
+    [SerializeField]
+    BallPathTile endTile;
 
     [SerializeField]
     Transform pathParent;
@@ -92,7 +107,9 @@ public class BallPath : MonoBehaviour {
     {
         if (i < pathParent.childCount)
         {
-            return pathParent.GetChild(i).GetComponent<BallPathTile>();
+            BallPathTile bpt = pathParent.GetChild(i).GetComponent<BallPathTile>();
+            bpt.gameObject.SetActive(true);
+            return bpt;
         } else
         {
             BallPathTile bpt = Instantiate(pathTilePrefab, pathParent, false);
@@ -104,9 +121,9 @@ public class BallPath : MonoBehaviour {
     void ShowWithLineRenderer()
     {
         List<Vector3> positions = new List<Vector3>();
-        positions.Add(boardGrid.GetLocalPosition(start));
+        positions.Add(boardGrid.GetLocalPosition(startPos));
         positions.AddRange(path.Select(e => boardGrid.GetLocalPosition(e)));
-        positions.Add(boardGrid.GetLocalPosition(target));
+        positions.Add(boardGrid.GetLocalPosition(endPos));
 
         lineRenderer.enabled = true;
         lineRenderer.numCapVertices = 1;
@@ -123,7 +140,7 @@ public class BallPath : MonoBehaviour {
         {
             try
             {
-                start = boardGrid.Find(Occupancy.BallPathTarget).First();
+                startPos = boardGrid.Find(Occupancy.BallPathTarget).First();
                 hasSource = true;
             }
             catch (System.NullReferenceException) {}
@@ -137,10 +154,10 @@ public class BallPath : MonoBehaviour {
 
         if (!hasSource)
         {
-            start = boardGrid.RandomPosition;
+            startPos = boardGrid.RandomPosition;
         }
 
-        boardGrid.Occupy(start, Occupancy.BallPathSource);
+        boardGrid.Occupy(startPos, Occupancy.BallPathSource);
     }
 
     [SerializeField, Range(0, 1)]
@@ -155,9 +172,9 @@ public class BallPath : MonoBehaviour {
 
     public void SetPath(int length)
     {
-        List<GridPos> crossNeighbours = boardGrid.Neighbours(start, BoardGrid.Neighbourhood.Cross).ToList();
-        GridPos direction = crossNeighbours[Random.Range(0, crossNeighbours.Count)] - start;
-        GridPos pos = start + direction;
+        List<GridPos> crossNeighbours = boardGrid.Neighbours(startPos, BoardGrid.Neighbourhood.Cross).ToList();
+        GridPos direction = crossNeighbours[Random.Range(0, crossNeighbours.Count)] - startPos;
+        GridPos pos = startPos + direction;
 
         int i = 0;
         path.Clear();
@@ -169,7 +186,7 @@ public class BallPath : MonoBehaviour {
 
             crossNeighbours = boardGrid
                 .Neighbours(pos, BoardGrid.Neighbourhood.Cross)
-                .Where(e => !path.Contains(e) && e != start)
+                .Where(e => !path.Contains(e) && e != startPos)
                 .ToList();
 
             GridPos next = pos + direction;
@@ -235,9 +252,9 @@ public class BallPath : MonoBehaviour {
                             boardGrid.Free(path[idE]);
                         }
                         path.Clear();
-                        crossNeighbours = boardGrid.Neighbours(start, BoardGrid.Neighbourhood.Cross).ToList();
+                        crossNeighbours = boardGrid.Neighbours(startPos, BoardGrid.Neighbourhood.Cross).ToList();
                         next = crossNeighbours[Random.Range(0, crossNeighbours.Count)];
-                        pos = start;
+                        pos = startPos;
                         //Debug.Log("Clearing path");
                     }
                     
@@ -278,7 +295,7 @@ public class BallPath : MonoBehaviour {
         }
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(boardGrid.GetWorldPosition(start), 0.5f);
+        Gizmos.DrawSphere(boardGrid.GetWorldPosition(startPos), 0.5f);
 
         Gizmos.color = Color.gray;
 

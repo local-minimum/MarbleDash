@@ -15,17 +15,20 @@ public class PlayerController : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         groundLayer = LayerMask.NameToLayer("ground");
     }
-	
+
+    [SerializeField, Range(0, 5)]
+    float forceMultiplier = 0.5f;
+
 	void Update () {
         if (grounded)
         {
-            rb.AddForce(board.Slope);
+            rb.AddForce(board.Slope * forceMultiplier);
         }
     }
 
     int groundLayer;
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionStay(Collision collision)
     {
         if (groundLayer == collision.gameObject.layer)
         {

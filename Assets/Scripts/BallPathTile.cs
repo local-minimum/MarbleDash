@@ -24,9 +24,14 @@ public class BallPathTile : MonoBehaviour {
     BoardGrid board;
     GridPos pos;
     Vector2 size;
+    bool playerVisited = false;
+
+    [SerializeField, Range(0, 1)]
+    float middleWidth = 0.5f;
 
     public void SetPosition(BoardGrid board, GridPos pos)
     {
+        playerVisited = false;
         this.board = board;
         this.pos = pos;
         size = board.TileShape;
@@ -55,7 +60,7 @@ public class BallPathTile : MonoBehaviour {
         Direction entry = Direction.None;
         Direction exit = Direction.None;
         if (nextTile) {
-            (nextTile.pos - pos).AsMajorDirection();
+            exit = (nextTile.pos - pos).AsMajorDirection();
         }
         if (previousTile)
         {
@@ -64,65 +69,196 @@ public class BallPathTile : MonoBehaviour {
 
         GetComponent<MeshRenderer>().material = (previousTile == null) ? startMat : pathMat;
 
-        if (previousTile == null || true)
+        m.Clear();
+
+        if (previousTile == null)
         {
-            m.Clear();
-            m.vertices = new Vector3[]
+            GenerateStart(halfX, halfZ, exit);
+        } else if (nextTile == null)
+        {
+            GenerateEnd(halfX, halfZ, entry);
+        } else
+        {
+            GenerateMiddle(halfX, halfZ, entry, exit);
+        }
+        m.RecalculateNormals();
+        m.RecalculateBounds();
+    }
+
+    void GenerateEnd(float halfX, float halfZ, Direction entry)
+    {
+
+    }
+
+    void GenerateMiddle(float halfX, float halfZ, Direction entry, Direction exit)
+    {
+        List<Vector3> verts = new List<Vector3>();
+        List<int> tris = new List<int>();
+        List<Vector2> uvs = new List<Vector2>();
+
+
+        Vector2 halfSizeInner = size * middleWidth / 2f;
+        Vector2 halfSizeOuter = size / 2f;
+        Vector2 uvCenter = Vector2.one * middleWidth;
+        Vector2 uvEdges = Vector2.one - uvCenter;
+
+        verts.Add(new Vector3(-halfSizeInner.x, halfSizeInner.y, 0));       // 0
+        verts.Add(new Vector3(halfSizeInner.x, halfSizeInner.y, 0));        // 1
+        verts.Add(new Vector3(halfSizeInner.x, -halfSizeInner.y, 0));       // 2
+        verts.Add(new Vector3(-halfSizeInner.x, -halfSizeInner.y, 0));      // 3
+
+        uvs.Add(new Vector2(uvEdges.x, uvEdges.y + uvCenter.y));
+        uvs.Add(new Vector2(uvEdges.x + uvCenter.x, uvEdges.y + uvCenter.y));
+        uvs.Add(new Vector2(uvEdges.x + uvCenter.x, uvEdges.y));
+        uvs.Add(new Vector2(uvEdges.x, uvEdges.y));
+
+        tris.AddRange(new int[]
+        {
+                0, 3, 1,
+                1, 3, 2,
+        });
+
+        int off = 4;
+
+        if (entry == Direction.West || exit == Direction.West)
+        {
+            //Debug.Log(name + " West");
+
+            verts.Add(new Vector3(-halfSizeOuter.x, -halfSizeInner.y));     // off + 0
+            verts.Add(new Vector3(-halfSizeOuter.x, halfSizeInner.y));      // off + 1
+
+            uvs.Add(new Vector2(0, uvEdges.y));
+            uvs.Add(new Vector2(0, uvEdges.y + uvCenter.y));
+            
+            
+            tris.AddRange(new int[]
             {
+                3, 0, off + 1,
+                3, off + 1, off + 0
+            });
+            
+            off += 2;
+        }
+
+        if (entry == Direction.East || exit == Direction.East)
+        {
+            //Debug.Log(name + " East");
+            verts.Add(new Vector3(+halfSizeOuter.x, -halfSizeInner.y));     // off + 0
+            verts.Add(new Vector3(+halfSizeOuter.x, halfSizeInner.y));      // off + 1
+
+            uvs.Add(new Vector2(1, uvEdges.y));
+            uvs.Add(new Vector2(1, uvEdges.y + uvCenter.y));
+            
+            tris.AddRange(new int[]
+            {
+                1, 2, off + 1,
+                2, off + 0, off + 1
+            });
+
+            off += 2;
+        }
+
+        if (entry == Direction.North || exit == Direction.North)
+        {
+            //Debug.Log(name + " North");
+            verts.Add(new Vector3(-halfSizeInner.x, halfSizeOuter.y));     // off + 0
+            verts.Add(new Vector3(halfSizeInner.x, halfSizeOuter.y));      // off + 1
+
+            uvs.Add(new Vector2(uvEdges.x, 1));
+            uvs.Add(new Vector2(uvEdges.x + uvCenter.x, 1));
+            
+            tris.AddRange(new int[]
+            {
+                0, 1, off + 1,
+                0, off + 1, off + 0
+            });
+            
+            off += 2;
+        }
+
+        if (entry == Direction.South || exit == Direction.South)
+        {
+            //Debug.Log(name + " South");
+
+            verts.Add(new Vector3(-halfSizeInner.x, -halfSizeOuter.y));     // off + 0
+            verts.Add(new Vector3(halfSizeInner.x, -halfSizeOuter.y));      // off + 1
+
+            uvs.Add(new Vector2(uvEdges.x, 0));
+            uvs.Add(new Vector2(uvEdges.x + uvCenter.x, 0));
+
+            tris.AddRange(new int[]
+            {
+                2, 3, off + 0,
+                2, off + 0, off + 1
+            });
+
+            off += 2;
+        }
+
+        m.SetVertices(verts);
+        m.SetTriangles(tris, 0);
+        m.SetUVs(0, uvs);
+    }
+
+    void GenerateStart(float halfX, float halfZ, Direction exit)
+    {
+        m.vertices = new Vector3[]
+        {
                 new Vector3(-halfX, halfZ),
                 new Vector3(halfX, halfZ),
                 new Vector3(halfX, -halfZ),
                 new Vector3(-halfX, -halfZ),
 
-            };
-            m.triangles = new int[]
-            {
+        };
+        m.triangles = new int[]
+        {
                 0, 3, 1,
                 1, 3, 2,
-            };
+        };
 
-            if (exit == Direction.North)
+        if (exit == Direction.South)
+        {
+            m.uv = new Vector2[]
             {
-                m.uv = new Vector2[]
-                {
                     new Vector2(0, 1),
                     new Vector2(1, 1),
                     new Vector2(1, 0),
                     new Vector2(0, 0)
-                };
-            } else if (exit == Direction.South)
+            };
+        }
+        else if (exit == Direction.North)
+        {
+            m.uv = new Vector2[]
             {
-                m.uv = new Vector2[]
-                {
                     new Vector2(1, 0),
                     new Vector2(0, 0),
                     new Vector2(0, 1),
                     new Vector2(1, 1)
-                };
-            } else if (exit == Direction.East)
+            };
+        }
+        else if (exit == Direction.West)
+        {
+            m.uv = new Vector2[]
             {
-                m.uv = new Vector2[]
-                {
                     new Vector2(0, 0),
                     new Vector2(0, 1),
                     new Vector2(1, 1),
                     new Vector2(1, 0)
 
-                };
-            } else if (exit == Direction.West || true)
+            };
+        }
+        else if (exit == Direction.East || true)
+        {
+            m.uv = new Vector2[]
             {
-                m.uv = new Vector2[]
-                {
                     new Vector2(1, 1),
                     new Vector2(1, 0),
                     new Vector2(0, 0),
                     new Vector2(0, 1)
 
-                };
-            }
-
-            m.RecalculateNormals();
-            m.RecalculateBounds();
+            };
         }
+
+
     }
 }
