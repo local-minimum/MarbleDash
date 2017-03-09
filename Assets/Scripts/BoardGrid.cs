@@ -104,6 +104,8 @@ public class BoardGrid : MonoBehaviour {
         gridOccupancy = new Occupancy[size, size];
         targetSize = target.InverseTransformVector(target.GetComponent<Collider>().bounds.size);
         targetLocalOffset = Vector3.forward * targetSize.z;
+        targetSize.x = Mathf.Abs(targetSize.x);
+        targetSize.y = Mathf.Abs(targetSize.y);
         targetSize.z = 0;
         targetLocalOffset = targetLocalOffset - targetSize / 2f;
     }
@@ -262,6 +264,31 @@ public class BoardGrid : MonoBehaviour {
             }
 
         }
+    }
+
+    public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] trues)
+    {
+        int mask = 1 << (int) trues[0];
+        for (int i=0; i<trues.Length; i++)
+        {
+            mask |= 1 << (int)trues[i];
+        }
+
+        int[,] ret = new int[3, 3];
+        for (int yOff = -1; yOff < 2; yOff++)
+        {
+            for (int xOff = -1; xOff < 2; xOff++)
+            {
+                GridPos cur = pos + new GridPos(xOff, yOff);
+                if (IsValidPosition(cur)) {
+                    ret[xOff + 1, yOff + 1] = ((int)gridOccupancy[cur.x, cur.y] & mask) != 0 ? 1 : 0;
+                } else
+                {
+                    ret[xOff + 1, yOff + 1] = -1;
+                }
+            }
+        }
+        return ret;
     }
 
     public void DebugPosition(GridPos pos)
