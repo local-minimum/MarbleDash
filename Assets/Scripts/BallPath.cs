@@ -14,7 +14,7 @@ public class BallPath : MonoBehaviour {
     [SerializeField]
     bool connectPrevious = true;
 
-    GridPos source;
+    GridPos start;
     GridPos target;
     List<GridPos> path = new List<GridPos>();
 
@@ -54,30 +54,57 @@ public class BallPath : MonoBehaviour {
         target = path[path.Count - 1];
         path.Remove(target);
 
-        ConstructMeshes();
-        ShowWithLineRenderer();
+        ConstructPath();
+        //ShowWithLineRenderer();
     }
 
-    void ConstructMeshes()
+    void ConstructPath()
     {
-        ConstructStart();
+        startTile.SetPosition(boardGrid, start);
+        BallPathTile next = null;
+        BallPathTile prev = startTile;
+        
+        for (int i=0, l=path.Count; i<l; i++)
+        {
+            next = GetTile(i);
+            next.SetPosition(boardGrid, path[i]);
+            prev.SetNextTile(next);
+            prev.GenerateMesh();
+            prev = next;
+        }
+
+        if (prev != null)
+        {
+            prev.GenerateMesh();
+        }
     }
 
     [SerializeField]
-    GameObject startGO;
+    BallPathTile startTile;
 
+    [SerializeField]
+    Transform pathParent;
 
-    void ConstructStart()
+    [SerializeField]
+    BallPathTile pathTilePrefab;
+
+    BallPathTile GetTile(int i)
     {
-        Direction d = (path[0] - source).AsMajorDirection();
-        startGO.transform.position = boardGrid.GetLocalPosition(source);
-        
+        if (i < pathParent.childCount)
+        {
+            return pathParent.GetChild(i).GetComponent<BallPathTile>();
+        } else
+        {
+            BallPathTile bpt = Instantiate(pathTilePrefab, pathParent, false);
+            bpt.name = "Ball Path Segment " + i;
+            return bpt;
+        } 
     }
 
     void ShowWithLineRenderer()
     {
         List<Vector3> positions = new List<Vector3>();
-        positions.Add(boardGrid.GetLocalPosition(source));
+        positions.Add(boardGrid.GetLocalPosition(start));
         positions.AddRange(path.Select(e => boardGrid.GetLocalPosition(e)));
         positions.Add(boardGrid.GetLocalPosition(target));
 
@@ -96,7 +123,7 @@ public class BallPath : MonoBehaviour {
         {
             try
             {
-                source = boardGrid.Find(Occupancy.BallPathTarget).First();
+                start = boardGrid.Find(Occupancy.BallPathTarget).First();
                 hasSource = true;
             }
             catch (System.NullReferenceException) {}
@@ -110,10 +137,10 @@ public class BallPath : MonoBehaviour {
 
         if (!hasSource)
         {
-            source = boardGrid.RandomPosition;
+            start = boardGrid.RandomPosition;
         }
 
-        boardGrid.Occupy(source, Occupancy.BallPathSource);
+        boardGrid.Occupy(start, Occupancy.BallPathSource);
     }
 
     [SerializeField, Range(0, 1)]
@@ -128,9 +155,9 @@ public class BallPath : MonoBehaviour {
 
     public void SetPath(int length)
     {
-        List<GridPos> crossNeighbours = boardGrid.Neighbours(source, BoardGrid.Neighbourhood.Cross).ToList();
-        GridPos direction = crossNeighbours[Random.Range(0, crossNeighbours.Count)] - source;
-        GridPos pos = source + direction;
+        List<GridPos> crossNeighbours = boardGrid.Neighbours(start, BoardGrid.Neighbourhood.Cross).ToList();
+        GridPos direction = crossNeighbours[Random.Range(0, crossNeighbours.Count)] - start;
+        GridPos pos = start + direction;
 
         int i = 0;
         path.Clear();
@@ -142,7 +169,7 @@ public class BallPath : MonoBehaviour {
 
             crossNeighbours = boardGrid
                 .Neighbours(pos, BoardGrid.Neighbourhood.Cross)
-                .Where(e => !path.Contains(e) && e != source)
+                .Where(e => !path.Contains(e) && e != start)
                 .ToList();
 
             GridPos next = pos + direction;
@@ -208,9 +235,9 @@ public class BallPath : MonoBehaviour {
                             boardGrid.Free(path[idE]);
                         }
                         path.Clear();
-                        crossNeighbours = boardGrid.Neighbours(source, BoardGrid.Neighbourhood.Cross).ToList();
+                        crossNeighbours = boardGrid.Neighbours(start, BoardGrid.Neighbourhood.Cross).ToList();
                         next = crossNeighbours[Random.Range(0, crossNeighbours.Count)];
-                        pos = source;
+                        pos = start;
                         //Debug.Log("Clearing path");
                     }
                     
@@ -251,7 +278,7 @@ public class BallPath : MonoBehaviour {
         }
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(boardGrid.GetWorldPosition(source), 0.5f);
+        Gizmos.DrawSphere(boardGrid.GetWorldPosition(start), 0.5f);
 
         Gizmos.color = Color.gray;
 

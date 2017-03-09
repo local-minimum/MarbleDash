@@ -7,10 +7,17 @@ public class BallPathTile : MonoBehaviour {
     MeshFilter mf;
     Mesh m;
 
-    private void Start()
+    [SerializeField]
+    Material startMat;
+
+    [SerializeField]
+    Material pathMat;
+
+    private void Awake()
     {
         mf = GetComponent<MeshFilter>();
         m = new Mesh();
+        m.name = "ProcGen path tile";
         mf.sharedMesh = m;
     }
 
@@ -23,7 +30,7 @@ public class BallPathTile : MonoBehaviour {
         this.board = board;
         this.pos = pos;
         size = board.TileShape;
-        transform.position = board.GetLocalPosition(pos);
+        transform.localPosition = board.GetLocalPosition(pos);
     }
 
     BallPathTile nextTile;
@@ -44,24 +51,34 @@ public class BallPathTile : MonoBehaviour {
     {
         float halfX = size.x / 2f;
         float halfZ = size.y / 2f;
-        Direction exit = (nextTile.pos - pos).AsMajorDirection();
-        Direction entry = (previousTile.pos - pos).AsMajorDirection();
 
-        if (previousTile == null)
+        Direction entry = Direction.None;
+        Direction exit = Direction.None;
+        if (nextTile) {
+            (nextTile.pos - pos).AsMajorDirection();
+        }
+        if (previousTile)
+        {
+            entry = (previousTile.pos - pos).AsMajorDirection();
+        }
+
+        GetComponent<MeshRenderer>().material = (previousTile == null) ? startMat : pathMat;
+
+        if (previousTile == null || true)
         {
             m.Clear();
             m.vertices = new Vector3[]
             {
-                new Vector3(-halfX, 0, halfZ),
-                new Vector3(halfX, 0, halfZ),
-                new Vector3(halfX, 0, -halfZ),
-                new Vector3(-halfX, 0, -halfZ),
+                new Vector3(-halfX, halfZ),
+                new Vector3(halfX, halfZ),
+                new Vector3(halfX, -halfZ),
+                new Vector3(-halfX, -halfZ),
 
             };
             m.triangles = new int[]
             {
-                0, 1, 3,
-                1, 2, 3,
+                0, 3, 1,
+                1, 3, 2,
             };
 
             if (exit == Direction.North)
@@ -92,7 +109,7 @@ public class BallPathTile : MonoBehaviour {
                     new Vector2(1, 0)
 
                 };
-            } else if (exit == Direction.West)
+            } else if (exit == Direction.West || true)
             {
                 m.uv = new Vector2[]
                 {
@@ -103,6 +120,9 @@ public class BallPathTile : MonoBehaviour {
 
                 };
             }
+
+            m.RecalculateNormals();
+            m.RecalculateBounds();
         }
     }
 }
