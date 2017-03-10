@@ -9,9 +9,6 @@ public class BallPath : MonoBehaviour {
     BoardGrid boardGrid;
 
     [SerializeField]
-    LineRenderer lineRenderer;
-
-    [SerializeField]
     bool connectPrevious = true;
 
     GridPos startPos;
@@ -25,10 +22,12 @@ public class BallPath : MonoBehaviour {
     [SerializeField, Range(0, 1)]
     float minPathTolerance = 0.8f;
 
-
-    private void Start()
+    public Vector3 DropTarget
     {
-        lineRenderer.enabled = false;
+        get
+        {
+            return boardGrid.GetWorldPosition(startPos);
+        }
     }
 
     public void GeneratePath(bool connectPrevious)
@@ -53,9 +52,7 @@ public class BallPath : MonoBehaviour {
 
         endPos = path[path.Count - 1];
         path.Remove(endPos);
-
-        ConstructPath();
-        //ShowWithLineRenderer();
+        
     }
 
     public void ConstructPath()
@@ -116,19 +113,6 @@ public class BallPath : MonoBehaviour {
             bpt.name = "Ball Path Segment " + i;
             return bpt;
         } 
-    }
-
-    void ShowWithLineRenderer()
-    {
-        List<Vector3> positions = new List<Vector3>();
-        positions.Add(boardGrid.GetLocalPosition(startPos));
-        positions.AddRange(path.Select(e => boardGrid.GetLocalPosition(e)));
-        positions.Add(boardGrid.GetLocalPosition(endPos));
-
-        lineRenderer.enabled = true;
-        lineRenderer.numCapVertices = 1;
-        lineRenderer.numPositions = positions.Count;
-        lineRenderer.SetPositions(positions.ToArray());
     }
 
     void SetPathSource(bool connectPrevious)

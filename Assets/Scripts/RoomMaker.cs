@@ -41,7 +41,6 @@ public class RoomMaker : MonoBehaviour {
         RemoveRoomInRoom();
         SolidifyUncertain();
         SnakeWalls();
-        PlaceWalls();
     }
 
     [SerializeField]
@@ -159,7 +158,7 @@ public class RoomMaker : MonoBehaviour {
         }
     }
 
-    public void PlaceWalls()
+    public void ConstructWalls()
     {
         for (int i=0, l=wallParent.childCount; i<l; i++)
         {

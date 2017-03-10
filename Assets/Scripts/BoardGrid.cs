@@ -106,6 +106,18 @@ public class BoardGrid : MonoBehaviour {
     [SerializeField]
     int size = 10;
 
+    [SerializeField]
+    Transform solidTileParent;
+
+    [SerializeField]
+    Transform holesTileParent;
+
+    [SerializeField]
+    Transform solidTilePrefab;
+
+    [SerializeField]
+    Transform holesTilePrefab;
+
     public int Size
     {
         get
@@ -117,18 +129,22 @@ public class BoardGrid : MonoBehaviour {
     [SerializeField]
     Occupancy[,] gridOccupancy;
 
+    [SerializeField]
     Vector3 targetSize;
 
+    [SerializeField]
     Vector3 targetLocalOffset;
 
     void Start() {
         gridOccupancy = new Occupancy[size, size];
+        /*
         targetSize = target.InverseTransformVector(target.GetComponent<Collider>().bounds.size);
         targetLocalOffset = Vector3.forward * targetSize.z;
         targetSize.x = Mathf.Abs(targetSize.x);
         targetSize.y = Mathf.Abs(targetSize.y);
         targetSize.z = 0;
         targetLocalOffset = targetLocalOffset - targetSize / 2f;
+        */
     }
 
     public Vector2 TileShape
@@ -265,6 +281,113 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
+
+    public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] filter)
+    {
+        int mask = 1 << (int)filter[0];
+        for (int i = 0; i < filter.Length; i++)
+        {
+            mask |= 1 << (int)filter[i];
+        }
+        int[,] ret = new int[3, 3];
+        for (int yOff = -1; yOff < 2; yOff++)
+        {
+            for (int xOff = -1; xOff < 2; xOff++)
+            {
+                GridPos cur = pos + new GridPos(xOff, yOff);
+                if (IsValidPosition(cur))
+                {
+                    ret[xOff + 1, yOff + 1] = ((1 << (int)gridOccupancy[cur.x, cur.y]) & mask) != 0 ? 1 : 0;
+                }
+                else
+                {
+                    ret[xOff + 1, yOff + 1] = -1;
+                }
+            }
+        }
+        return ret;
+    }
+
+    [SerializeField, Range(-1, 1)]
+    float heightOffset = -0.1f;
+
+    public void ConstructFloor()
+    {
+        InactivatePreviousTiles();
+        Vector3 localScale = TileShape;
+        localScale.x /= 2f;
+        localScale.y /= 2f;
+        localScale.z = 1;
+
+        for (int x=0; x<size; x++)
+        {
+            for (int y=0; y<size; y++)
+            {
+                Transform t;
+                if (gridOccupancy[x, y] == Occupancy.Hole)
+                {
+                    t = GetNextHole(); 
+                } else
+                {
+                    t = GetNextSolid();
+                }
+
+                t.localPosition = GetLocalPosition(x, y) + Vector3.forward * heightOffset;
+                t.localScale = localScale;
+            }
+        }
+    }
+
+    int nextHoleIndex = 0;
+
+    Transform GetNextHole()
+    {
+        Transform t;
+        if (nextHoleIndex < holesTileParent.childCount)
+        {
+            t = holesTileParent.GetChild(nextHoleIndex);
+            t.gameObject.SetActive(true);
+        } else
+        {
+            t = Instantiate(holesTilePrefab, holesTileParent, false);
+        }
+        nextHoleIndex++;
+        return t;
+    }
+
+    int nextSolidIndex = 0;
+    Transform GetNextSolid()
+    {
+        Transform t;
+        if  (nextSolidIndex < solidTileParent.childCount)
+        {
+            t = solidTileParent.GetChild(nextSolidIndex);
+            t.gameObject.SetActive(true);
+        } else
+        {
+            t = Instantiate(solidTilePrefab, solidTileParent, false);
+        }
+
+        nextSolidIndex++;
+        return t;
+    }
+
+    void InactivatePreviousTiles()
+    {
+        nextHoleIndex = 0;
+        nextSolidIndex = 0;
+        for (int i=0, l=solidTileParent.childCount; i<l; i++)
+        {
+            solidTileParent.GetChild(i).gameObject.SetActive(false);
+        }
+
+        for (int i = 0, l = holesTileParent.childCount; i < l; i++)
+        {
+            holesTileParent.GetChild(i).gameObject.SetActive(false);
+        }
+
+    }
+
     [SerializeField]
     bool drawGizmos = false;
 
@@ -287,29 +410,6 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
-    public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] filter)
-    {
-        int mask = 1 << (int) filter[0];
-        for (int i=0; i<filter.Length; i++)
-        {
-            mask |= 1 << (int)filter[i];
-        }
-        int[,] ret = new int[3, 3];
-        for (int yOff = -1; yOff < 2; yOff++)
-        {
-            for (int xOff = -1; xOff < 2; xOff++)
-            {
-                GridPos cur = pos + new GridPos(xOff, yOff);
-                if (IsValidPosition(cur)) {
-                    ret[xOff + 1, yOff + 1] = ((1 << (int)gridOccupancy[cur.x, cur.y]) & mask) != 0 ? 1 : 0;
-                } else
-                {
-                    ret[xOff + 1, yOff + 1] = -1;
-                }
-            }
-        }
-        return ret;
-    }
     public void DebugPosition(GridPos pos, params Occupancy[] filter)
     {
         int[,] context = GetOccupancyContext(pos, filter);

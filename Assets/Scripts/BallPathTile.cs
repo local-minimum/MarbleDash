@@ -31,6 +31,7 @@ public class BallPathTile : MonoBehaviour {
 
     public void SetPosition(BoardGrid board, GridPos pos)
     {
+        foreshadowed = false;
         playerVisited = false;
         this.board = board;
         this.pos = pos;
@@ -271,9 +272,10 @@ public class BallPathTile : MonoBehaviour {
     {
         if (!playerVisited && other.tag == "Player")
         {
-            if (previousTile == null || previousTile.playerVisited)
+            if (previousTile == null || previousTile.foreshadowed)
             {
                 playerVisited = true;
+                foreshadowed = true;
                 activeMat.color = refColor;
 
                 if (nextTile)
@@ -290,17 +292,21 @@ public class BallPathTile : MonoBehaviour {
     [SerializeField, Range(0, 1)]
     float foreshadowFactor = 0.4f;
 
+    bool foreshadowed = false;
+
     void Foreshadow(float progress, float step)
     {
         if (activeMat == null)
         {
             return;
         }
+
         progress = Mathf.Clamp01(progress - step);
         activeMat.color = Color.Lerp(offColor, refColor, progress * foreshadowFactor);
 
         if (progress > 0 && nextTile)
         {
+            foreshadowed = true;
             nextTile.Foreshadow(progress, step);    
         }
 
