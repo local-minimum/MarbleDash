@@ -296,7 +296,7 @@ public class BallPathTile : MonoBehaviour {
 
     void Foreshadow(float progress, float step)
     {
-        if (activeMat == null)
+        if (activeMat == null || playerVisited)
         {
             return;
         }
