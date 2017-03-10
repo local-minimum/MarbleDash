@@ -55,6 +55,33 @@ public class BallPath : MonoBehaviour {
         
     }
 
+    [SerializeField, Range(0, 1)]
+    float holeProbability = 0.5f;
+    public void GeneratePathHoles()
+    {
+        for (int i = 0, l = path.Count; i < l; i++)
+        {
+
+            GridPos pos = path[i];
+            int[,] context = boardGrid.GetOccupancyContext(pos, Occupancy.BallPath);
+            if (context[2, 1] == 1 && context[1, 0] == 1 && boardGrid.IsFree(pos.x + 1, pos.y - 1) && holeProbability < Random.value)
+            {
+                boardGrid.Occupy(pos.x + 1, pos.y - 1, Occupancy.Hole);
+            } else if (context[2, 1] == 1 && context[1, 0] == 1 && context[1, 2] == 0 && boardGrid.IsFree(pos.x, pos.y + 1) && holeProbability < Random.value)
+            {
+                boardGrid.Occupy(pos.x, pos.y + 1, Occupancy.Hole);
+            }else if (context[0, 1] == 1 && context[1, 0] == 1 && boardGrid.IsFree(pos.x - 1, pos.y - 1) && holeProbability < Random.value)
+            {
+                boardGrid.Occupy(pos.x - 1, pos.y - 1, Occupancy.Hole);
+            }
+            else if (context[0, 1] == 1 && context[1, 0] == 1 && context[2, 1] == 0 && boardGrid.IsFree(pos.x + 1, pos.y) && holeProbability < Random.value)
+            {
+                boardGrid.Occupy(pos.x + 1, pos.y, Occupancy.Hole);
+            }
+
+        }
+    }
+
     public void ConstructPath()
     {
         RemoveTiles();

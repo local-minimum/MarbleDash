@@ -30,6 +30,7 @@ public class Level : MonoBehaviour {
     {
         ballPath.GeneratePath(previousLevel);
         roomMaker.GenerateRooms();
+        ballPath.GeneratePathHoles();
         previousLevel = true;
     }
 
