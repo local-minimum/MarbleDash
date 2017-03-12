@@ -16,6 +16,9 @@ public class Level : MonoBehaviour {
     [SerializeField]
     PlayerController ball;
 
+    [SerializeField]
+    BoxPlacer boxPlacer;
+
     bool previousLevel = false;
 
     [SerializeField, Range(0, 3)]
@@ -31,6 +34,7 @@ public class Level : MonoBehaviour {
         ballPath.GeneratePath(previousLevel);
         roomMaker.GenerateRooms();
         ballPath.GeneratePathHoles();
+        boxPlacer.Generate();
         previousLevel = true;
     }
 
@@ -39,6 +43,7 @@ public class Level : MonoBehaviour {
         boardGrid.ConstructFloor();
         ballPath.ConstructPath();
         roomMaker.ConstructWalls();
+        boxPlacer.Place();
         ball.transform.position = ballPath.DropTarget + Vector3.up * dropHeight;
     }
 }

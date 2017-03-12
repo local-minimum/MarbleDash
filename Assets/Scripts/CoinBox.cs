@@ -44,7 +44,11 @@ public class CoinBox : MonoBehaviour {
         //Spawn coins
 
         //Temporary
-        player.Stats.Coin += Random.Range(minCoin, maxCoin);
+        int coin = Random.Range(minCoin, maxCoin);
+        if (coin > 0)
+        {
+            player.Stats.Coin += coin;
+        }
         mat.color = deadColor;
         transform.localScale = new Vector3(1, 0.1f, 1);
         GetComponent<Collider>().enabled = false;
