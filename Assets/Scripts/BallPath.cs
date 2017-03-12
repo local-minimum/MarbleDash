@@ -8,9 +8,6 @@ public class BallPath : MonoBehaviour {
     [SerializeField]
     BoardGrid boardGrid;
 
-    [SerializeField]
-    bool connectPrevious = true;
-
     GridPos startPos;
     GridPos endPos;
     List<GridPos> path = new List<GridPos>();

@@ -21,7 +21,6 @@ public class BallPathTile : MonoBehaviour {
         mf.sharedMesh = m;
     }
 
-    BoardGrid board;
     GridPos pos;
     Vector2 size;
     bool playerVisited = false;
@@ -33,7 +32,6 @@ public class BallPathTile : MonoBehaviour {
     {
         foreshadowed = false;
         playerVisited = false;
-        this.board = board;
         this.pos = pos;
         size = board.TileShape;
         transform.localPosition = board.GetLocalPosition(pos);

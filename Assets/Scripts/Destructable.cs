@@ -25,25 +25,49 @@ public class Destructable : MonoBehaviour {
         }
     }
 
+    int velForce;
+
     public int GetVelocityForce()
     {
-        return Mathf.Clamp(Mathf.FloorToInt(VelocityForce), 0, MaxVelocityForce);
+        return velForce;
     }
 
     public int MaxVelocityForce = 10;
 
+    int recordDepth = 20;
+    float[] speedRecord;
+    int recordIndex = -1;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        speedRecord = new float[20];
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        //Debug.Log(LayerMask.LayerToName(collision.gameObject.layer));
 
         if (collision.gameObject.layer == LayerMask.NameToLayer("walls"))
         {
-            Debug.Log(VelocityForce);
+            Debug.Log(GetVelocityForce());
+        }
+    }
+
+    private void Update()
+    {
+        if (rb)
+        {
+            recordIndex++;
+            recordIndex %= recordDepth;
+            speedRecord[recordIndex] = rb.velocity.magnitude;
+
+            float vbar = 0;
+            for (int i=0; i<recordDepth; i++)
+            {
+                vbar += speedRecord[i];
+            }
+            velForce = Mathf.Clamp(Mathf.FloorToInt(vbar/recordDepth), 0, MaxVelocityForce);
+
         }
     }
 }
