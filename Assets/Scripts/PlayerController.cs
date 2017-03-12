@@ -11,9 +11,13 @@ public class PlayerController : MonoBehaviour {
 
     bool grounded = false;
 
+    Destructable destructable;
+
 	void Start () {
         rb = GetComponent<Rigidbody>();
         groundLayer = LayerMask.NameToLayer("ground");
+        destructableLayer = LayerMask.NameToLayer("destructables");
+        destructable = GetComponent<Destructable>();
     }
 
     [SerializeField, Range(0, 5)]
@@ -27,6 +31,17 @@ public class PlayerController : MonoBehaviour {
     }
 
     int groundLayer;
+    int destructableLayer;
+
+    private void OnCollisionEnter(Collision collision)
+    {
+
+        if (collision.gameObject.layer == destructableLayer)
+        {
+            Destructable otherDest = collision.gameObject.GetComponent<Destructable>();
+            otherDest.Hurt(destructable.GetVelocityForce());
+        }
+    }
 
     private void OnCollisionStay(Collision collision)
     {
@@ -44,4 +59,13 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    public void HurtMe()
+    {
+
+    }
+
+    public void KillMe()
+    {
+
+    }
 }

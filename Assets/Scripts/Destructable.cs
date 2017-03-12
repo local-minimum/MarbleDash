@@ -12,6 +12,14 @@ public class Destructable : MonoBehaviour {
     [SerializeField]
     float velocityForcePower = 1;
 
+    [SerializeField]
+    MonoBehaviour controller;
+
+    [SerializeField]
+    string hitMessage;
+
+    [SerializeField]
+    string destroyMessage;
 
     float VelocityForce
     {
@@ -44,12 +52,16 @@ public class Destructable : MonoBehaviour {
         speedRecord = new float[20];
     }
 
-    private void OnCollisionEnter(Collision collision)
+    public void Hurt(int points)
     {
-
-        if (collision.gameObject.layer == LayerMask.NameToLayer("walls"))
+        health -= points;
+        if (health < 1)
         {
-            Debug.Log(GetVelocityForce());
+            health = 0;
+            controller.SendMessage(destroyMessage);
+        } else
+        {
+            controller.SendMessage(hitMessage);
         }
     }
 
