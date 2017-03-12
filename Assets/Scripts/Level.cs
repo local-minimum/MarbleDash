@@ -26,7 +26,7 @@ public class Level : MonoBehaviour {
         Implement();
 	}
 
-    void Generate()
+    public void Generate()
     {
         ballPath.GeneratePath(previousLevel);
         roomMaker.GenerateRooms();
@@ -34,7 +34,7 @@ public class Level : MonoBehaviour {
         previousLevel = true;
     }
 
-    void Implement()
+    public void Implement()
     {
         boardGrid.ConstructFloor();
         ballPath.ConstructPath();
