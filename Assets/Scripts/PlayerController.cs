@@ -4,6 +4,31 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+    static PlayerController _instance;
+
+    public static PlayerController instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<PlayerController>();
+            }
+            return _instance;
+        }
+    }
+
+    [SerializeField]
+    PlayerStats playerStats = new PlayerStats();
+
+    public PlayerStats Stats
+    {
+        get
+        {
+            return playerStats;
+        }
+    }
+
     [SerializeField]
     BoardController board;
 
@@ -13,7 +38,18 @@ public class PlayerController : MonoBehaviour {
 
     Destructable destructable;
 
-	void Start () {
+    private void Awake()
+    {
+        if (_instance == this || _instance == null)
+        {
+            _instance = this;
+        } else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void Start () {
         rb = GetComponent<Rigidbody>();
         groundLayer = LayerMask.NameToLayer("ground");
         destructableLayer = LayerMask.NameToLayer("destructables");

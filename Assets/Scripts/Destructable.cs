@@ -5,7 +5,25 @@ using UnityEngine;
 public class Destructable : MonoBehaviour {
 
     [SerializeField]
-    float health;
+    int maxHealth;
+
+    int health;
+
+    public int Health {
+        get
+        {
+            return health;
+        }
+    }
+
+    public float PartialHealth
+    {
+        get
+        {
+            return health / (float) maxHealth;
+        }
+    }
+
 
     Rigidbody rb;
 
@@ -50,6 +68,7 @@ public class Destructable : MonoBehaviour {
     {
         rb = GetComponent<Rigidbody>();
         speedRecord = new float[20];
+        health = maxHealth;
     }
 
     public void Hurt(int points)
