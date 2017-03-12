@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23046017378098410}
   - component: {fileID: 114227347413487266}
   - component: {fileID: 64042709658535622}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ProtoWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -81,7 +81,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1822193993584872}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 0}
 --- !u!64 &64042709658535622
 MeshCollider:
   m_ObjectHideFlags: 1

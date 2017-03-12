@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 159912028e181354eb2c0691f59f0e9b
+timeCreated: 1489308262
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Moji
+  fontNames:
+  - Moji
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
