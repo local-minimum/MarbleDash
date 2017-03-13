@@ -1465,6 +1465,7 @@ GameObject:
   - component: {fileID: 2025833200}
   - component: {fileID: 2025833202}
   - component: {fileID: 2025833201}
+  - component: {fileID: 2025833203}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -1588,9 +1589,10 @@ MonoBehaviour:
   roomMaker: {fileID: 2025833200}
   ball: {fileID: 1113420215}
   boxPlacer: {fileID: 2025833202}
+  enemySpawner: {fileID: 2025833203}
   dropHeight: 3
-  turnTime: 0.75
-  firstTickDelay: 2
+  turnTime: 1.4
+  firstTickDelay: 1.36
 --- !u!114 &2025833202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1608,6 +1610,22 @@ MonoBehaviour:
   minBoxes: 5
   maxBoxes: 15
   board: {fileID: 2025833198}
+--- !u!114 &2025833203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2025833195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b160fa8de206f44dbd1b5de506c10d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  board: {fileID: 2025833198}
+  enemiesAtLevel: 5
+  enemyPrefabs:
+  - {fileID: 114647270488527920, guid: b6c71d122c0d6f74995b607623426974, type: 2}
+  enemyParent: {fileID: 2043342521}
 --- !u!1 &2043342520
 GameObject:
   m_ObjectHideFlags: 0

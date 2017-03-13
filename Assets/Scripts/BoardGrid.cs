@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Occupancy { Free, BallPathSource, BallPathTarget, BallPath, Wall, WallBreakable, WallIllusory, Hole, Obstacle};
+public enum Occupancy { Free, BallPathSource, BallPathTarget, BallPath, Wall, WallBreakable, WallIllusory, Hole, Obstacle, Enemy, Player};
 public enum Direction { None, North, South, West, East };
 
 public struct GridPos
@@ -201,13 +201,13 @@ public class BoardGrid : MonoBehaviour {
         }
         else
         {
-            if (gridOccupancy[x, y] == 1 << (int)Occupancy.Free)
+            if (gridOccupancy[x, y] == (1 << (int)Occupancy.Free))
             {
                 gridOccupancy[x, y] = 1 << (int)occupancy;
             }
             else
             {
-                gridOccupancy[x, y] &= 1 << (int)occupancy;
+                gridOccupancy[x, y] |= 1 << (int)occupancy;
             }
         }
     
@@ -237,13 +237,12 @@ public class BoardGrid : MonoBehaviour {
 
         int val = gridOccupancy[pos.x, pos.y];
         int filtVal = 1 << (int)filt;
-        if ((val & filtVal) == 0)
+        if ((val & filtVal) != filtVal)
         {
-            Debug.LogWarning(string.Format("Pos {0} doesn't have filter {1} set. Nothing to free", pos, filt));
+            Debug.LogWarning(string.Format("Pos {0} doesn't have filter {1} set. Nothing to free.", pos, filt));
         } else
         {
-
-            gridOccupancy[pos.x, pos.y] = val & ~filtVal;
+            gridOccupancy[pos.x, pos.y] = val & (~filtVal);
         }
     }
 
@@ -272,7 +271,7 @@ public class BoardGrid : MonoBehaviour {
 
     public bool IsFree(int x, int y)
     {
-        return gridOccupancy[x, y] == 1 << (int) Occupancy.Free;
+        return gridOccupancy[x, y] == (1 << (int) Occupancy.Free);
     }
 
     public List<Occupancy> GetOccupancy(GridPos pos)
@@ -292,7 +291,7 @@ public class BoardGrid : MonoBehaviour {
 
     public bool HasOccupancy(GridPos pos, Occupancy filt)
     {
-        return (gridOccupancy[pos.x, pos.y] & 1 << (int)filt) != 0;
+        return ((gridOccupancy[pos.x, pos.y] & (1 << (int)filt))) != 0;
     }
 
     public IEnumerable<GridPos> Find(Occupancy occupancy)
@@ -303,6 +302,28 @@ public class BoardGrid : MonoBehaviour {
             for (int y = 0; y < size; y++)
             {
                 if ((gridOccupancy[x, y] & filt) != 0)
+                {
+                    yield return new GridPos(x, y);
+                }
+            }
+        }
+    }
+
+    public IEnumerable<GridPos> FindIsOnlyAny(params Occupancy[] occupancy)
+    {
+
+        int filt = 1 << (int)occupancy[0];
+        for (int i=1; i<occupancy.Length; i++)
+        {
+            filt |= 1 << (int)occupancy[i];
+        }
+        int notFilt = ~filt;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                if ((gridOccupancy[x, y] & notFilt) == 0)
                 {
                     yield return new GridPos(x, y);
                 }

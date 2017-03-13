@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void TurnTick(PlayerController player);
+public delegate void TurnTick(PlayerController player, float tickTime);
 
 public class Level : MonoBehaviour {
 
@@ -36,6 +36,9 @@ public class Level : MonoBehaviour {
 
     [SerializeField]
     BoxPlacer boxPlacer;
+
+    [SerializeField]
+    EnemySpawner enemySpawner;
 
     bool previousLevel = false;
 
@@ -86,7 +89,7 @@ public class Level : MonoBehaviour {
             {
                 if (OnTurnTick != null)
                 {
-                    OnTurnTick(ball);
+                    OnTurnTick(ball, turnTime);
                 }
                 yield return new WaitForSeconds(turnTime);
             }
@@ -99,6 +102,7 @@ public class Level : MonoBehaviour {
         roomMaker.GenerateRooms();
         ballPath.GeneratePathHoles();
         boxPlacer.Generate();
+        enemySpawner.AllocatePlaces();
         previousLevel = true;
     }
 
@@ -109,6 +113,7 @@ public class Level : MonoBehaviour {
         ballPath.ConstructPath();
         roomMaker.ConstructWalls();
         boxPlacer.Place();
+        enemySpawner.SpawnEnemies();
         ball.transform.position = ballPath.DropTarget + Vector3.up * dropHeight;
         makeTurns = true;
     }
