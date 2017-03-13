@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Wall : MonoBehaviour {
 
+    static Occupancy[] walltypes = new Occupancy[] { Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory };
     GridPos pos;
     BoardGrid board;
     Occupancy wallType;
@@ -14,7 +16,8 @@ public class Wall : MonoBehaviour {
         this.board = board;
         this.pos = pos;
         transform.localPosition = board.GetLocalPosition(pos);
-        wallType = board.GetOccupancy(pos);
+        
+        wallType = board.GetOccupancy(pos).Where(e => walltypes.Contains(e)).First();
         Generate();
     }
 

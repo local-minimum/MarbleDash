@@ -126,8 +126,7 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
-    [SerializeField]
-    Occupancy[,] gridOccupancy;
+    int[,] gridOccupancy;
 
     [SerializeField]
     Vector3 targetSize;
@@ -136,7 +135,7 @@ public class BoardGrid : MonoBehaviour {
     Vector3 targetLocalOffset;
 
     void Start() {
-        gridOccupancy = new Occupancy[size, size];
+        gridOccupancy = new int[size, size];
         /*
         targetSize = target.InverseTransformVector(target.GetComponent<Collider>().bounds.size);
         targetLocalOffset = Vector3.forward * targetSize.z;
@@ -196,36 +195,71 @@ public class BoardGrid : MonoBehaviour {
 
     public void Occupy(int x, int y, Occupancy occupancy)
     {
-        gridOccupancy[x, y] = occupancy;
+        if (occupancy == Occupancy.Free)
+        {
+            Free(x, y);
+        }
+        else
+        {
+            if (gridOccupancy[x, y] == 1 << (int)Occupancy.Free)
+            {
+                gridOccupancy[x, y] = 1 << (int)occupancy;
+            }
+            else
+            {
+                gridOccupancy[x, y] &= 1 << (int)occupancy;
+            }
+        }
+    
     }
 
     public void Occupy(GridPos pos, Occupancy occupancy)
     {
-        gridOccupancy[pos.x, pos.y] = occupancy;
+        Occupy(pos.x, pos.y, occupancy);
     }
 
     public void Free(int x, int y)
     {
-        gridOccupancy[x, y] = Occupancy.Free;
+        gridOccupancy[x, y] = 1 << (int) Occupancy.Free;
     }
 
     public void Free(GridPos pos)
     {
-        gridOccupancy[pos.x, pos.y] = Occupancy.Free;
+        gridOccupancy[pos.x, pos.y] = 1 << (int) Occupancy.Free;
+    }
+
+    public void Free(GridPos pos, Occupancy filt)
+    {
+        if (filt == Occupancy.Free)
+        {
+            throw new System.ArgumentException("Can't free free on " + pos);
+        }
+
+        int val = gridOccupancy[pos.x, pos.y];
+        int filtVal = 1 << (int)filt;
+        if ((val & filtVal) == 0)
+        {
+            Debug.LogWarning(string.Format("Pos {0} doesn't have filter {1} set. Nothing to free", pos, filt));
+        } else
+        {
+
+            gridOccupancy[pos.x, pos.y] = val & ~filtVal;
+        }
     }
 
     public void FreeAll()
     {
         if (gridOccupancy == null || gridOccupancy.GetLength(0) != size)
         {
-            gridOccupancy = new Occupancy[size, size];
+            gridOccupancy = new int[size, size];
         }
 
+        int val = 1 << (int)Occupancy.Free;
         for (int x=0; x<size; x++)
         {
             for (int y=0; y<size; y++)
             {
-                gridOccupancy[x, y] = Occupancy.Free;
+                gridOccupancy[x, y] = val;
             }
         }
     }
@@ -233,26 +267,42 @@ public class BoardGrid : MonoBehaviour {
     public bool IsFree(GridPos pos)
     {
         //Debug.Log((int) gridOccupancy[pos.x, pos.y]);
-        return gridOccupancy[pos.x, pos.y] == Occupancy.Free;
+        return gridOccupancy[pos.x, pos.y] == (1 << (int) Occupancy.Free);
     }
 
     public bool IsFree(int x, int y)
     {
-        return gridOccupancy[x, y] == Occupancy.Free;
+        return gridOccupancy[x, y] == 1 << (int) Occupancy.Free;
     }
 
-    public Occupancy GetOccupancy(GridPos pos)
+    public List<Occupancy> GetOccupancy(GridPos pos)
     {
-        return gridOccupancy[pos.x, pos.y];
+        List<Occupancy> ret = new List<Occupancy>();
+        int posVal = gridOccupancy[pos.x, pos.y];
+        foreach (int val in System.Enum.GetValues(typeof(Occupancy)))
+        {
+            if ((posVal & (1 << val)) != 0)
+            {
+
+                ret.Add((Occupancy)val);
+            }
+        }
+        return ret;
+    }
+
+    public bool HasOccupancy(GridPos pos, Occupancy filt)
+    {
+        return (gridOccupancy[pos.x, pos.y] & 1 << (int)filt) != 0;
     }
 
     public IEnumerable<GridPos> Find(Occupancy occupancy)
     {
+        int filt = 1 << (int)occupancy;
         for (int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
             {
-                if (gridOccupancy[x, y] == occupancy)
+                if ((gridOccupancy[x, y] & filt) != 0)
                 {
                     yield return new GridPos(x, y);
                 }
@@ -297,7 +347,7 @@ public class BoardGrid : MonoBehaviour {
                 GridPos cur = pos + new GridPos(xOff, yOff);
                 if (IsValidPosition(cur))
                 {
-                    ret[xOff + 1, yOff + 1] = ((1 << (int)gridOccupancy[cur.x, cur.y]) & mask) != 0 ? 1 : 0;
+                    ret[xOff + 1, yOff + 1] = (gridOccupancy[cur.x, cur.y] & mask) != 0 ? 1 : 0;
                 }
                 else
                 {
@@ -306,6 +356,28 @@ public class BoardGrid : MonoBehaviour {
             }
         }
         return ret;
+    }
+
+    public static List<GridPos> ContextToOffsets(int[,] context)
+    {
+        List<GridPos> relPositions = new List<GridPos>();
+        for (int yOff = -1; yOff < 2; yOff++)
+        {
+            for (int xOff = -1; xOff < 2; xOff++)
+            {
+                if (xOff == 0 & yOff == 0)
+                {
+                    continue;
+                }
+
+                if (context[xOff + 1, yOff + 1] == 1)
+                {
+                    relPositions.Add(new GridPos(xOff, yOff));
+                }
+            }
+        }
+
+        return relPositions;
     }
 
     [SerializeField, Range(-1, 1)]
@@ -318,13 +390,13 @@ public class BoardGrid : MonoBehaviour {
         localScale.x /= 2f;
         localScale.y /= 2f;
         localScale.z = 1;
-
+        int holeFilt = 1 << (int) Occupancy.Hole;
         for (int x=0; x<size; x++)
         {
             for (int y=0; y<size; y++)
             {
                 Transform t;
-                if (gridOccupancy[x, y] == Occupancy.Hole)
+                if ((gridOccupancy[x, y] &  holeFilt) != 0)
                 {
                     t = GetNextHole(); 
                 } else
@@ -446,7 +518,7 @@ public class BoardGrid : MonoBehaviour {
             {
                 GridPos tmp = new GridPos(pos.x + xOff, pos.y + yOff);
 
-                msg += IsValidPosition(tmp) ? ((int) GetOccupancy(tmp)).ToString() : "-" ;
+                msg += IsValidPosition(tmp) ? gridOccupancy[pos.x, pos.y].ToString() : "-" ;
 
                 if (xOff == 1)
                 {

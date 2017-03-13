@@ -1589,6 +1589,8 @@ MonoBehaviour:
   ball: {fileID: 1113420215}
   boxPlacer: {fileID: 2025833202}
   dropHeight: 3
+  turnTime: 0.75
+  firstTickDelay: 2
 --- !u!114 &2025833202
 MonoBehaviour:
   m_ObjectHideFlags: 0

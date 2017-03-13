@@ -60,9 +60,9 @@ public class BallPath : MonoBehaviour {
         {
 
             GridPos pos = path[i];
-            int[,] context = boardGrid.GetOccupancyContext(pos, Occupancy.BallPath);
+            int[,] context = boardGrid.GetOccupancyContext(pos, Occupancy.BallPath, Occupancy.BallPathSource, Occupancy.BallPathTarget);
             if (context[2, 1] == 1 && context[1, 0] == 1 && boardGrid.IsFree(pos.x + 1, pos.y - 1) && holeProbability < Random.value)
-            {
+            {                
                 boardGrid.Occupy(pos.x + 1, pos.y - 1, Occupancy.Hole);
             } else if (context[2, 1] == 1 && context[1, 0] == 1 && context[1, 2] == 0 && boardGrid.IsFree(pos.x, pos.y + 1) && holeProbability < Random.value)
             {

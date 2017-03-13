@@ -270,11 +270,13 @@ public class BallPathTile : MonoBehaviour {
     {
         if (!playerVisited && other.tag == "Player")
         {
-            if (previousTile == null || previousTile.foreshadowed)
+            PlayerController pCtrl = other.GetComponent<PlayerController>();
+            if (pCtrl != null && (previousTile == null || previousTile.foreshadowed))
             {
                 playerVisited = true;
                 foreshadowed = true;
                 activeMat.color = refColor;
+                pCtrl.Stats.Coin += 1;
 
                 if (nextTile)
                 {
