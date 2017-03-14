@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour {
     bool grounded = false;
 
     Destructable destructable;
+    BoardGrid boardGrid;
 
     private void Awake()
     {
@@ -54,16 +55,62 @@ public class PlayerController : MonoBehaviour {
         groundLayer = LayerMask.NameToLayer("ground");
         destructableLayer = LayerMask.NameToLayer("destructables");
         destructable = GetComponent<Destructable>();
+        boardGrid = board.GetComponent<BoardGrid>();
     }
 
     [SerializeField, Range(0, 5)]
     float forceMultiplier = 0.5f;
 
+    public void Inert()
+    {
+        rb.velocity = Vector3.zero;
+    }
+
+    public void KillReset(string message)
+    {
+        playerStats.Reset();
+         
+    }
+
 	void Update () {
         if (grounded)
         {
             rb.AddForce(board.Slope * forceMultiplier);
+            TrackGridPos();
+        } else
+        {
+            onTile = offTile;
         }
+
+        
+    }
+
+    void TrackGridPos()
+    {
+
+        int closest = -1;
+        BoardTile closestBoard = null;
+        float sqDist = 0;
+        for (int i=0, l=collidingGrounds.Count; i<l; i++)
+        {
+            float curSqDist = (collidingGrounds[i].position - transform.position).sqrMagnitude;
+            BoardTile curBoard = collidingGrounds[i].GetComponent<BoardTile>();
+
+            if (curBoard != null && (closest < 0 || curSqDist < sqDist))
+            {
+                closest = i;
+                closestBoard = curBoard;
+            }
+        }
+
+        if (closest < 0 || closestBoard == null)
+        {
+            onTile = _onTile;
+        } else
+        {
+            onTile = closestBoard.pos;
+        }
+        
     }
 
     int groundLayer;
@@ -75,33 +122,83 @@ public class PlayerController : MonoBehaviour {
         if (collision.gameObject.layer == destructableLayer)
         {
             Destructable otherDest = collision.gameObject.GetComponent<Destructable>();
-            otherDest.Hurt(destructable.GetVelocityForce());
+            Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+            if (enemy)
+            {
+                int deflectedHurt;
+                if (enemy.AllowsAttack(collision.contacts, out deflectedHurt)) {
+                    otherDest.Hurt(destructable.GetVelocityForce() - deflectedHurt);
+                }
+                if (deflectedHurt > 0) {
+                    destructable.Hurt(deflectedHurt);
+                }
+            }
+            else
+            {
+                otherDest.Hurt(destructable.GetVelocityForce());
+            }
         }
     }
+
+    GridPos offTile = new GridPos(-1, -1);
+    GridPos _onTile = new GridPos(-1, -1);
+
+    public GridPos onTile
+    {
+        get
+        {
+            return _onTile;
+        }
+
+        private set
+        {
+            if (_onTile != value)
+            {
+                if (boardGrid.IsValidPosition(_onTile))
+                {
+                    boardGrid.Free(_onTile, Occupancy.Player);
+                }
+                _onTile = value;
+                if (boardGrid.IsValidPosition(value))
+                {
+                    boardGrid.Occupy(value, Occupancy.Player);
+                    Debug.Log("Player on tile " + value);
+                }
+            }
+        }
+    }
+
+    List<Transform> collidingGrounds = new List<Transform>();
 
     private void OnCollisionStay(Collision collision)
     {
         if (groundLayer == collision.gameObject.layer)
         {
             grounded = true;
+
+            if (!collidingGrounds.Contains(collision.transform))
+            {
+                collidingGrounds.Add(collision.transform);
+            }            
         }
     }
-
+    
     private void OnCollisionExit(Collision collision)
     {
         if (groundLayer == collision.gameObject.layer)
         {
-            grounded = false;
+            collidingGrounds.Remove(collision.transform);
+            grounded = collidingGrounds.Count > 0;
         }
     }
 
     public void HurtMe()
     {
-
+        Debug.Log("Player hurt");
     }
 
     public void KillMe()
     {
-
+        Debug.Log("Player should be dead");
     }
 }

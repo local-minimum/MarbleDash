@@ -9,7 +9,7 @@ public class EnemySpawner : MonoBehaviour {
     BoardGrid board;
 
     [SerializeField]
-    int enemiesAtLevel=5;
+    int enemiesAtLevel = 3;
 
     List<GridPos> spawnLocations = new List<GridPos>();
 
@@ -32,11 +32,20 @@ public class EnemySpawner : MonoBehaviour {
 
     public void SpawnEnemies()
     {
+        ClearCurrentEnemies();
         Debug.Log("Enemies: " + spawnLocations.Count);
         foreach (GridPos pos in spawnLocations)
         {
             Enemy e = GetEnemy();
             e.SetPosition(pos, board);
+        }
+    }
+
+    void ClearCurrentEnemies()
+    {
+        for (int i=0, l=enemyParent.childCount; i<l; i++)
+        {
+            Destroy(enemyParent.GetChild(i).gameObject, 0.1f);
         }
     }
 

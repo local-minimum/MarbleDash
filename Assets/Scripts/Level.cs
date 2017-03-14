@@ -26,6 +26,9 @@ public class Level : MonoBehaviour {
     BoardGrid boardGrid;
 
     [SerializeField]
+    BoardController boardController;
+
+    [SerializeField]
     BallPath ballPath;
 
     [SerializeField]
@@ -115,6 +118,8 @@ public class Level : MonoBehaviour {
         boxPlacer.Place();
         enemySpawner.SpawnEnemies();
         ball.transform.position = ballPath.DropTarget + Vector3.up * dropHeight;
+        ball.Inert();
+        boardController.Balance();
         makeTurns = true;
     }
 }

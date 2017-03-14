@@ -417,15 +417,18 @@ public class BoardGrid : MonoBehaviour {
             for (int y=0; y<size; y++)
             {
                 Transform t;
+                TileType tType;
                 if ((gridOccupancy[x, y] &  holeFilt) != 0)
                 {
-                    t = GetNextHole(); 
+                    t = GetNextHole();
+                    tType = TileType.Hole;
                 } else
                 {
                     t = GetNextSolid();
+                    tType = TileType.Solid;
                 }
 
-                t.localPosition = GetLocalPosition(x, y) + Vector3.forward * heightOffset;
+                t.GetComponent<BoardTile>().SetPosition(this, new GridPos(x, y), heightOffset, tType);
                 t.localScale = localScale;
             }
         }

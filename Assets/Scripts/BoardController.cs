@@ -26,6 +26,12 @@ public class BoardController : MonoBehaviour {
     [SerializeField, Range(0, 1)]
     float delay; 
 
+    public void Balance()
+    {
+        innerRotation = 0;
+        outerRotation = 0;
+    }
+
 	void Update () {
         float innerTarget = Input.GetAxis("Horizontal");
         float outerTarget = Input.GetAxis("Vertical");

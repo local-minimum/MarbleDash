@@ -34,7 +34,7 @@ public class CoinBox : MonoBehaviour {
     void Crack()
     {
         mat.color = Color.Lerp(deadColor, healthyColor, destructable.PartialHealth);
-        Debug.Log(destructable.PartialHealth);
+        //Debug.Log(destructable.PartialHealth);
         //Animate to cracked state if not there
     }
 

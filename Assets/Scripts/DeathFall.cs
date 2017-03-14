@@ -9,6 +9,9 @@ public class DeathFall : MonoBehaviour {
 
     int playerLayer;
 
+    [SerializeField]
+    string[] deathMessages;
+
     private void Start()
     {
         playerLayer = LayerMask.NameToLayer("player");
@@ -18,6 +21,7 @@ public class DeathFall : MonoBehaviour {
     {
         if (other.gameObject.layer == playerLayer)
         {
+            other.GetComponent<PlayerController>().KillReset(deathMessages[Random.Range(0, deathMessages.Length)]);
             level.Generate();
             level.Implement();
         }

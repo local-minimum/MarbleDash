@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum EnemyMode {Standing, Patroling, Hunting};
+public enum EnemyMode {Standing, Patroling, Hunting, Attacking};
 
 
 public class Enemy : MonoBehaviour {
@@ -14,6 +14,8 @@ public class Enemy : MonoBehaviour {
     Level lvl;
 
     int playerLayer;
+
+    bool attackedThisTurn;
 
     EnemyMode behaviour = EnemyMode.Patroling;
 
@@ -57,6 +59,7 @@ public class Enemy : MonoBehaviour {
 
     private void Lvl_OnTurnTick(PlayerController player, float turntime)
     {
+        attackedThisTurn = false;
         if (behaviour == EnemyMode.Hunting)
         {
             ExecuteHunt(player, turntime);        
@@ -112,14 +115,22 @@ public class Enemy : MonoBehaviour {
         }
     }
 
+    public virtual bool AllowsAttack(ContactPoint[] contactPoints, out int reflectedDamage)
+    {
+        reflectedDamage = 0;
+        return !attackedThisTurn && behaviour != EnemyMode.Attacking;
+    }
+
     protected virtual void Hurt()
     {
-
+        attackedThisTurn = true;
+        Debug.Log("Hurt " + name);
     }
 
     protected virtual void Killed()
     {
-
+        attackedThisTurn = true;
+        Debug.Log("Killed " + name);
     }
 
     [SerializeField, Range(0, 1)]

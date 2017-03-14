@@ -474,6 +474,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: {fileID: 2025833201}
+  deathMessages:
+  - fell trough a hole to a crushing death
 --- !u!1 &689219672
 GameObject:
   m_ObjectHideFlags: 0
@@ -1585,6 +1587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardGrid: {fileID: 2025833198}
+  boardController: {fileID: 2025833196}
   ballPath: {fileID: 2025833199}
   roomMaker: {fileID: 2025833200}
   ball: {fileID: 1113420215}
@@ -1622,7 +1625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 2025833198}
-  enemiesAtLevel: 5
+  enemiesAtLevel: 3
   enemyPrefabs:
   - {fileID: 114647270488527920, guid: b6c71d122c0d6f74995b607623426974, type: 2}
   enemyParent: {fileID: 2043342521}

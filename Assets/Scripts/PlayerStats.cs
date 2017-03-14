@@ -28,4 +28,9 @@ public class PlayerStats {
             coin = value;
         }
     }
+
+    public void Reset()
+    {
+        Coin = 0;
+    }
 }

@@ -25,6 +25,9 @@ public class CoinUI : MonoBehaviour {
         if (from == to)
         {
             coinField.text = to.ToString();
+        } else if (to == 0)
+        {
+            coinField.text = to.ToString();
         } else
         {
             StartCoroutine(ChangeCoin(from, to));
