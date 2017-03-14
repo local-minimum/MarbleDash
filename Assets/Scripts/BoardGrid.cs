@@ -95,6 +95,18 @@ public struct GridPos
         return Mathf.Min(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
     }
 
+    public GridPos NineNormalized
+    {
+        get
+        {
+            return new GridPos(x > 0 ? 1 : (x < 0 ? -1 : 0), y > 0 ? 1 : (y < 0 ? -1 : 0));
+        }
+    }
+
+    public bool IsZero()
+    {
+        return x == 0 && y == 0;
+    }
 }
 
 [ExecuteInEditMode]

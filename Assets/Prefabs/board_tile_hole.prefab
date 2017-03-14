@@ -55,6 +55,7 @@ GameObject:
   - component: {fileID: 4241408191004978}
   - component: {fileID: 95512770335418312}
   - component: {fileID: 64930470152424796}
+  - component: {fileID: 114132272717007262}
   m_Layer: 8
   m_Name: board_tile_hole
   m_TagString: Untagged
@@ -210,3 +211,14 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114132272717007262
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1821597757667336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f3d11e6b2dd3784b9b16c367fb2e47b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

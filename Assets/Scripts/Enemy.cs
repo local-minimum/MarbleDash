@@ -79,7 +79,38 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecuteHunt(PlayerController player, float turnTime)
     {
-        ExecutePatrol(turnTime);
+        GridPos favouredDirection = (player.onTile - pos).NineNormalized;
+        if (favouredDirection.IsZero())
+        {
+            //Should be attack
+            ExecuteRest(turnTime);
+        }
+        else
+        {
+            int[,] context = DirectionFilteredContext(
+                board.GetOccupancyContext(pos, Occupancy.Free, Occupancy.BallPath, Occupancy.Player),
+                favouredDirection);
+
+            GridPos moveDirection = SelectMoveOffset(BoardGrid.ContextToOffsets(context));
+            Move(moveDirection, turnTime);
+        }
+    }
+
+    int[,] DirectionFilteredContext(int[,] context, GridPos direction)
+    {
+        direction += new GridPos(1, 1);
+        for (int x=0; x<3; x++)
+        {
+            for (int y=0; y<3; y++)
+            {
+                if (context[x, y] == 1 && Mathf.Abs(direction.x - x) + Mathf.Abs(direction.y - y) > 1)
+                {
+                    context[x, y] = 0;
+                }
+            }
+        }
+
+        return context;
     }
 
     protected virtual void ExecutePatrol(float turnTime)
