@@ -115,7 +115,15 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecutePatrol(float turnTime)
     {
-        int[,] context = board.GetOccupancyContext(pos, Occupancy.Free, Occupancy.BallPath, Occupancy.Player);
+        
+        int[,] context = board.GetNotOccupancyContext(pos,
+            Occupancy.BallPathTarget,
+            Occupancy.Enemy,
+            Occupancy.Obstacle,
+            Occupancy.Wall,
+            Occupancy.WallBreakable,
+            Occupancy.WallIllusory,
+            Occupancy.Hole);
         GridPos moveDirection = SelectMoveOffset(BoardGrid.ContextToOffsets(context));
         Move(moveDirection, turnTime);
     }
