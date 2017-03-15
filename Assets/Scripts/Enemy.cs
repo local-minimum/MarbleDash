@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour {
     bool attackedThisTurn;
 
     EnemyMode behaviour = EnemyMode.Patroling;
+    bool isAlive = true;
 
     GridPos pos = new GridPos(-1, -1);
     BoardGrid board;
@@ -161,15 +162,18 @@ public class Enemy : MonoBehaviour {
         return !attackedThisTurn && behaviour != EnemyMode.Attacking;
     }
 
-    protected virtual void Hurt()
+    public virtual void HurtEffect()
     {
         attackedThisTurn = true;
         Debug.Log("Hurt " + name);
     }
 
-    protected virtual void Killed()
+    public virtual void KilledEffect()
     {
         attackedThisTurn = true;
+        isAlive = false;
+        board.Free(pos, Occupancy.Enemy);
+        Destroy(gameObject, 0.1f);
         Debug.Log("Killed " + name);
     }
 

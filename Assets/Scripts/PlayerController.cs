@@ -125,9 +125,13 @@ public class PlayerController : MonoBehaviour {
             Enemy enemy = collision.gameObject.GetComponent<Enemy>();
             if (enemy)
             {
+                
                 int deflectedHurt;
                 if (enemy.AllowsAttack(collision.contacts, out deflectedHurt)) {
                     otherDest.Hurt(destructable.GetVelocityForce() - deflectedHurt);
+                } else
+                {
+                    Debug.Log("Hurting " + otherDest.name + " refused");
                 }
                 if (deflectedHurt > 0) {
                     destructable.Hurt(deflectedHurt);

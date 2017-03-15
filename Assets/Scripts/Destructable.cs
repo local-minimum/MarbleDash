@@ -50,6 +50,13 @@ public class Destructable : MonoBehaviour {
     }
 
     int velForce;
+    public float VelocityEffect
+    {
+        get
+        {
+            return velForce / (float)MaxVelocityForce;
+        }
+    }
 
     public int GetVelocityForce()
     {
