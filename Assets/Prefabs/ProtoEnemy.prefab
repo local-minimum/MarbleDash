@@ -23,8 +23,8 @@ GameObject:
   - component: {fileID: 65945257759012174}
   - component: {fileID: 23069788620925860}
   - component: {fileID: 135555780109466264}
-  - component: {fileID: 114205736543487812}
   - component: {fileID: 114647270488527920}
+  - component: {fileID: 114205736543487812}
   - component: {fileID: 54552586301795578}
   m_Layer: 11
   m_Name: ProtoEnemy
@@ -125,8 +125,8 @@ MonoBehaviour:
   maxHealth: 10
   velocityForcePower: 1
   controller: {fileID: 114647270488527920}
-  hitMessage: Hurt
-  destroyMessage: Killed
+  hitMessage: HurtEffect
+  destroyMessage: KilledEffect
   MaxVelocityForce: 10
 --- !u!114 &114647270488527920
 MonoBehaviour:

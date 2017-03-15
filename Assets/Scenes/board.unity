@@ -1760,5 +1760,5 @@ MonoBehaviour:
   staticPosition: {x: 7.37, y: 21.65, z: 0}
   dynamicZeroVelocityOffset: {x: 2.56, y: 6.5, z: -0.19}
   dynamicMaxVelocityOffset: {x: 3.57, y: 12, z: 0}
-  camMode: 1
+  camMode: 0
   attack: 0.15

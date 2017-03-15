@@ -126,8 +126,8 @@ public class PlayerController : MonoBehaviour {
             if (enemy)
             {
                 
-                int deflectedHurt;
-                if (enemy.AllowsAttack(collision.contacts, out deflectedHurt)) {
+                int deflectedHurt = 0;
+                if (otherDest.GetVelocityForce() < destructable.GetVelocityForce() && enemy.AllowsAttack(collision.contacts, out deflectedHurt)) {
                     otherDest.Hurt(destructable.GetVelocityForce() - deflectedHurt);
                 } else
                 {
