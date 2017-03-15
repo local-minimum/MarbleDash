@@ -146,6 +146,30 @@ public class BoardGrid : MonoBehaviour {
     [SerializeField]
     Vector3 targetLocalOffset;
 
+    static BoardGrid _instance;
+    public static BoardGrid instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<BoardGrid>();
+            }
+            return _instance;
+        }
+    }
+
+    private void Awake()
+    {
+        if (_instance == null || _instance == this)
+        {
+            _instance = this;
+        } else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start() {
         gridOccupancy = new int[size, size];
         /*

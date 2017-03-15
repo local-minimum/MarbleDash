@@ -5,8 +5,7 @@ using UnityEngine;
 public class CoinBox : MonoBehaviour {
 
     PlayerController player;
-    Destructable destructable;
-
+    Destructable destructable;    
 
     [SerializeField]
     int minCoin;
@@ -23,6 +22,17 @@ public class CoinBox : MonoBehaviour {
         MeshRenderer mr = GetComponent<MeshRenderer>();
         mat = Instantiate(mr.material);
         mr.material = mat;
+    }
+
+    GridPos pos;
+
+    public void SetPosition(GridPos pos)
+    {
+        transform.localPosition = BoardGrid.instance.GetLocalPosition(pos);
+        this.pos = pos;
+        if (!BoardGrid.instance.HasOccupancy(pos, Occupancy.Obstacle)) {
+            BoardGrid.instance.Occupy(pos, Occupancy.Obstacle);
+        }
     }
 
     [SerializeField]
@@ -50,6 +60,9 @@ public class CoinBox : MonoBehaviour {
             player.Stats.Coin += coin;
         }
         mat.color = deadColor;
+
+        BoardGrid.instance.Free(pos, Occupancy.Obstacle);
+
         transform.localScale = new Vector3(1, 0.1f, 1);
         GetComponent<Collider>().enabled = false;
         Destroy(gameObject, 1);

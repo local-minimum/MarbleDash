@@ -21,7 +21,8 @@ public class Enemy : MonoBehaviour {
 
     GridPos pos = new GridPos(-1, -1);
     BoardGrid board;
-
+    [SerializeField]
+    Vector3 localPlacementOffset = new Vector3(0, 0, 0.5f);
     public  void SetPosition(GridPos pos, BoardGrid board)
     {        
         this.pos = pos;
@@ -36,7 +37,7 @@ public class Enemy : MonoBehaviour {
 
 
         }
-        transform.localPosition = board.GetLocalPosition(pos);     
+        transform.localPosition = board.GetLocalPosition(pos) + localPlacementOffset;     
     }
 
     private void Start()
@@ -143,7 +144,7 @@ public class Enemy : MonoBehaviour {
         board.Free(pos, Occupancy.Enemy);
         pos += offset;
         board.Occupy(pos, Occupancy.Enemy);
-        StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos)));
+        StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos) + localPlacementOffset));
     }
 
     private void OnTriggerEnter(Collider other)

@@ -60,7 +60,7 @@ public class BoxPlacer : MonoBehaviour {
         for (int i = 0, l = positions.Count; i < l; i++)
         {
             CoinBox box = Instantiate(prefabs[Random.Range(0, prefabs.Length)], boxPlaceParent, false);
-            box.transform.localPosition = board.GetLocalPosition(positions[i]);
+            box.SetPosition(positions[i]);
         }
     }
 
