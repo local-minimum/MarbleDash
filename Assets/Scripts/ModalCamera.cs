@@ -24,9 +24,25 @@ public class ModalCamera : MonoBehaviour {
     [SerializeField, Range(0, 1)]
     float attack = 0.5f;
 
+    [SerializeField]
+    KeyCode toggleKey = KeyCode.Tab;
+
     Vector3 playerPos = Vector3.zero;
 
 	void Update () {
+        if (Input.GetKeyDown(toggleKey))
+        {
+            switch (camMode)
+            {
+                case CameraMode.Static:
+                    camMode = CameraMode.Tracking;
+                    break;
+                case CameraMode.Tracking:
+                    camMode = CameraMode.Static;
+                    break;
+            }
+        }
+
 		if (camMode == CameraMode.Static)
         {
             if ((transform.position - staticPosition).sqrMagnitude > 0.05f)

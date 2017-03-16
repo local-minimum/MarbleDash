@@ -96,12 +96,14 @@ public class BallPath : MonoBehaviour {
         }
 
         endTile.SetPosition(boardGrid, endPos);
-       
+
         if (prev != null)
         {
             prev.SetNextTile(endTile);
             prev.GenerateMesh();
         }
+
+        endTile.GenerateMesh();
     }
 
     void RemoveTiles()

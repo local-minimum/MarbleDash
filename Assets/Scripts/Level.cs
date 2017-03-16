@@ -99,6 +99,18 @@ public class Level : MonoBehaviour {
         }
     }
 
+    public void StopTheMotion() 
+    {
+        makeTurns = false;
+        PlayerController.instance.Freeze();
+    }
+
+    public void StartTheMotion()
+    {
+        makeTurns = true;
+        PlayerController.instance.Thaw();
+    }
+
     public void Generate()
     {
         ballPath.GeneratePath(previousLevel);

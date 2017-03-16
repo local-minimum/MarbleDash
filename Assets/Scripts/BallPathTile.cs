@@ -11,7 +11,12 @@ public class BallPathTile : MonoBehaviour {
     Material startMat;
 
     [SerializeField]
+    Material endMat;
+
+    [SerializeField]
     Material pathMat;
+
+    ParticleSystem partSys;
 
     private void Awake()
     {
@@ -19,6 +24,7 @@ public class BallPathTile : MonoBehaviour {
         m = new Mesh();
         m.name = "ProcGen path tile";
         mf.sharedMesh = m;
+        partSys = GetComponentInChildren<ParticleSystem>();
     }
 
     GridPos pos;
@@ -71,7 +77,7 @@ public class BallPathTile : MonoBehaviour {
             entry = (previousTile.pos - pos).AsMajorDirection();
         }
 
-        activeMat = Instantiate( (previousTile == null) ? startMat : pathMat);
+        activeMat = Instantiate( (previousTile == null) ? startMat : exit == Direction.None ? endMat : pathMat);
         GetComponent<MeshRenderer>().material = activeMat;
         refColor = activeMat.color;
         m.Clear();
@@ -82,6 +88,7 @@ public class BallPathTile : MonoBehaviour {
         } else if (nextTile == null)
         {
             GenerateEnd(halfX, halfZ, entry);
+            activeMat.color = offColor;
         } else
         {
             GenerateMiddle(halfX, halfZ, entry, exit);
@@ -93,7 +100,7 @@ public class BallPathTile : MonoBehaviour {
 
     void GenerateEnd(float halfX, float halfZ, Direction entry)
     {
-
+        GenerateStart(halfX, halfZ, entry);
     }
 
     void GenerateMiddle(float halfX, float halfZ, Direction entry, Direction exit)
@@ -273,7 +280,6 @@ public class BallPathTile : MonoBehaviour {
             PlayerController pCtrl = other.GetComponent<PlayerController>();
             if (pCtrl != null && (previousTile == null || previousTile.foreshadowed))
             {
-                playerVisited = true;
                 foreshadowed = true;
                 activeMat.color = refColor;
                 pCtrl.Stats.Coin += 1;
@@ -281,9 +287,38 @@ public class BallPathTile : MonoBehaviour {
                 if (nextTile)
                 {
                     nextTile.Foreshadow(1, foreshadowDecay);
+                } else
+                {
+                    LevelCompleted();
                 }
+
+                playerVisited = true;
             }
         }
+    }
+
+    void LevelCompleted()
+    {
+        if (playerVisited)
+        {
+            return;
+        }
+
+        playerVisited = true;
+        StartCoroutine(NewLevel());
+    }
+
+    IEnumerator<WaitForSeconds> NewLevel()
+    {
+        
+        partSys.Play();
+        yield return new WaitForSeconds(0.15f);
+        Level.instance.StopTheMotion();
+        Level.instance.Generate();
+        yield return new WaitForSeconds(2f);
+        Level.instance.Implement();
+        yield return new WaitForSeconds(0.5f);
+        Level.instance.StartTheMotion();
     }
 
     [SerializeField, Range(0, 1)]
@@ -298,16 +333,23 @@ public class BallPathTile : MonoBehaviour {
     {
         if (activeMat == null || playerVisited)
         {
+            if (!playerVisited) {
+                Debug.Log(string.Format("There's no active material here ({0}) so can't apply color change", name));
+            }
             return;
         }
 
         progress = Mathf.Clamp01(progress - step);
         activeMat.color = Color.Lerp(offColor, refColor, progress * foreshadowFactor);
 
+        foreshadowed = true;
+
         if (progress > 0 && nextTile)
         {
-            foreshadowed = true;
             nextTile.Foreshadow(progress, step);    
+        } else if (progress > 0)
+        {
+            Debug.Log("Reached end of path at " + name);
         }
 
     }

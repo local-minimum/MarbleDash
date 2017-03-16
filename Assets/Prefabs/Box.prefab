@@ -39,7 +39,7 @@ Transform:
   m_GameObject: {fileID: 1580740224431556}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -0, y: -0, z: 0.39999872}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: -1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -57,7 +57,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: d7ca6dc2d09814646a7c68a38de29b63, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -124,5 +124,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minCoin: 1
   maxCoin: 10
-  healthyColor: {r: 1, g: 1, b: 1, a: 1}
-  deadColor: {r: 0.52205884, g: -0.015354686, b: -0.015354686, a: 1}
+  MaterialSequencePrefabs:
+  - {fileID: 2100000, guid: d7ca6dc2d09814646a7c68a38de29b63, type: 2}
+  - {fileID: 2100000, guid: ff82daaecbdfc8146b15dd18fee280b4, type: 2}
+  - {fileID: 2100000, guid: b4ad8548f7c079b4589167f47be87fb4, type: 2}
+  healthyColor: {r: 0.47794116, g: 0.43509126, b: 0.29519895, a: 1}
+  deadColor: {r: 0.391, g: 0.35594484, b: 0.2415, a: 1}

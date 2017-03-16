@@ -66,6 +66,17 @@ public class PlayerController : MonoBehaviour {
         rb.velocity = Vector3.zero;
     }
 
+    public void Freeze()
+    {
+        Inert();
+        rb.isKinematic = true;
+    }
+
+    public void Thaw()
+    {
+        rb.isKinematic = false;
+    }
+
     public void KillReset(string message)
     {
         playerStats.Reset();
@@ -75,8 +86,11 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
         if (grounded)
         {
-            rb.AddForce(board.Slope * forceMultiplier);
-            TrackGridPos();
+            if (!rb.isKinematic)
+            {
+                rb.AddForce(board.Slope * forceMultiplier);
+                TrackGridPos();
+            }
         } else
         {
             onTile = offTile;
