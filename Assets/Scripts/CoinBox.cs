@@ -5,7 +5,10 @@ using UnityEngine;
 public class CoinBox : MonoBehaviour {
 
     PlayerController player;
-    Destructable destructable;    
+    Destructable destructable;
+
+    [SerializeField, Range(0, 1)]
+    float lootProbability = 1f;
 
     [SerializeField]
     int minCoin;
@@ -69,14 +72,15 @@ public class CoinBox : MonoBehaviour {
 
     void Break()
     {
-        //Animate to break
-        //Spawn coins
-
-        //Temporary
-        int coin = Random.Range(minCoin, maxCoin);
-        if (coin > 0)
+        if (Random.value < lootProbability)
         {
-            player.Stats.Coin += coin;
+
+            CoinFountains.instance.ShowerMe(transform);
+            int coin = Random.Range(minCoin, maxCoin);
+            if (coin > 0)
+            {
+                player.Stats.Coin += coin;
+            }
         }
         mr.material = mats[2];
         mr.material.color = deadColor;
@@ -89,6 +93,6 @@ public class CoinBox : MonoBehaviour {
             transform.localScale.z * 1.1f);
 
         GetComponent<Collider>().enabled = false;
-        Destroy(gameObject, 1);
+        Destroy(gameObject, .5f);
     }
 }
