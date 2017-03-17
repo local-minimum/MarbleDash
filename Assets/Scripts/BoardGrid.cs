@@ -90,6 +90,14 @@ public struct GridPos
         return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
     }
 
+    public int EightMagnitude
+    {
+        get
+        {
+            return Mathf.Max(Mathf.Abs(x), Mathf.Abs(y));
+        }
+    }
+
     public static int ShortestDimension(GridPos a, GridPos b)
     {
         return Mathf.Min(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));

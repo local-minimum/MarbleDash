@@ -22,9 +22,17 @@ public class Enemy : MonoBehaviour {
 
     GridPos pos = new GridPos(-1, -1);
     BoardGrid board;
+
     [SerializeField]
     Vector3 localPlacementOffset = new Vector3(0, 0, 0.5f);
-    public  void SetPosition(GridPos pos, BoardGrid board)
+
+    [SerializeField]
+    string attackAnim;
+
+    [SerializeField]
+    int attackRange = 2;
+
+    public void SetPosition(GridPos pos, BoardGrid board)
     {        
         this.pos = pos;
         this.board = board;
@@ -41,10 +49,13 @@ public class Enemy : MonoBehaviour {
         transform.localPosition = board.GetLocalPosition(pos) + localPlacementOffset;     
     }
 
+   
+    Animator anim;
+
     private void Start()
     {
         playerLayer = LayerMask.NameToLayer("player");
-
+        anim = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -62,7 +73,12 @@ public class Enemy : MonoBehaviour {
     private void Lvl_OnTurnTick(PlayerController player, float turntime)
     {
         attackedThisTurn = false;
-        if (behaviour == EnemyMode.Hunting)
+        GridPos playerDirection = (player.onTile - pos);
+        if (playerDirection.EightMagnitude <= attackRange)
+        {
+            Attack(playerDirection);
+        }
+        else if (behaviour == EnemyMode.Hunting)
         {
             ExecuteHunt(player, turntime);        
         } else if (behaviour == EnemyMode.Patroling)
@@ -81,21 +97,14 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecuteHunt(PlayerController player, float turnTime)
     {
-        GridPos favouredDirection = (player.onTile - pos).NineNormalized;
-        if (favouredDirection.IsZero())
-        {
-            //Should be attack
-            ExecuteRest(turnTime);
-        }
-        else
-        {
-            int[,] context = DirectionFilteredContext(
-                board.GetOccupancyContext(pos, Occupancy.Free, Occupancy.BallPath, Occupancy.Player),
-                favouredDirection);
+        GridPos playerDirection = (player.onTile - pos);
+        int[,] context = DirectionFilteredContext(
+        board.GetOccupancyContext(pos, Occupancy.Free, Occupancy.BallPath, Occupancy.Player),
+        playerDirection.NineNormalized);
 
-            GridPos moveDirection = SelectMoveOffset(BoardGrid.ContextToOffsets(context));
-            Move(moveDirection, turnTime);
-        }
+        GridPos moveDirection = SelectMoveOffset(BoardGrid.ContextToOffsets(context));
+        Move(moveDirection, turnTime);
+        
     }
 
     int[,] DirectionFilteredContext(int[,] context, GridPos direction)
@@ -138,6 +147,30 @@ public class Enemy : MonoBehaviour {
             return new GridPos(0, 0);
         }
         return offsets[Random.Range(0, offsets.Count)];
+    }
+
+    [SerializeField]
+    float attackDelay = 0.4f;
+
+    protected virtual void Attack(GridPos playerDirection)
+    {
+        behaviour = EnemyMode.Attacking;
+        Debug.Log("Attacks");
+        StartCoroutine(LookTowards(playerDirection));
+
+        if (anim)
+        {
+            StartCoroutine(DelayAttackTrigger(attackDelay));
+        }
+
+    }
+
+    IEnumerator<WaitForSeconds> DelayAttackTrigger(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        anim.SetTrigger(attackAnim) ;
+        yield return new WaitForSeconds(delay);
+        behaviour = EnemyMode.Hunting;
     }
 
     protected virtual void Move(GridPos offset, float maxTime)
@@ -189,6 +222,43 @@ public class Enemy : MonoBehaviour {
 
     [SerializeField]
     Vector3 jumpHeightAxis = Vector3.up;
+
+    protected IEnumerator<WaitForSeconds> LookTowards(GridPos direction)
+    {
+        Direction dir = direction.AsMajorDirection();
+        Quaternion target = Quaternion.identity;
+        Quaternion source = transform.localRotation;
+        switch (dir)
+        {
+            case Direction.East:
+                target = Quaternion.AngleAxis(270, -Vector3.forward);
+                break;
+            case Direction.West:
+                target = Quaternion.AngleAxis(90, -Vector3.forward);
+                break;
+            case Direction.South:
+                target = Quaternion.AngleAxis(0, -Vector3.forward);
+                break;
+            case Direction.North:
+                target = Quaternion.AngleAxis(180, -Vector3.forward);
+                break;
+            default:
+                target = source;
+                break;
+        }
+
+        if (source != target)
+        {
+            float p = 0;
+            for (int i=0; i<11; i++)
+            {
+                transform.localRotation = Quaternion.LerpUnclamped(source, target, p);
+                p += 0.1f;
+                yield return new WaitForSeconds(0.016f);
+            }
+            transform.localRotation = target;
+        }
+    }
 
     protected IEnumerator<WaitForSeconds> JumpToPos(float maxTime, Vector3 targetPos)
     {
