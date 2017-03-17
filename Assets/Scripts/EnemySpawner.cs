@@ -5,6 +5,20 @@ using System.Linq;
 
 public class EnemySpawner : MonoBehaviour {
 
+    static EnemySpawner _instance;
+
+    public static EnemySpawner instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance =FindObjectOfType<EnemySpawner>();
+            }
+            return _instance;
+        }
+    }
+
     [SerializeField]
     BoardGrid board;
 
@@ -19,7 +33,26 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField]
     Transform enemyParent;
 
-	public void AllocatePlaces()
+    private void Awake()
+    {
+        if (_instance == null || _instance == this)
+        {
+            _instance = this;
+        } else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this)
+        {
+            _instance = null;
+        }
+    }
+
+    public void AllocatePlaces()
     {
         spawnLocations.Clear();
         GridPos[] potentials = board.FindIsOnlyAny(Occupancy.Free, Occupancy.BallPath).ToArray().Shuffle();
@@ -30,14 +63,19 @@ public class EnemySpawner : MonoBehaviour {
         }
     }
 
+    List<Enemy> enemiesOnLevel = new List<Enemy>();
+
     public void SpawnEnemies()
     {
+        enemiesOnLevel.Clear();
         ClearCurrentEnemies();
+
         Debug.Log("Enemies: " + spawnLocations.Count);
         foreach (GridPos pos in spawnLocations)
         {
             Enemy e = GetEnemy();
             e.SetPosition(pos, board);
+            enemiesOnLevel.Add(e);
         }
     }
 
@@ -52,5 +90,14 @@ public class EnemySpawner : MonoBehaviour {
     Enemy GetEnemy()
     {
         return Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], enemyParent, false);
+    }
+
+    public void iDied(Enemy deader)
+    {
+        enemiesOnLevel.Remove(deader);
+        if (enemiesOnLevel.Count == 0)
+        {
+            StoreSwapper.instance.ShowStoreSwapping();
+        }
     }
 }

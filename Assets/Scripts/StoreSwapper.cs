@@ -1,0 +1,123 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class StoreSwapper : MonoBehaviour {
+
+    [SerializeField]
+    Transform holesParent;
+
+    [SerializeField]
+    float remainTime = 5;
+
+    [SerializeField]
+    bool storeSwappingAcitve = false;
+
+    static StoreSwapper _instance;
+
+    public static StoreSwapper instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<StoreSwapper>();
+            }
+            return _instance;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (_instance == this)
+        {
+            _instance = null;
+        }
+    }
+
+    private void Awake()
+    {
+        if (_instance == null || _instance == this)
+        {
+            _instance = this;
+        } else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void Update () {
+	    if (storeSwappingAcitve && Time.timeSinceLevelLoad - lastChange > remainTime)
+        {
+            SwapStore();
+        } else if (!storeSwappingAcitve)
+        {
+            DisableStore();
+        }
+	}
+
+    float lastChange;
+
+    int activeStoreIndex = -1;
+    StoreTrigger activeStore;
+
+    void SwapStore()
+    {
+        DisableStore();
+        List<int> available = new List<int>();
+        for (int i=0; i<holesParent.childCount; i++)
+        {
+            if (holesParent.GetChild(i).gameObject.activeSelf && i != activeStoreIndex)
+            {
+                available.Add(i);
+            }
+        }
+
+        activeStoreIndex = available[Random.Range(0, available.Count)];
+        Transform holeTile = holesParent.GetChild(activeStoreIndex);
+        activeStore = holeTile.GetComponentInChildren<StoreTrigger>(true);
+        activeStore.StartStoreTrigger();
+        lastChange = Time.timeSinceLevelLoad;
+    }
+
+    void DisableStore()
+    {
+        if (activeStore)
+        {
+            activeStore.StopStoreTrigger();
+        }
+    }
+
+    public void EnterStore()
+    {
+        storeSwappingAcitve = false;
+        activeStoreIndex = -1;
+        Level.instance.StopTheMotion();
+        Debug.Log("Enter Store");
+    }
+
+    public void ShowAllStores()
+    {
+        for (int i = 0; i < holesParent.childCount; i++)
+        {
+            if (holesParent.GetChild(i).gameObject.activeSelf)
+            {
+                holesParent.GetChild(i).GetComponentInChildren<StoreTrigger>(true).StartStoreTrigger();
+
+            }
+        }
+    }
+
+    public void ShowStoreSwapping()
+    {
+        activeStoreIndex = -1;
+        lastChange = Time.timeSinceLevelLoad - remainTime;
+        storeSwappingAcitve = true;
+    }
+
+    public void HideAllStores()
+    {
+        storeSwappingAcitve = false;
+        DisableStore();
+    }
+}

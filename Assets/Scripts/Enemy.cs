@@ -173,6 +173,7 @@ public class Enemy : MonoBehaviour {
         attackedThisTurn = true;
         isAlive = false;
         board.Free(pos, Occupancy.Enemy);
+        EnemySpawner.instance.iDied(this);
         Destroy(gameObject, 0.1f);
         Debug.Log("Killed " + name);
     }

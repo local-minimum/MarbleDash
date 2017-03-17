@@ -22,6 +22,7 @@ public class DeathFall : MonoBehaviour {
         if (other.gameObject.layer == playerLayer)
         {
             other.GetComponent<PlayerController>().KillReset(deathMessages[Random.Range(0, deathMessages.Length)]);
+            StoreSwapper.instance.HideAllStores();
             level.Generate();
             level.Implement();
         }
