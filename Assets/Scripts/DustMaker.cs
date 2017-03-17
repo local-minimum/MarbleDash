@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinFountains : MonoBehaviour {
+public class DustMaker : MonoBehaviour {
 
-
-    static CoinFountains _instance;
-
-    public static CoinFountains instance
+    static DustMaker _instance;
+    
+    public static DustMaker instance
     {
         get
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<CoinFountains>();
+                _instance = FindObjectOfType<DustMaker>();
             }
             return _instance;
         }
@@ -24,7 +23,8 @@ public class CoinFountains : MonoBehaviour {
         if (_instance == null || _instance == this)
         {
             _instance = this;
-        } else
+        }
+        else
         {
             Destroy(gameObject);
         }
@@ -32,12 +32,14 @@ public class CoinFountains : MonoBehaviour {
     }
 
     ParticleSystem ps;
+
     Quaternion localRot;
 
-    void Start () {
+    void Start()
+    {
         ps = GetComponent<ParticleSystem>();
         localRot = transform.localRotation;
-	}
+    }
 
     [SerializeField]
     Vector3 placementOffset = Vector3.zero;

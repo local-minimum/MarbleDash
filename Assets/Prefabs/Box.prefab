@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45f0a10426fe44e439b508124ed167e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lootProbability: 0.25
+  lootProbability: 0.75
   minCoin: 4
   maxCoin: 10
   MaterialSequencePrefabs:

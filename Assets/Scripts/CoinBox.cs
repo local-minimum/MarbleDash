@@ -81,6 +81,10 @@ public class CoinBox : MonoBehaviour {
             {
                 player.Stats.Coin += coin;
             }
+        } else
+        {
+
+            DustMaker.instance.ShowerMe(transform);
         }
         mr.material = mats[2];
         mr.material.color = deadColor;

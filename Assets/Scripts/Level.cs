@@ -72,6 +72,14 @@ public class Level : MonoBehaviour {
         Implement();
 	}
 
+    private void OnDestroy()
+    {
+        if (_instance == this)
+        {
+            _instance = null;
+        }
+    }
+
     IEnumerator<WaitForSeconds> TurnTicker()
     {
         bool ticking = makeTurns;
