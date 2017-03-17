@@ -315,6 +315,7 @@ public class BallPathTile : MonoBehaviour {
         yield return new WaitForSeconds(0.15f);
         Level.instance.StopTheMotion();
         Level.instance.Generate();
+        StoreSwapper.instance.HideAllStores();
         yield return new WaitForSeconds(2f);
         Level.instance.Implement();
         yield return new WaitForSeconds(0.5f);
