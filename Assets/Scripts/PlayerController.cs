@@ -210,8 +210,9 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    public void HurtMe()
+    public void HurtMe(int amount)
     {
+        
         Debug.Log("Player hurt");
     }
 

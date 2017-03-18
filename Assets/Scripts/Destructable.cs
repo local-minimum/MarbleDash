@@ -93,7 +93,7 @@ public class Destructable : MonoBehaviour {
             controller.SendMessage(destroyMessage);
         } else
         {
-            controller.SendMessage(hitMessage);
+            controller.SendMessage(hitMessage, points);
         }
 
         if (OnHealthChange != null)

@@ -58,7 +58,7 @@ public class CoinBox : MonoBehaviour {
     [SerializeField]
     Color deadColor = Color.black;
 
-    void Crack()
+    void Crack(int amount)
     {
         if (destructable.PartialHealth < 0.4f)
         {

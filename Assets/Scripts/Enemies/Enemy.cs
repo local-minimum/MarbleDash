@@ -195,8 +195,9 @@ public class Enemy : MonoBehaviour {
         return !attackedThisTurn && behaviour != EnemyMode.Attacking;
     }
 
-    public virtual void HurtEffect()
+    public virtual void HurtEffect(int amount)
     {
+        FloatTextManager.ShowText(transform, amount.ToString());
         attackedThisTurn = true;
         Splatterer.instance.SplatMe(transform);
         Debug.Log("Hurt " + name);
