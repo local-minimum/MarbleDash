@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 
+public delegate void HealthChange();
+
 public class Destructable : MonoBehaviour {
+
+    public event HealthChange OnHealthChange;
 
     [SerializeField]
     int maxHealth;
@@ -74,6 +78,10 @@ public class Destructable : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         speedRecord = new float[20];
         health = maxHealth;
+        if (OnHealthChange != null)
+        {
+            OnHealthChange();
+        }
     }
 
     public void Hurt(int points)
@@ -86,6 +94,11 @@ public class Destructable : MonoBehaviour {
         } else
         {
             controller.SendMessage(hitMessage);
+        }
+
+        if (OnHealthChange != null)
+        {
+            OnHealthChange();
         }
     }
 

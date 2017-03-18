@@ -244,6 +244,7 @@ MonoBehaviour:
   bodyProperties: {fileID: 114205736543487812}
   localPlacementOffset: {x: 0, y: 0, z: 0.5}
   attackAnim: Slap
+  attackRange: 1
   attackDelay: 0.4
   jumpFractionDuration: 0.4
   heightCurve:
@@ -288,7 +289,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
-  jumpHeightAxis: {x: 0, y: 0, z: 0.5}
+  jumpHeightAxis: {x: 0, y: 0, z: 1}
 --- !u!135 &135555780109466264
 SphereCollider:
   m_ObjectHideFlags: 1

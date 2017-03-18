@@ -45,7 +45,7 @@ public class Level : MonoBehaviour {
 
     bool previousLevel = false;
 
-    [SerializeField, Range(0, 3)]
+    [SerializeField, Range(0, 10)]
     float dropHeight = 0.5f;
 
     [SerializeField, Range(0, 2)]
@@ -132,6 +132,7 @@ public class Level : MonoBehaviour {
     public void Implement()
     {
         makeTurns = false;
+        Splatterer.instance.CleanupSplatter();
         boardGrid.ConstructFloor();
         ballPath.ConstructPath();
         roomMaker.ConstructWalls();

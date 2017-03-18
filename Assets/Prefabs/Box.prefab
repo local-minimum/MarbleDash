@@ -129,5 +129,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: d7ca6dc2d09814646a7c68a38de29b63, type: 2}
   - {fileID: 2100000, guid: ff82daaecbdfc8146b15dd18fee280b4, type: 2}
   - {fileID: 2100000, guid: b4ad8548f7c079b4589167f47be87fb4, type: 2}
+  placementOffset: {x: 0, y: 0, z: 0.5}
   healthyColor: {r: 0.47794116, g: 0.43509126, b: 0.29519895, a: 1}
   deadColor: {r: 0.391, g: 0.35594484, b: 0.2415, a: 1}

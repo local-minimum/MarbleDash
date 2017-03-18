@@ -328,6 +328,9 @@ public class BallPathTile : MonoBehaviour {
     [SerializeField, Range(0, 1)]
     float foreshadowFactor = 0.4f;
 
+    [SerializeField, Range(0, 1)]
+    float foreshadowTrunctation = 0.25f;
+
     bool foreshadowed = false;
 
     void Foreshadow(float progress, float step)
@@ -341,17 +344,20 @@ public class BallPathTile : MonoBehaviour {
         }
 
         progress = Mathf.Clamp01(progress - step);
-        activeMat.color = Color.Lerp(offColor, refColor, progress * foreshadowFactor);
-
-        foreshadowed = true;
-
-        if (progress > 0 && nextTile)
+        if (progress > foreshadowTrunctation)
         {
-            nextTile.Foreshadow(progress, step);    
-        } else if (progress > 0)
-        {
-            Debug.Log("Reached end of path at " + name);
+            activeMat.color = Color.Lerp(offColor, refColor, progress * foreshadowFactor);
+
+            foreshadowed = true;
+
+            if (progress > 0 && nextTile)
+            {
+                nextTile.Foreshadow(progress, step);
+            }
+            else if (progress > 0)
+            {
+                Debug.Log("Reached end of path at " + name);
+            }
         }
-
     }
 }

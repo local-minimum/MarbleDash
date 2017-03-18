@@ -198,6 +198,7 @@ public class Enemy : MonoBehaviour {
     public virtual void HurtEffect()
     {
         attackedThisTurn = true;
+        Splatterer.instance.SplatMe(transform);
         Debug.Log("Hurt " + name);
     }
 
@@ -206,6 +207,7 @@ public class Enemy : MonoBehaviour {
         attackedThisTurn = true;
         isAlive = false;
         board.Free(pos, Occupancy.Enemy);
+        Splatterer.instance.SplatMe(transform);
         EnemySpawner.instance.iDied(this);
         Destroy(gameObject, 0.1f);
         Debug.Log("Killed " + name);
