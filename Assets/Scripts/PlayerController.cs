@@ -216,7 +216,7 @@ public class PlayerController : MonoBehaviour {
         Debug.Log("Player hurt");
     }
 
-    public void KillMe()
+    public void KillMe(int amount)
     {
         Debug.Log("Player should be dead");
     }

@@ -73,7 +73,7 @@ public class CoinBox : MonoBehaviour {
         //Animate to cracked state if not there
     }
 
-    void Break()
+    void Break(int amount)
     {
         if (Random.value < lootProbability)
         {

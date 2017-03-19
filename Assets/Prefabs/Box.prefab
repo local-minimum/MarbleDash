@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d20d8e006cda9b458a28862712e36b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
+  maxHealth: 3
   velocityForcePower: 1
   controller: {fileID: 114957753951369638}
   hitMessage: Crack

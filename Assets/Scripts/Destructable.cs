@@ -86,11 +86,12 @@ public class Destructable : MonoBehaviour {
 
     public void Hurt(int points)
     {
+        points = Mathf.Min(points, health);
         health -= points;
-        if (health < 1)
+        if (health <= 0)
         {
             health = 0;
-            controller.SendMessage(destroyMessage);
+            controller.SendMessage(destroyMessage, points);
         } else
         {
             controller.SendMessage(hitMessage, points);

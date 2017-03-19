@@ -203,8 +203,9 @@ public class Enemy : MonoBehaviour {
         Debug.Log("Hurt " + name);
     }
 
-    public virtual void KilledEffect()
+    public virtual void KilledEffect(int amount)
     {
+        FloatTextManager.ShowText(transform, amount.ToString());
         attackedThisTurn = true;
         isAlive = false;
         board.Free(pos, Occupancy.Enemy);
