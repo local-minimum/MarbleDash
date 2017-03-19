@@ -210,6 +210,17 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    public void EmoteStatus()
+    {
+        StartCoroutine(delayEmote());
+    }
+
+    IEnumerator<WaitForSeconds> delayEmote()
+    {
+        yield return new WaitForSeconds(1f);
+        destructable.Emit();
+    }
+
     public void HurtMe(int amount)
     {
         

@@ -103,6 +103,14 @@ public class Destructable : MonoBehaviour {
         }
     }
 
+    public void Emit()
+    {
+        if (OnHealthChange != null)
+        {
+            OnHealthChange();
+        }
+    }
+
     private void Update()
     {
         if (rb)

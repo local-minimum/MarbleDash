@@ -25,7 +25,6 @@ public class PlayerHealthUI : MonoBehaviour {
     private void Start()
     {
         anim = GetComponent<Animator>();
-        //StartCoroutine(AdjustHealth(initialDelay));    
     }
 
 
@@ -63,7 +62,10 @@ public class PlayerHealthUI : MonoBehaviour {
 
     private void PlayerDestructable_OnHealthChange()
     {
-        StartCoroutine(AdjustHealth(0));
+        if (Level.LevelRunning)
+        {
+            StartCoroutine(AdjustHealth(0));
+        }
     }
 
 }

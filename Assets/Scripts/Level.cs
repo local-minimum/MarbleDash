@@ -54,7 +54,15 @@ public class Level : MonoBehaviour {
     [SerializeField, Range(0, 2)]
     float turnTime;
 
-    bool makeTurns = false;
+    static bool makeTurns = false;
+
+    public static bool LevelRunning
+    {
+        get
+        {
+            return makeTurns;
+        }
+    }
 
     [SerializeField, Range(0, 10)]
     float firstTickDelay = 2f;
@@ -145,6 +153,7 @@ public class Level : MonoBehaviour {
         enemySpawner.SpawnEnemies();
         ball.transform.position = ballPath.DropTarget + Vector3.up * dropHeight;
         ball.Inert();
+        ball.EmoteStatus();
         boardController.Balance();
         makeTurns = true;
     }
