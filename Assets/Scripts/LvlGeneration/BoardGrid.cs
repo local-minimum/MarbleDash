@@ -5,6 +5,7 @@ using UnityEngine;
 public enum Occupancy { Free, BallPathSource, BallPathTarget, BallPath, Wall, WallBreakable, WallIllusory, Hole, Obstacle, Enemy, Player};
 public enum Direction { None, North, South, West, East };
 
+[System.Serializable]
 public struct GridPos
 {
     public int x;
@@ -82,6 +83,38 @@ public struct GridPos
         } else
         {
             return Direction.None;
+        }
+    }
+
+    public GridPos West
+    {
+        get
+        {
+            return new GridPos(x - 1, y);
+        }
+    }
+
+    public GridPos East
+    {
+        get
+        {
+            return new GridPos(x + 1, y);
+        }
+    }
+
+    public GridPos North
+    {
+        get
+        {
+            return new GridPos(x, y - 1);
+        }
+    }
+
+    public GridPos South
+    {
+        get
+        {
+            return new GridPos(x, y + 1);
         }
     }
 
@@ -546,6 +579,26 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
+    public BoardTile ConstructFloorAt(GridPos pos, TileType tileType)
+    {
+        Vector3 localScale = TileShape;
+        localScale.x /= 2f;
+        localScale.y /= 2f;
+        localScale.z = 1;
+        Transform t;
+        if (tileType == TileType.Solid)
+        {
+            t = GetNextSolid();
+        } else
+        {
+            t = GetNextHole();
+        }
+        BoardTile tile = t.GetComponent<BoardTile>();
+        tile.SetPosition(this, pos, heightOffset, tileType);
+        t.localScale = localScale;
+        return tile;
+    }
+
     int nextHoleIndex = 0;
 
     Transform GetNextHole()
@@ -580,7 +633,7 @@ public class BoardGrid : MonoBehaviour {
         return t;
     }
 
-    void InactivatePreviousTiles()
+    public void InactivatePreviousTiles()
     {
         nextHoleIndex = 0;
         nextSolidIndex = 0;

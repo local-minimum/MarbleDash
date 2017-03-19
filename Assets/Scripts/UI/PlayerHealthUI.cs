@@ -19,9 +19,6 @@ public class PlayerHealthUI : MonoBehaviour {
 
     Animator anim;
 
-    [SerializeField]
-    float initialDelay = 2f;
-
     private void Start()
     {
         anim = GetComponent<Animator>();
