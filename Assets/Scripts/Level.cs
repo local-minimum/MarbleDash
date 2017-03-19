@@ -35,6 +35,9 @@ public class Level : MonoBehaviour {
     RoomMaker roomMaker;
 
     [SerializeField]
+    BumperPlacer bumperPlacer;
+
+    [SerializeField]
     PlayerController ball;
 
     [SerializeField]
@@ -125,6 +128,7 @@ public class Level : MonoBehaviour {
         roomMaker.GenerateRooms();
         ballPath.GeneratePathHoles();
         boxPlacer.Generate();
+        bumperPlacer.AllocateBumpPlacements();
         enemySpawner.AllocatePlaces();
         previousLevel = true;
     }
@@ -136,6 +140,7 @@ public class Level : MonoBehaviour {
         boardGrid.ConstructFloor();
         ballPath.ConstructPath();
         roomMaker.ConstructWalls();
+        bumperPlacer.SpawnBumpers();
         boxPlacer.Place();
         enemySpawner.SpawnEnemies();
         ball.transform.position = ballPath.DropTarget + Vector3.up * dropHeight;

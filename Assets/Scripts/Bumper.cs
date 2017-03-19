@@ -26,6 +26,11 @@ public class Bumper : MonoBehaviour {
         playerLayer = LayerMask.NameToLayer("player");
     }
 
+    public void SetPosition(BoardGrid board, GridPos pos) {
+        transform.localPosition = board.GetLocalPosition(pos);
+        gameObject.SetActive(true);
+    }
+
     Level lvl;
 
     private void OnEnable()

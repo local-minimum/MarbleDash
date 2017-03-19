@@ -396,6 +396,27 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
+    public int[,] GetOccupancyNonFree(GridPos pos)
+    {
+        int mask = 1 <<  (int) Occupancy.Free;    
+        int[,] ret = new int[3, 3];
+        for (int yOff = -1; yOff < 2; yOff++)
+        {
+            for (int xOff = -1; xOff < 2; xOff++)
+            {
+                GridPos cur = pos + new GridPos(xOff, yOff);
+                if (IsValidPosition(cur))
+                {
+                    ret[xOff + 1, yOff + 1] = (gridOccupancy[cur.x, cur.y] & mask) == 0 ? 1 : 0;
+                }
+                else
+                {
+                    ret[xOff + 1, yOff + 1] = -1;
+                }
+            }
+        }
+        return ret;
+    }
 
     public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] filter)
     {
@@ -447,6 +468,27 @@ public class BoardGrid : MonoBehaviour {
             }
         }
         return ret;
+    }
+
+    public static int CountContextOccupied(int[,] context, bool includeCenter, bool countExtierior)
+    {
+        int count = 0;
+        for (int x = 0; x < 3; x++)
+        {
+            for (int y =0; y< 3; y++)
+            {
+                if (x == y && x == 1 && !includeCenter)
+                {
+                    continue;
+                }
+                if (context[x, y] > 0 || countExtierior && context[x, y] == -1)
+                {
+                    count++;
+                } 
+            }
+        }
+
+        return count;
     }
 
     public static List<GridPos> ContextToOffsets(int[,] context)
