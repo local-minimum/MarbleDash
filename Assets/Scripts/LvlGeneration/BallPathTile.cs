@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class BallPathTile : MonoBehaviour {
 
@@ -289,7 +290,7 @@ public class BallPathTile : MonoBehaviour {
                     nextTile.Foreshadow(1, foreshadowDecay);
                 } else
                 {
-                    LevelCompleted();
+                    LevelCompleted(other.transform);
                 }
 
                 playerVisited = true;
@@ -297,7 +298,7 @@ public class BallPathTile : MonoBehaviour {
         }
     }
 
-    void LevelCompleted()
+    void LevelCompleted(Transform playerT)
     {
         if (playerVisited)
         {
@@ -305,20 +306,50 @@ public class BallPathTile : MonoBehaviour {
         }
 
         playerVisited = true;
-        StartCoroutine(NewLevel());
+        StartCoroutine(NewLevel(playerT));
     }
 
-    IEnumerator<WaitForSeconds> NewLevel()
+    IEnumerator<WaitForSeconds> NewLevel(Transform playerT)
     {
-        
+        float progress = 0f;
+        float delta = 0.016f;
+        Vector3 localStart = transform.InverseTransformPoint(playerT.position);
+        Vector3 firstTarget = new Vector3(0, 0, 0.5f);
+        float centerTime = (localStart - firstTarget).magnitude * 0.5f;
+
+        while (progress < centerTime)
+        {
+            progress += delta;
+            playerT.position = transform.TransformPoint(Vector3.Lerp(localStart, firstTarget, progress / centerTime));
+            yield return new WaitForSeconds(delta);
+        }
+
+
+        playerT.position = transform.TransformPoint(firstTarget);
+
         partSys.Play();
         yield return new WaitForSeconds(0.15f);
+
+        progress = 0;
+        float launchTime = 1.5f;
+        Vector3 secondTarget = new Vector3(0, 0, 30);
+        while (progress < launchTime)
+        {
+            progress += delta;
+            playerT.position = transform.TransformPoint(Vector3.Lerp(firstTarget, secondTarget, progress / launchTime));
+            yield return new WaitForSeconds(delta);
+        }
+        MeshRenderer playerRend = playerT.GetComponent<MeshRenderer>();
+        ShadowCastingMode onShadows = playerRend.shadowCastingMode;
+        playerRend.shadowCastingMode = ShadowCastingMode.Off;
+        yield return new WaitForSeconds(delta);
         Level.instance.StopTheMotion();
         Level.instance.Generate();
         StoreSwapper.instance.HideAllStores();
-        yield return new WaitForSeconds(2f);
         Level.instance.Implement();
         yield return new WaitForSeconds(0.5f);
+        playerRend.shadowCastingMode = onShadows;
+        yield return new WaitForSeconds(delta);
         Level.instance.StartTheMotion();
     }
 
