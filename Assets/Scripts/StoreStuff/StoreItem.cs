@@ -24,7 +24,7 @@ public class StoreItem : ScriptableObject {
 [System.Serializable]
 public struct StoreItemEffect
 {
-    string effectTarget;
-    string effectProperty;
-    float effectMagnitude;
+    public string effectTarget;
+    public string effectProperty;
+    public float effectMagnitude;
 }
