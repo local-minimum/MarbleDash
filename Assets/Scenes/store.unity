@@ -2498,6 +2498,7 @@ MonoBehaviour:
   displayDesc: {fileID: 176913459}
   displayPrize: {fileID: 825151073}
   displayIcon: {fileID: 848765436}
+  pathToStoreItems: ShopItems
 --- !u!1 &2028771200
 GameObject:
   m_ObjectHideFlags: 0

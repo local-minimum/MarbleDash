@@ -19,3 +19,8 @@ MonoBehaviour:
   baseCost: 900
   slottable: 0
   availabilityProbability: 0.4
+  effects:
+  - effectName: HealthMajor
+    effectTarget: Player.Destructable
+    effectProperty: Health
+    effectMagnitude: 14

@@ -19,3 +19,8 @@ MonoBehaviour:
   baseCost: 400
   slottable: 0
   availabilityProbability: 0.8
+  effects:
+  - effectName: HealMinor
+    effectTarget: Player.Destructable
+    effectProperty: Health
+    effectMagnitude: 7

@@ -17,13 +17,14 @@ public class StoreItem : ScriptableObject {
     public bool slottable;
     public float availabilityProbability;
 
-    List<StoreItemEffect> effects = new List<StoreItemEffect>();
+    public List<StoreItemEffect> effects = new List<StoreItemEffect>();
 
 }
 
 [System.Serializable]
 public struct StoreItemEffect
 {
+    public string effectName;
     public string effectTarget;
     public string effectProperty;
     public float effectMagnitude;
