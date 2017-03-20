@@ -67,7 +67,7 @@ public class StoreBuilder : MonoBehaviour {
                     trig.transform.localPosition = Vector3.zero;
                     trig.itemIndex = -1;
                     BoxCollider bc = trig.GetComponent<BoxCollider>();
-                    bc.size = new Vector3(bc.size.x * 2.5f, bc.size.y * 2.5f, bc.size.z);
+                    bc.size = new Vector3(bc.size.x * 2.5f, bc.size.y * 4.5f, bc.size.z);
                 }
             }
         }
@@ -93,13 +93,15 @@ public class StoreBuilder : MonoBehaviour {
 
     void MakeStoreSlots()
     {
+        int storeIndex = 0;
         for (int i = 0, last=storeSlots.Length - 1; i<last; i+=2)
         {
-            MakeSlot(storeSlots[i], storeSlots[i + 1]);
+            MakeSlot(storeSlots[i], storeSlots[i + 1], storeIndex);
+            storeIndex++;
         }
     }
 
-    void MakeSlot(GridPos from, GridPos to)
+    void MakeSlot(GridPos from, GridPos to, int storeIndex)
     {
         Debug.Log("Making slot from " + from + " to " + to);
         GridPos cur = from;
@@ -107,6 +109,11 @@ public class StoreBuilder : MonoBehaviour {
         while (cur != to)
         {
             board.Occupy(cur, Occupancy.BallPath);
+
+            StoreItemTrigger trig = Instantiate(sitPrefab, board.GetTile(cur), false);
+            trig.transform.localPosition = Vector3.zero;
+            trig.itemIndex = storeIndex;
+
             cur += (to - cur).NineNormalized;
             if (board.IsValidPosition(cur.West))
             {
@@ -116,6 +123,7 @@ public class StoreBuilder : MonoBehaviour {
             {
                 board.Occupy(cur.East, Occupancy.Wall);
             }
+
             i++;
             if (i > 10)
             {

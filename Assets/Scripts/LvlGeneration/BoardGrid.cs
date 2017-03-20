@@ -572,8 +572,9 @@ public class BoardGrid : MonoBehaviour {
                     t = GetNextSolid();
                     tType = TileType.Solid;
                 }
-
-                t.GetComponent<BoardTile>().SetPosition(this, new GridPos(x, y), heightOffset, tType);
+                GridPos tilePos = new GridPos(x, y);
+                tileLookUp[tilePos] = t;
+                t.GetComponent<BoardTile>().SetPosition(this, tilePos, heightOffset, tType);
                 t.localScale = localScale;
             }
         }
@@ -593,10 +594,16 @@ public class BoardGrid : MonoBehaviour {
         {
             t = GetNextHole();
         }
+        tileLookUp[pos] = t;
         BoardTile tile = t.GetComponent<BoardTile>();
         tile.SetPosition(this, pos, heightOffset, tileType);
         t.localScale = localScale;
         return tile;
+    }
+
+    public Transform GetTile(GridPos pos)
+    {
+        return tileLookUp[pos];
     }
 
     int nextHoleIndex = 0;
@@ -633,8 +640,11 @@ public class BoardGrid : MonoBehaviour {
         return t;
     }
 
+    Dictionary<GridPos, Transform> tileLookUp = new Dictionary<GridPos, Transform>();
+
     public void InactivatePreviousTiles()
     {
+        tileLookUp.Clear();
         nextHoleIndex = 0;
         nextSolidIndex = 0;
         for (int i=0, l=solidTileParent.childCount; i<l; i++)

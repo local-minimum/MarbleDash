@@ -57,6 +57,9 @@ public class Store : MonoBehaviour {
     Image img;
 
     [SerializeField]
+    Sprite itemFront;
+
+    [SerializeField]
     Sprite[] generalSprites;
 
     [SerializeField]
@@ -84,9 +87,18 @@ public class Store : MonoBehaviour {
     {
         if (displayingIndex < 0)
         {
+
             img.sprite = generalSprites[Mathf.Abs(displayingIndex) - 1];
             img.preserveAspect = true;
-        }   SetVisibilities(false);
+            SetVisibilities(false);
+
+        } else
+        {
+            img.sprite = itemFront;
+            Debug.Log(displayingIndex);
+            SetVisibilities(true);
+
+        }
     }
 
     void SetVisibilities(bool isItem)
