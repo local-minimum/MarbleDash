@@ -7,12 +7,12 @@ public static class CollectionsHelper
 {
     public static GridPos[] Shuffle(this GridPos[] data)
     {
-        List<KeyValuePair<float, GridPos>> list = new List<KeyValuePair<float, GridPos>>();
+        List<KeyValuePair<double, GridPos>> list = new List<KeyValuePair<double, GridPos>>();
 
 
         for(int i=0; i<data.Length; i++)
         {
-            list.Add(new KeyValuePair<float, GridPos>(Random.value, data[i]));
+            list.Add(new KeyValuePair<double, GridPos>(PlayerRunData.stats.lvlRnd.NextDouble(), data[i]));
         }
       
         return list.OrderBy(e => e.Key).Select(e => e.Value).ToArray();
@@ -42,7 +42,7 @@ public class BoxPlacer : MonoBehaviour {
     {
         positions.Clear();
         GridPos[] freePositions = board.Find(Occupancy.Free).ToArray().Shuffle();
-        positions.AddRange(freePositions.Take(Random.Range(minBoxes, maxBoxes)));
+        positions.AddRange(freePositions.Take(PlayerRunData.stats.lvlRnd.Range(minBoxes, maxBoxes)));
         for (int i = 0, l = positions.Count; i < l; i++)
         {
             board.Occupy(positions[i], Occupancy.Obstacle);
@@ -51,6 +51,8 @@ public class BoxPlacer : MonoBehaviour {
 
     public void Place()
     {
+        System.Random rnd = PlayerRunData.stats.lvlRnd;
+
         for (int i=0, l=boxPlaceParent.childCount; i<l;  i++)
         {
             Destroy(boxPlaceParent.GetChild(i).gameObject, 0.1f);
@@ -59,7 +61,7 @@ public class BoxPlacer : MonoBehaviour {
 
         for (int i = 0, l = positions.Count; i < l; i++)
         {
-            CoinBox box = Instantiate(prefabs[Random.Range(0, prefabs.Length)], boxPlaceParent, false);
+            CoinBox box = Instantiate(prefabs[rnd.Range(0, prefabs.Length)], boxPlaceParent, false);
             box.SetPosition(positions[i]);
         }
     }

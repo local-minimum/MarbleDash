@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StoreSwapper : MonoBehaviour {
 
@@ -93,6 +94,8 @@ public class StoreSwapper : MonoBehaviour {
         storeSwappingAcitve = false;
         activeStoreIndex = -1;
         Level.instance.StopTheMotion();
+        PlayerRunData.stats.EnterNewStore();
+        SceneManager.LoadScene("store");
         Debug.Log("Enter Store");
     }
 

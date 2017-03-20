@@ -19,17 +19,6 @@ public class PlayerController : MonoBehaviour {
     }
 
     [SerializeField]
-    PlayerStats playerStats = new PlayerStats();
-
-    public PlayerStats Stats
-    {
-        get
-        {
-            return playerStats;
-        }
-    }
-
-    [SerializeField]
     BoardController board;
 
     Rigidbody rb;
@@ -79,7 +68,6 @@ public class PlayerController : MonoBehaviour {
 
     public void KillReset(string message)
     {
-        playerStats.Reset();
          
     }
 

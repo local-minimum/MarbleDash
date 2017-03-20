@@ -54,6 +54,8 @@ public class Store : MonoBehaviour {
         }
     }
 
+    [SerializeField]
+    Text coins;
     
     [SerializeField]
     Image img;
@@ -92,6 +94,7 @@ public class Store : MonoBehaviour {
 
     private void Start()
     {
+        coins.text = PlayerRunData.stats.Coin.ToString();
         displayingIndex = -2;
         ShowMessage();
     }
@@ -131,7 +134,7 @@ public class Store : MonoBehaviour {
                 break;
             }
 
-            float p = Random.Range(0, remainingAccProb);
+            float p = PlayerRunData.stats.storeRnd.Range(0, remainingAccProb);
 
             for (int storeItemIndex = 0; storeItemIndex < items.Length; storeItemIndex++)
             {

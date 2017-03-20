@@ -89,7 +89,7 @@ public class EnemySpawner : MonoBehaviour {
 
     Enemy GetEnemy()
     {
-        return Instantiate(enemyPrefabs[Random.Range(0, enemyPrefabs.Length)], enemyParent, false);
+        return Instantiate(enemyPrefabs[PlayerRunData.stats.lvlRnd.Range(0, enemyPrefabs.Length)], enemyParent, false);
     }
 
     public void iDied(Enemy deader)

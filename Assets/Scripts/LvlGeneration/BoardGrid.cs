@@ -256,7 +256,8 @@ public class BoardGrid : MonoBehaviour {
     {
         get
         {
-            return new GridPos(Random.Range(0, size), Random.Range(0, size));
+            return new GridPos(PlayerRunData.stats.lvlRnd.Range(0, size),
+                PlayerRunData.stats.lvlRnd.Range(0, size));
         }
     }
 

@@ -48,16 +48,18 @@ public class RoomMaker : MonoBehaviour {
 
     void SeedRooms()
     {
+        System.Random rnd = PlayerRunData.stats.lvlRnd;
+
         for (int i=0; i<primaryRooms;i++)
         {
 
             int mask = 1 << i;
 
             GridPos pos = boardGrid.RandomPosition;
-            int w = seedShapes[Random.Range(0, seedShapes.Length)];
-            int h = seedShapes[Random.Range(0, seedShapes.Length)];
+            int w = seedShapes[rnd.Range(0, seedShapes.Length)];
+            int h = seedShapes[rnd.Range(0, seedShapes.Length)];
 
-            GridPos low = boardGrid.Clamp(pos - new GridPos(Random.Range(0, w), Random.Range(0, h)));
+            GridPos low = boardGrid.Clamp(pos - new GridPos(rnd.Range(0, w), rnd.Range(0, h)));
             GridPos high = boardGrid.Clamp(low + new GridPos(w, h));
 
             if (GridPos.ShortestDimension(low, high) < seedShapes[0])
@@ -189,6 +191,7 @@ public class RoomMaker : MonoBehaviour {
 
     void SnakeWalls()
     {
+        System.Random rnd = PlayerRunData.stats.lvlRnd;
         bool[,] walls = new bool[size, size];
 
         for (int y = 0; y < size; y++)
@@ -205,7 +208,7 @@ public class RoomMaker : MonoBehaviour {
                         boardGrid.Occupy(x, y, Occupancy.Wall);
                         walls[x, y] = true;
                     }
-                    else if (boardGrid.IsFree(x - 1, y) && (prevX == 0 || x > 0 && Random.value < 0.5f))
+                    else if (boardGrid.IsFree(x - 1, y) && (prevX == 0 || x > 0 && rnd.NextDouble() < 0.5f))
                     {
                         boardGrid.Occupy(x - 1, y, Occupancy.Wall);
                         walls[x - 1, y] = true;
@@ -233,7 +236,7 @@ public class RoomMaker : MonoBehaviour {
                         boardGrid.Occupy(x, y, Occupancy.Wall);
                         walls[x, y] = true;
                     }
-                    else if ((prevY == 0 || Random.value < 0.5f) && boardGrid.IsFree(x, y - 1))
+                    else if ((prevY == 0 || rnd.NextDouble() < 0.5f) && boardGrid.IsFree(x, y - 1))
                     {
                         boardGrid.Occupy(x, y - 1, Occupancy.Wall);
                         walls[x, y - 1] = true;

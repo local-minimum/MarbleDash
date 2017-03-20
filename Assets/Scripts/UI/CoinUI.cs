@@ -7,17 +7,21 @@ public class CoinUI : MonoBehaviour {
 
     [SerializeField]
     Text coinField;
-
-    PlayerController player;
+    
     private void OnEnable()
     {
-        player = PlayerController.instance;
-        player.Stats.OnCoinChange += Stats_OnCoinChange;
+
+        PlayerRunData.stats.OnCoinChange += Stats_OnCoinChange;
     }
 
     private void OnDisable()
     {
-        player.Stats.OnCoinChange -= Stats_OnCoinChange;
+        PlayerRunData.stats.OnCoinChange -= Stats_OnCoinChange;
+    }
+
+    private void OnDestroy()
+    {
+        PlayerRunData.stats.OnCoinChange -= Stats_OnCoinChange;
     }
 
     private void Stats_OnCoinChange(int from, int to)

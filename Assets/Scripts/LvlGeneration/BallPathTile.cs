@@ -283,7 +283,7 @@ public class BallPathTile : MonoBehaviour {
             {
                 foreshadowed = true;
                 activeMat.color = refColor;
-                pCtrl.Stats.Coin += 1;
+                PlayerRunData.stats.Coin += 1;
 
                 if (nextTile)
                 {
@@ -350,6 +350,7 @@ public class BallPathTile : MonoBehaviour {
         yield return new WaitForSeconds(0.5f);
         playerRend.shadowCastingMode = onShadows;
         yield return new WaitForSeconds(delta);
+        PlayerRunData.stats.NextLevel();
         Level.instance.StartTheMotion();
     }
 

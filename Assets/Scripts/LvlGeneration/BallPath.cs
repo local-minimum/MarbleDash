@@ -32,7 +32,7 @@ public class BallPath : MonoBehaviour {
         while (true)
         {
             SetPathSource(connectPrevious);
-            SetPath(Random.Range(minPath, maxPath));
+            SetPath(PlayerRunData.stats.lvlRnd.Range(minPath, maxPath));
             if (path.Count < Mathf.FloorToInt(minPath * minPathTolerance))
             {
                 for (int i = 0, n = path.Count; i < n; i++)
@@ -56,22 +56,24 @@ public class BallPath : MonoBehaviour {
     float holeProbability = 0.5f;
     public void GeneratePathHoles()
     {
+        System.Random rnd = PlayerRunData.stats.lvlRnd;
+
         for (int i = 0, l = path.Count; i < l; i++)
         {
-
+           
             GridPos pos = path[i];
             int[,] context = boardGrid.GetOccupancyContext(pos, Occupancy.BallPath, Occupancy.BallPathSource, Occupancy.BallPathTarget);
-            if (context[2, 1] == 1 && context[1, 0] == 1 && boardGrid.IsFree(pos.x + 1, pos.y - 1) && holeProbability < Random.value)
+            if (context[2, 1] == 1 && context[1, 0] == 1 && boardGrid.IsFree(pos.x + 1, pos.y - 1) && holeProbability < rnd.NextDouble())
             {                
                 boardGrid.Occupy(pos.x + 1, pos.y - 1, Occupancy.Hole);
-            } else if (context[2, 1] == 1 && context[1, 0] == 1 && context[1, 2] == 0 && boardGrid.IsFree(pos.x, pos.y + 1) && holeProbability < Random.value)
+            } else if (context[2, 1] == 1 && context[1, 0] == 1 && context[1, 2] == 0 && boardGrid.IsFree(pos.x, pos.y + 1) && holeProbability < rnd.NextDouble())
             {
                 boardGrid.Occupy(pos.x, pos.y + 1, Occupancy.Hole);
-            }else if (context[0, 1] == 1 && context[1, 0] == 1 && boardGrid.IsFree(pos.x - 1, pos.y - 1) && holeProbability < Random.value)
+            }else if (context[0, 1] == 1 && context[1, 0] == 1 && boardGrid.IsFree(pos.x - 1, pos.y - 1) && holeProbability < rnd.NextDouble())
             {
                 boardGrid.Occupy(pos.x - 1, pos.y - 1, Occupancy.Hole);
             }
-            else if (context[0, 1] == 1 && context[1, 0] == 1 && context[2, 1] == 0 && boardGrid.IsFree(pos.x + 1, pos.y) && holeProbability < Random.value)
+            else if (context[0, 1] == 1 && context[1, 0] == 1 && context[2, 1] == 0 && boardGrid.IsFree(pos.x + 1, pos.y) && holeProbability < rnd.NextDouble())
             {
                 boardGrid.Occupy(pos.x + 1, pos.y, Occupancy.Hole);
             }
@@ -183,11 +185,12 @@ public class BallPath : MonoBehaviour {
     public void SetPath(int length)
     {
         List<GridPos> crossNeighbours = boardGrid.Neighbours(startPos, BoardGrid.Neighbourhood.Cross).ToList();
-        GridPos direction = crossNeighbours[Random.Range(0, crossNeighbours.Count)] - startPos;
+        GridPos direction = crossNeighbours[PlayerRunData.stats.lvlRnd.Range(0, crossNeighbours.Count)] - startPos;
         GridPos pos = startPos + direction;
-
+        System.Random rnd = PlayerRunData.stats.lvlRnd;
         int i = 0;
         path.Clear();
+
         while (length > path.Count)
         {
             path.Add(pos);
@@ -201,7 +204,7 @@ public class BallPath : MonoBehaviour {
 
             GridPos next = pos + direction;
 
-            if (Random.value > turnProb && crossNeighbours.Contains(pos))
+            if (rnd.NextDouble() > turnProb && crossNeighbours.Contains(pos))
             {
                 pos = next;
             }
@@ -213,7 +216,7 @@ public class BallPath : MonoBehaviour {
 
                 while (crossNeighbours.Count > 0)
                 {
-                    next = crossNeighbours[Random.Range(0, crossNeighbours.Count)];                    
+                    next = crossNeighbours[rnd.Range(0, crossNeighbours.Count)];                    
 
                     nextNeighbours = boardGrid
                         .Neighbours(next, BoardGrid.Neighbourhood.Eight)
@@ -263,7 +266,7 @@ public class BallPath : MonoBehaviour {
                         }
                         path.Clear();
                         crossNeighbours = boardGrid.Neighbours(startPos, BoardGrid.Neighbourhood.Cross).ToList();
-                        next = crossNeighbours[Random.Range(0, crossNeighbours.Count)];
+                        next = crossNeighbours[rnd.Range(0, crossNeighbours.Count)];
                         pos = startPos;
                         //Debug.Log("Clearing path");
                     }

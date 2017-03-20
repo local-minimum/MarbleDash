@@ -3833,8 +3833,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cf1f1ce1293daa4c9c331ab262e85ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStats:
-    coin: 0
   board: {fileID: 2025833196}
   forceMultiplier: 1
 --- !u!114 &1113420216
@@ -3957,7 +3955,6 @@ MonoBehaviour:
   showTrigger: Show
   adjustHealthTime: 0.5
   barImage: {fileID: 1180774548}
-  initialDelay: 2
 --- !u!1 &1236780578
 GameObject:
   m_ObjectHideFlags: 0

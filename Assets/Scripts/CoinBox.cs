@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CoinBox : MonoBehaviour {
 
-    PlayerController player;
     Destructable destructable;
 
     [SerializeField, Range(0, 1)]
@@ -29,7 +28,7 @@ public class CoinBox : MonoBehaviour {
     private void Awake()
     {
         destructable = GetComponent<Destructable>();
-        player = PlayerController.instance;
+        
         mr = GetComponent<MeshRenderer>();
         for (int i = 0; i < MaterialSequencePrefabs.Length; i++)
         {
@@ -82,7 +81,7 @@ public class CoinBox : MonoBehaviour {
             int coin = Random.Range(minCoin, maxCoin);
             if (coin > 0)
             {
-                player.Stats.Coin += coin;
+                PlayerRunData.stats.Coin += coin;
             }
         } else
         {

@@ -25,7 +25,7 @@ public class BumperPlacer : MonoBehaviour {
     public void AllocateBumpPlacements()
     {
         nextPositions.Clear();
-        int bumperTargetCount = Random.Range(minBumpers, maxBumpers);
+        int bumperTargetCount = PlayerRunData.stats.lvlRnd.Range(minBumpers, maxBumpers);
         if (bumperTargetCount > 0)
         {
             GridPos[] positions = board.Find(Occupancy.Free)
