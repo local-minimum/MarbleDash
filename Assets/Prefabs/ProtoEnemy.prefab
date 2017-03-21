@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 33106190889904072}
   - component: {fileID: 23960295194921228}
   - component: {fileID: 64644190440413334}
+  - component: {fileID: 114761515697560430}
   m_Layer: 13
   m_Name: hand
   m_TagString: Untagged
@@ -290,6 +291,19 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 0
   jumpHeightAxis: {x: 0, y: 0, z: 1}
+--- !u!114 &114761515697560430
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1415282338638366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98d01a16414094d469cba8c5d1a2598f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minDmg: 1
+  maxDmg: 3
 --- !u!135 &135555780109466264
 SphereCollider:
   m_ObjectHideFlags: 1

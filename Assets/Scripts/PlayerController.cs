@@ -129,7 +129,22 @@ public class PlayerController : MonoBehaviour {
             {
                 
                 int deflectedHurt = 0;
-                if (otherDest.GetVelocityForce() < destructable.GetVelocityForce() && enemy.AllowsAttack(collision.contacts, out deflectedHurt)) {
+                if (!enemy.AllowsAttack(collision.contacts, out deflectedHurt))
+                {
+                    AttackingMesh am = collision.gameObject.GetComponentInChildren<AttackingMesh>();
+                    if (am)
+                    {
+                        int dmg = am.RollDamage;
+                        destructable.Hurt(dmg + deflectedHurt);
+                    } else
+                    {
+                        if (deflectedHurt > 0)
+                        {
+                            destructable.Hurt(deflectedHurt);
+                        }
+                    }
+
+                } else if (otherDest.GetVelocityForce() < destructable.GetVelocityForce()) {
                     otherDest.Hurt(destructable.GetVelocityForce() - deflectedHurt);
                 } else
                 {

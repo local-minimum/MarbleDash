@@ -18,6 +18,15 @@ public class Enemy : MonoBehaviour {
     bool attackedThisTurn;
 
     EnemyMode behaviour = EnemyMode.Patroling;
+
+    public EnemyMode Behaviour
+    {
+        get
+        {
+            return behaviour;
+        }
+    }
+
     bool isAlive = true;
 
     GridPos pos = new GridPos(-1, -1);
