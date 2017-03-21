@@ -6,19 +6,24 @@ public class Destructable : MonoBehaviour {
 
     public event HealthChange OnHealthChange;
 
-    [SerializeField]
+    [SerializeField, HideInInspector]
     int maxHealth;
 
     int health;
 
-    public int Health {
+    virtual public int Health {
         get
         {
             return health;
         }
+
+        protected set
+        {
+            health = value;
+        }
     }
 
-    public float PartialHealth
+    virtual public float PartialHealth
     {
         get
         {
@@ -77,20 +82,26 @@ public class Destructable : MonoBehaviour {
     {
         rb = GetComponent<Rigidbody>();
         speedRecord = new float[20];
+        SetInitialHealthOnStart();
+    }
+
+    protected virtual void SetInitialHealthOnStart()
+    {
         health = maxHealth;
         if (OnHealthChange != null)
         {
             OnHealthChange();
         }
+
     }
 
     public void Hurt(int points)
     {
-        points = Mathf.Min(points, health);
-        health -= points;
-        if (health <= 0)
+        points = Mathf.Min(points, Health);
+        Health -= points;
+        if (Health <= 0)
         {
-            health = 0;
+            Health = 0;
             controller.SendMessage(destroyMessage, points);
         } else
         {

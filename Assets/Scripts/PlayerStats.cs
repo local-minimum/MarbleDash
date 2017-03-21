@@ -140,6 +140,35 @@ public class PlayerStats : ScriptableObject {
 
     #endregion
 
+    #region Health
+    [SerializeField]
+    int currentHealth;
+
+    [SerializeField]
+    int maxHealth = 20;
+
+    public int Health
+    {
+        get
+        {
+            return currentHealth;
+        }
+
+        set
+        {
+            currentHealth = Mathf.Clamp(value, 0, maxHealth);
+        }
+    }
+
+    public float PartialHealth
+    {
+        get
+        {
+            return currentHealth / (float) maxHealth;
+        }
+    }
+
+    #endregion
     public void Reset()
     {
         _gameRandomSouce = null;
@@ -153,6 +182,10 @@ public class PlayerStats : ScriptableObject {
         inStore = false;
 
         damageTaken = 0;
+
+        maxHealth = 20;
+        currentHealth = maxHealth;
+
 
         _currentLevel = 0;
         NextLevel();
