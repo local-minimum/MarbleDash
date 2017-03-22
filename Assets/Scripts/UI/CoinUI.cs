@@ -38,6 +38,11 @@ public class CoinUI : MonoBehaviour {
         }
     }
 
+    private void Start()
+    {
+        Stats_OnCoinChange(PlayerRunData.stats.Coin, PlayerRunData.stats.Coin);
+    }
+
     int toValue;
     bool counting = false;
 
