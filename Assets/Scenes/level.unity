@@ -592,62 +592,11 @@ Transform:
   m_Father: {fileID: 441174230}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &647804088
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 647804089}
-  - component: {fileID: 647804090}
-  - component: {fileID: 647804091}
-  m_Layer: 0
-  m_Name: DeathTrigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &647804089
+--- !u!4 &647804089 stripped
 Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 647804088}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -9.9}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 2025833197}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &647804090
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 647804088}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 100, y: 100, z: 5}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &647804091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 647804088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e8b886877334ee4aaaac89e753cf42e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  level: {fileID: 2025833201}
-  deathMessages:
-  - fell trough a hole to a crushing death
+  m_PrefabParentObject: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3,
+    type: 2}
+  m_PrefabInternal: {fileID: 1565645886}
 --- !u!1 &689219672
 GameObject:
   m_ObjectHideFlags: 0
@@ -12613,6 +12562,53 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 57878ad1fccad9a4d8882f015a7b2561, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1565645886
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 2025833197}
+    m_Modifications:
+    - target: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -9.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368193425523612, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114775243506243728, guid: aa74a90043424104c9f4f036df4b1ad3,
+        type: 2}
+      propertyPath: level
+      value: 
+      objectReference: {fileID: 2025833201}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: aa74a90043424104c9f4f036df4b1ad3, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1650671921
 GameObject:
