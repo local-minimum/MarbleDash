@@ -117,7 +117,26 @@ public class PlayerStats : ScriptableObject {
 
     public void Bought(StoreItem item)
     {
-        //TODO: More here        
+        Coin -= item.baseCost;
+        Debug.Log(string.Format("Bought {0} for {1}", item.name, item.baseCost));
+        if (item.slottable)
+        {
+            SetSlot(item);
+        } else
+        {
+            foreach (var effect in item.effects)
+            {
+                switch (effect.effectProperty)
+                {
+                    case "Health":
+                        Health += Mathf.FloorToInt(effect.effectMagnitude);
+                        break;
+                    default:
+                        Debug.Log("unkown effect '" + effect.effectProperty + "' from " + item.name);
+                        break;
+                }
+            }
+        }
     }
 
     public void ExitStore()
@@ -189,6 +208,18 @@ public class PlayerStats : ScriptableObject {
     }
 
     #endregion
+
+    #region ItemSlot
+    [SerializeField, HideInInspector]
+    StoreItem _slot;
+
+
+    void SetSlot(StoreItem item)
+    {
+        _slot = item;
+    } 
+    #endregion
+
     public void Reset()
     {
         _gameRandomSouce = null;

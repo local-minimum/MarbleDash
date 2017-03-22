@@ -112,11 +112,13 @@ public class StoreBuilder : MonoBehaviour {
         Debug.Log("Making slot from " + from + " to " + to);
         GridPos cur = from;
         int i = 0;
+        StoreItemTrigger trig;
+
         while (cur != to)
         {
             board.Occupy(cur, Occupancy.BallPath);
 
-            StoreItemTrigger trig = Instantiate(sitPrefab, board.GetTile(cur), false);
+            trig = Instantiate(sitPrefab, board.GetTile(cur), false);
             trig.transform.localPosition = Vector3.zero;
             trig.itemIndex = storeIndex;
 
@@ -136,7 +138,11 @@ public class StoreBuilder : MonoBehaviour {
                 break;
             }
         }
-        
+
+        trig = Instantiate(sitPrefab, board.GetTile(to), false);
+        trig.transform.localPosition = Vector3.zero;
+        trig.itemIndex = storeIndex;
+
         GridPos south = to.South;
         board.Occupy(to, Occupancy.BallPath);
         if (board.IsValidPosition(south)) {

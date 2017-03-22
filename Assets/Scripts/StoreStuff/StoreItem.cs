@@ -25,7 +25,6 @@ public class StoreItem : ScriptableObject {
 public struct StoreItemEffect
 {
     public string effectName;
-    public string effectTarget;
     public string effectProperty;
     public float effectMagnitude;
 }

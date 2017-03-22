@@ -36,6 +36,7 @@ public class FloatTextManager : MonoBehaviour {
         if (_instance == this)
         {
             _instance = null;
+            pool.Clear();
         }
     }
 
