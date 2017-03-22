@@ -21,6 +21,22 @@ less likely if it was a collab. But now you know.
 
 It should be quite obvious, if things on this help-side haven't changed, that pretty is a serious shortcoming.
 
+**But I rather steal your code and assets. Can I steal them?**
+
+They are here, so of course you can.
+
+**Sure but will you come hunt me with some nasty law firm?**
+
+No I won't but wouldn't it be nicer and more fun if we collaborated?
+
+**No, I don't like collaboration**
+
+Fine, but please attribute me in some relevant manner.
+
+**NO!**
+
+*Sigh*, sure go ahead. But can you maybe at least let me know so I can see the potential success of your clone?
+
 ## Envisioned features
 
 *Most features are described as issues on github*
