@@ -68,7 +68,10 @@ public class PlayerController : MonoBehaviour {
 
     public void KillReset(string message)
     {
-         
+        StoreSwapper.instance.HideAllStores();
+        PlayerRunData.stats.Reset();
+        Level.instance.Generate();
+        Level.instance.Implement();
     }
 
 	void Update () {
@@ -233,5 +236,6 @@ public class PlayerController : MonoBehaviour {
     public void KillMe(int amount)
     {
         Debug.Log("Player should be dead");
+        KillReset("");
     }
 }
