@@ -21,7 +21,32 @@ public class DeathFall : MonoBehaviour {
     {
         if (other.gameObject.layer == playerLayer)
         {
-            other.GetComponent<PlayerController>().KillReset(deathMessages[Random.Range(0, deathMessages.Length)]);
+            if (PlayerRunData.stats.InStore)
+            {
+                Store.instance.RespawnPlayer();
+            }
+            else
+            {
+                if (PlayerRunData.stats.holeMode == PlayModeHoles.InstaKill)
+                {
+                    KillPlayer(other);
+                } else
+                {
+                    PlayerRunData.stats.Health -= PlayerRunData.stats.holeDamage;
+                    if (PlayerRunData.stats.Health <= 0)
+                    {
+                        KillPlayer(other);
+                    } else
+                    {
+                        Level.instance.DropBall();
+                    }
+                }
+            }
         }
+    }
+
+    void KillPlayer(Collider other)
+    {
+        other.GetComponent<PlayerController>().KillReset(deathMessages[Random.Range(0, deathMessages.Length)]);
     }
 }

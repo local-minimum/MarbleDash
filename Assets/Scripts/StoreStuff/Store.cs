@@ -245,7 +245,7 @@ public class Store : MonoBehaviour {
         SceneManager.LoadScene("level");
     }
 
-    void RespawnPlayer()
+    public void RespawnPlayer()
     {
         player.localPosition = ballDrop;
         player.GetComponent<Rigidbody>().velocity = Vector3.zero;

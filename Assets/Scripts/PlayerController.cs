@@ -75,6 +75,19 @@ public class PlayerController : MonoBehaviour {
     }
 
 	void Update () {
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            switch (PlayerRunData.stats.holeMode)
+            {
+                case PlayModeHoles.Damage:
+                    PlayerRunData.stats.holeMode = PlayModeHoles.InstaKill;
+                    break;
+                case PlayModeHoles.InstaKill:
+                    PlayerRunData.stats.holeMode = PlayModeHoles.Damage;
+                    break;
+            }
+        }
+
         if (grounded)
         {
             if (!rb.isKinematic)

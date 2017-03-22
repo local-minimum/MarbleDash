@@ -153,9 +153,7 @@ public class Level : MonoBehaviour {
         bumperPlacer.SpawnBumpers();
         boxPlacer.Place();
         enemySpawner.SpawnEnemies();
-        ball.transform.position = ballPath.DropTarget + Vector3.up * dropHeight;
-        ball.Inert();
-        ball.EmoteStatus();
+        DropBall();
         boardController.Balance();
 
         if (OnNewLevel != null)
@@ -165,5 +163,12 @@ public class Level : MonoBehaviour {
 
         
         makeTurns = true;
+    }
+
+    public void DropBall()
+    {
+        ball.transform.position = ballPath.DropTarget + Vector3.up * dropHeight;
+        ball.Inert();
+        ball.EmoteStatus();
     }
 }

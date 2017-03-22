@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayModeHoles { InstaKill, Damage};
+
 public static class RndHelper
 {
     public static float Range(this System.Random rnd, float low, float high)
@@ -19,11 +21,14 @@ public delegate void CoinChange(int from, int to);
 
 [CreateAssetMenu(fileName = "PlayerStats", menuName = "PlayerRunStats", order = 0)]
 public class PlayerStats : ScriptableObject {
-
     
     public bool validSave = false;
 
-    #region GameSeed
+    #region Game
+
+    public PlayModeHoles holeMode = PlayModeHoles.Damage;
+
+    public int holeDamage = 10;
 
     [SerializeField]
     int gameRandomSeed;
@@ -223,6 +228,8 @@ public class PlayerStats : ScriptableObject {
     public void Reset()
     {
         _gameRandomSouce = null;
+        holeDamage = 10;
+
         coin = 0;
         if (OnCoinChange != null)
         {
