@@ -74,7 +74,7 @@ public class Destructable : MonoBehaviour {
 
     public int MaxVelocityForce = 10;
 
-    int recordDepth = 20;
+    int recordDepth = 10;
     float[] speedRecord;
     int recordIndex = -1;
 

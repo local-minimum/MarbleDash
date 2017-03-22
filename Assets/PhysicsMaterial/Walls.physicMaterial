@@ -5,9 +5,9 @@ PhysicMaterial:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: PlayerBall
+  m_Name: Walls
   dynamicFriction: 0.1
   staticFriction: 0.05
-  bounciness: 0.3
+  bounciness: 0.8
   frictionCombine: 0
   bounceCombine: 3
