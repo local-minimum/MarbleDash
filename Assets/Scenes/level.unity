@@ -13023,7 +13023,7 @@ MonoBehaviour:
   enemySpawner: {fileID: 2025833203}
   dropHeight: 7
   turnTime: 1.4
-  firstTickDelay: 1.36
+  firstTickDelay: 2
 --- !u!114 &2025833202
 MonoBehaviour:
   m_ObjectHideFlags: 0

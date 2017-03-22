@@ -163,6 +163,7 @@ public class Level : MonoBehaviour {
             OnNewLevel();
         }
 
+        
         makeTurns = true;
     }
 }
