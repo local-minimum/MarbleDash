@@ -21,6 +21,5 @@ MonoBehaviour:
   availabilityProbability: 0.4
   effects:
   - effectName: HealthMajor
-    effectTarget: Player.Destructable
     effectProperty: Health
     effectMagnitude: 14
