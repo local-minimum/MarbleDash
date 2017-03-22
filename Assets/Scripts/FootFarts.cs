@@ -116,8 +116,8 @@ public class FootFarts : MonoBehaviour {
         Vector3 CA = C - A;
         Vector3 ptA = pt - A;
 
-        float dBA = Mathf.Clamp01(Vector3.Dot(ptA, BA));
-        float dCA = Mathf.Clamp01(Vector3.Dot(ptA, CA));
+        float dBA = Vector3.Dot(ptA, BA);
+        float dCA = Vector3.Dot(ptA, CA);
 
         return a + (ba * dBA + ca * dCA) / 2f; //TODO: is it reall div 2 here?
     }
