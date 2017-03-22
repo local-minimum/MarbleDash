@@ -186,8 +186,15 @@ public class Enemy : MonoBehaviour {
     {
         board.Free(pos, Occupancy.Enemy);
         pos += offset;
-        board.Occupy(pos, Occupancy.Enemy);
-        StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos) + localPlacementOffset));
+        if (!board.HasOccupancy(pos, Occupancy.Enemy))
+        {
+            board.Occupy(pos, Occupancy.Enemy);
+            StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos) + localPlacementOffset));
+        } else
+        {
+            pos -= offset;
+            board.Occupy(pos, Occupancy.Enemy);
+        }
     }
 
     private void OnTriggerEnter(Collider other)

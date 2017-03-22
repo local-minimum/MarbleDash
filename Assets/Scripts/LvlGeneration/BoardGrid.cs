@@ -455,7 +455,7 @@ public class BoardGrid : MonoBehaviour {
     public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] filter)
     {
         int mask = 1 << (int)filter[0];
-        for (int i = 0; i < filter.Length; i++)
+        for (int i = 1; i < filter.Length; i++)
         {
             mask |= 1 << (int)filter[i];
         }
@@ -481,7 +481,7 @@ public class BoardGrid : MonoBehaviour {
     public int[,] GetNotOccupancyContext(GridPos pos, params Occupancy[] filter)
     {
         int mask = 1 << (int)filter[0];
-        for (int i = 0; i < filter.Length; i++)
+        for (int i = 1; i < filter.Length; i++)
         {
             mask |= 1 << (int)filter[i];
         }
@@ -532,7 +532,7 @@ public class BoardGrid : MonoBehaviour {
         {
             for (int xOff = -1; xOff < 2; xOff++)
             {
-                if (xOff == 0 & yOff == 0)
+                if (xOff == 0 && yOff == 0)
                 {
                     continue;
                 }
