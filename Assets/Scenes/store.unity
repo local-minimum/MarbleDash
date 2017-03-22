@@ -219,7 +219,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &169624935
 GameObject:
@@ -683,6 +683,7 @@ Transform:
   - {fileID: 1053166056}
   - {fileID: 592690925}
   - {fileID: 795625255}
+  - {fileID: 1113420214}
   m_Father: {fileID: 709332483}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -716,12 +717,6 @@ Transform:
   m_Father: {fileID: 441174230}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &601046805 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114683453807335146, guid: 57878ad1fccad9a4d8882f015a7b2561,
-    type: 2}
-  m_PrefabInternal: {fileID: 767185699}
-  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
 --- !u!1 &647804088
 GameObject:
   m_ObjectHideFlags: 0
@@ -1562,12 +1557,12 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1113420209}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.52, z: -1.73}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 1.7299998, z: 3.520001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 441174230}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1113420215
 MonoBehaviour:
@@ -1878,7 +1873,7 @@ RectTransform:
   m_Children:
   - {fileID: 1180774547}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2039,7 +2034,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2174,7 +2169,7 @@ RectTransform:
   m_Children:
   - {fileID: 1473269906}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2356,7 +2351,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15adb1245142e5e49ba60c2d4bbd04df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coins: {fileID: 601046805}
+  ballDrop: {x: 0, y: 1.73, z: 3.520001}
+  player: {fileID: 1113420214}
   img: {fileID: 2028771202}
   itemFront: {fileID: 21300000, guid: 251e1c091718eb44fb06a497d701b41b, type: 3}
   emptySlot: {fileID: 0}

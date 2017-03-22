@@ -27,6 +27,10 @@ public class StoreBuilder : MonoBehaviour {
 
     private void Start()
     {
+        if (!PlayerRunData.stats.InStore)
+        {
+            PlayerRunData.stats.EnterNewStore();
+        }
         board.FreeAll();
         TilesHoleAndHoles();
         MakeStoreSlots();
@@ -60,6 +64,8 @@ public class StoreBuilder : MonoBehaviour {
             BoardTile tile = board.ConstructFloorAt(pos, IsHole(pos) ? TileType.Hole : TileType.Solid);
             if (tile.tileType == TileType.Hole)
             {
+                StoreTrigger st = tile.GetComponentInChildren<StoreTrigger>();
+                st.gameObject.SetActive(true);
 
                 if (exits.Contains(pos))
                 {

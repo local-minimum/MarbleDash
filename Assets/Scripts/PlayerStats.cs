@@ -117,7 +117,11 @@ public class PlayerStats : ScriptableObject {
 
     public void Bought(StoreItem item)
     {
-        //TODO: More here
+        //TODO: More here        
+    }
+
+    public void ExitStore()
+    {
         inStore = false;
     }
 

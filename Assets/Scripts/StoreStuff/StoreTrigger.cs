@@ -8,17 +8,31 @@ public class StoreTrigger : MonoBehaviour {
     {
         if (other.gameObject.layer == playerLayer && gameObject.activeSelf)
         {
-            StoreSwapper.instance.EnterStore();
+            if (PlayerRunData.stats.InStore)
+            {
+                Store.instance.BuyOrExit();
+            }
+            else
+            {
+                StoreSwapper.instance.EnterStore();
+            }
         }
     }
 
     int playerLayer;
     ParticleSystem ps;
 
-    void Start () {
+    void Start()
+    {
         playerLayer = LayerMask.NameToLayer("player");
         ps = GetComponent<ParticleSystem>();
-        StopStoreTrigger();
+        if (PlayerRunData.stats.InStore)
+        {
+            StartStoreTrigger();
+        }
+        else { 
+            StopStoreTrigger();
+        }
 	}
 
     private void OnDisable()

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Store : MonoBehaviour {
 
     static Store _instance;
 
-    static Store instance
+    public static Store instance
     {
         get
         {
@@ -55,7 +56,10 @@ public class Store : MonoBehaviour {
     }
 
     [SerializeField]
-    Text coins;
+    Vector3 ballDrop;
+
+    [SerializeField]
+    Transform player;    
     
     [SerializeField]
     Image img;
@@ -94,7 +98,6 @@ public class Store : MonoBehaviour {
 
     private void Start()
     {
-        coins.text = PlayerRunData.stats.Coin.ToString();
         displayingIndex = -2;
         ShowMessage();
     }
@@ -201,5 +204,50 @@ public class Store : MonoBehaviour {
             displayingIndex = -2;
             ShowMessage();
         }
+    }
+
+    bool SelectedEmptyExists
+    {
+        get
+        {
+            return displayingIndex >= 0 && storeItemSlots.ContainsKey(displayingIndex);
+        }
+    }
+
+    public void BuyOrExit()
+    {
+        if (displayingIndex < 0)
+        {
+            LoadNextLevel();
+        } else if (!SelectedEmptyExists)
+        {
+            RespawnPlayer();
+        } else
+        {
+            StoreItem item = storeItemSlots[displayingIndex];
+            if (item.baseCost > PlayerRunData.stats.Coin)
+            {
+                //This would add loan shark in future
+                RespawnPlayer();
+            } else
+            {                
+                PlayerRunData.stats.Bought(item);
+                LoadNextLevel();
+            }
+        }
+    }
+
+    void LoadNextLevel()
+    {
+        PlayerRunData.stats.ExitStore();
+        PlayerRunData.stats.NextLevel();
+
+        SceneManager.LoadScene("level");
+    }
+
+    void RespawnPlayer()
+    {
+        player.localPosition = ballDrop;
+        player.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 }
