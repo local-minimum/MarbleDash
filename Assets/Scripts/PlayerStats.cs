@@ -59,6 +59,14 @@ public class PlayerStats : ScriptableObject {
     [SerializeField]
     int _currentLevel;
 
+    public int currentLevel
+    {
+        get
+        {
+            return _currentLevel;
+        }
+    }
+
     [SerializeField]
     int _lvlRndSeed;
 
@@ -92,6 +100,14 @@ public class PlayerStats : ScriptableObject {
 
     [SerializeField]
     bool inStore;
+
+    public bool InStore
+    {
+        get
+        {
+            return inStore;
+        }
+    }
 
     public void EnterNewStore()
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public delegate void TurnTick(PlayerController player, float tickTime);
+public delegate void NewLevel();
 
 public class Level : MonoBehaviour {
 
@@ -21,6 +22,7 @@ public class Level : MonoBehaviour {
     }
 
     public event TurnTick OnTurnTick;
+    public event NewLevel OnNewLevel;
 
     [SerializeField]
     BoardGrid boardGrid;
@@ -155,6 +157,12 @@ public class Level : MonoBehaviour {
         ball.Inert();
         ball.EmoteStatus();
         boardController.Balance();
+
+        if (OnNewLevel != null)
+        {
+            OnNewLevel();
+        }
+
         makeTurns = true;
     }
 }
