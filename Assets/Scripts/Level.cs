@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void TurnTick(PlayerController player, float tickTime);
+public delegate void TurnTick(PlayerController player, int turnIndex, float tickTime);
 public delegate void NewLevel();
 
 public class Level : MonoBehaviour {
@@ -96,6 +96,7 @@ public class Level : MonoBehaviour {
     IEnumerator<WaitForSeconds> TurnTicker()
     {
         bool ticking = makeTurns;
+        int turnIndex = 0;
         while (true)
         {
             if (makeTurns == false)
@@ -108,14 +109,16 @@ public class Level : MonoBehaviour {
                 {
                     yield return new WaitForSeconds(firstTickDelay);
                 }
+                turnIndex = 0;
             }
             else
             {
                 if (OnTurnTick != null)
                 {
-                    OnTurnTick(ball, turnTime);
+                    OnTurnTick(ball, turnIndex, turnTime);
                 }
                 yield return new WaitForSeconds(turnTime);
+                turnIndex++;
             }
         }
     }

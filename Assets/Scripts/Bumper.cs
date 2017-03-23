@@ -45,7 +45,7 @@ public class Bumper : MonoBehaviour {
         lvl.OnTurnTick -= Instance_OnTurnTick;
     }
 
-    private void Instance_OnTurnTick(PlayerController player, float tickTime)
+    private void Instance_OnTurnTick(PlayerController player, int turnId, float tickTime)
     {
         if (playerRB && bumpOnTurn)
         {

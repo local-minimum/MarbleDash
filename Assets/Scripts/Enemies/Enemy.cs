@@ -161,28 +161,52 @@ public class Enemy : MonoBehaviour {
         lvl.OnTurnTick -= Lvl_OnTurnTick;  
     }
 
-
-    private void Lvl_OnTurnTick(PlayerController player, float turntime)
+    private void Lvl_OnTurnTick(PlayerController player, int turnIndex, float turntime)
     {
         attackedThisTurn = false;
         if (!ForceBehaviourSequence())
         {
 
+            GridPos playerDirection = (player.onTile - pos);
+            if (playerDirection.EightMagnitude <= attackRange)
+            {
+                Attack(playerDirection);
+            }
+            else if (behaviour == EnemyMode.Hunting)
+            {
+                ExecuteHunt(player, turntime);
+            }
+            else if (behaviour == EnemyMode.Patroling)
+            {
+                ExecutePatrol(turntime);
+            }
+            else
+            {
+                ExecuteRest(turntime);
+            }
         }
-        GridPos playerDirection = (player.onTile - pos);
-        if (playerDirection.EightMagnitude <= attackRange)
+    }
+
+    Dictionary<EnemyMode, int> lastModeInvocation = new Dictionary<EnemyMode, int>();
+
+    protected virtual bool OnCoolDown(EnemyMode mode, int turnId)
+    {
+        if (lastModeInvocation.ContainsKey(mode))
         {
-            Attack(playerDirection);
+
         }
-        else if (behaviour == EnemyMode.Hunting)
+
+        return false;
+    }
+
+    protected virtual bool PlayerInRange(GridPos playerOffset, EnemyMode mode)
+    {
+        if (IsAttack(mode))
         {
-            ExecuteHunt(player, turntime);        
-        } else if (behaviour == EnemyMode.Patroling)
-        {
-            ExecutePatrol(turntime);
+            return playerOffset.EightMagnitude <= attackRange;
         } else
         {
-            ExecuteRest(turntime);
+            return false;
         }
     }
 

@@ -119,7 +119,7 @@ public class FootFarts : MonoBehaviour {
         float dBA = Vector3.Dot(ptA, BA) / BA.magnitude;
         float dCA = Vector3.Dot(ptA, CA) / CA.magnitude;
 
-        return a + (ba * dBA + ca * dCA); //TODO: I think this is wrong?
+        return a + (ba * dBA + ca * dCA);
     }
 }
 
