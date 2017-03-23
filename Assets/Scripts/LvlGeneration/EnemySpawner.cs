@@ -25,6 +25,9 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField]
     int enemiesAtLevel = 3;
 
+    [SerializeField]
+    int minSpawnDistanceFromPlayerDrop = 3;
+
     List<GridPos> spawnLocations = new List<GridPos>();
 
     [SerializeField]
@@ -54,8 +57,14 @@ public class EnemySpawner : MonoBehaviour {
 
     public void AllocatePlaces()
     {
+        GridPos playerDrop = board.Find(Occupancy.BallPathSource).First();
         spawnLocations.Clear();
-        GridPos[] potentials = board.FindIsOnlyAny(Occupancy.Free, Occupancy.BallPath).ToArray().Shuffle();
+        GridPos[] potentials = board
+            .FindIsOnlyAny(Occupancy.Free, Occupancy.BallPath)
+            .Where(e => GridPos.ShortestDimension(e, playerDrop) >= minSpawnDistanceFromPlayerDrop)
+            .ToArray()
+            .Shuffle();
+
         for (int i=0; i<enemiesAtLevel; i++)
         {
             spawnLocations.Add(potentials[i]);
