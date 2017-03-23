@@ -23,7 +23,16 @@ public class EnemySpawner : MonoBehaviour {
     BoardGrid board;
 
     [SerializeField]
-    int enemiesAtLevel = 3;
+    int enemyDifficultyLoadPerLevel = 3;
+
+    [SerializeField]
+    int enemyDifficultyLoadMinRelative = -3;
+
+    [SerializeField]
+    int enemyDifficutlyLoadMaxRelative = 4;
+
+    [SerializeField]
+    int enemyDifficultyLoadMinAbs = 3;
 
     [SerializeField]
     int minEnemyDifficutly = 0;
@@ -61,7 +70,55 @@ public class EnemySpawner : MonoBehaviour {
         }
     }
 
-    public void AllocatePlaces()
+    List<KeyValuePair<Enemy, int>> toSpawn = new List<KeyValuePair<Enemy, int>>();
+    int targetDifficultyLoad;
+    int currentDifficultyLoad;
+
+    public void AllocatePlacesAndDecideEnemies()
+    {
+        targetDifficultyLoad = PlayerRunData.stats.currentLevel * enemyDifficultyLoadPerLevel;
+        currentDifficultyLoad = 0;
+        toSpawn.Clear();
+
+        var validPrefabs = GetValidEnemies();
+
+        int iterations = 0;
+        int loadDelta = targetDifficultyLoad;
+        
+        while (iterations < 100)
+        {
+            int enemyIndex = PlayerRunData.stats.lvlRnd.Range(0, validPrefabs.Length);
+            int enemyTierIndex = PlayerRunData.stats.lvlRnd.Range(0, validPrefabs[enemyIndex].Value.Count);
+            KeyValuePair<int, int> tierData = validPrefabs[enemyIndex].Value[enemyIndex];
+
+            if (Mathf.Abs(currentDifficultyLoad + tierData.Value - targetDifficultyLoad) < loadDelta)
+            {
+
+                toSpawn.Add(new KeyValuePair<Enemy, int>(validPrefabs[enemyIndex].Key, tierData.Key));
+                currentDifficultyLoad += tierData.Value;
+                loadDelta = Mathf.Abs(targetDifficultyLoad - currentDifficultyLoad);
+
+            } else if (currentDifficultyLoad >= Mathf.Max(targetDifficultyLoad + enemyDifficultyLoadMinRelative,
+                enemyDifficultyLoadMinAbs))
+            {
+                break;
+            }
+
+            if (currentDifficultyLoad > targetDifficultyLoad + enemyDifficutlyLoadMaxRelative)
+            {
+                int removeIndex = PlayerRunData.stats.lvlRnd.Range(0, toSpawn.Count);
+                currentDifficultyLoad -= toSpawn[removeIndex].Key.GetDifficulty(toSpawn[removeIndex].Value);
+                loadDelta = Mathf.Abs(targetDifficultyLoad - currentDifficultyLoad);
+                toSpawn.RemoveAt(removeIndex);
+            }
+            iterations++;
+        }
+
+        ReservePositions();
+
+    }
+
+    void ReservePositions()
     {
         GridPos playerDrop = board.Find(Occupancy.BallPathSource).First();
         spawnLocations.Clear();
@@ -71,11 +128,12 @@ public class EnemySpawner : MonoBehaviour {
             .ToArray()
             .Shuffle();
 
-        for (int i=0; i<enemiesAtLevel; i++)
+        for (int i = 0, l = toSpawn.Count; i < l; i++)
         {
             spawnLocations.Add(potentials[i]);
             board.Occupy(potentials[i], Occupancy.Enemy);
         }
+
     }
 
     List<Enemy> enemiesOnLevel = new List<Enemy>();
@@ -86,10 +144,10 @@ public class EnemySpawner : MonoBehaviour {
         ClearCurrentEnemies();
 
         Debug.Log("Enemies: " + spawnLocations.Count);
-        foreach (GridPos pos in spawnLocations)
+        for(int i=0, l=spawnLocations.Count; i<l; i++)        
         {
-            Enemy e = GetEnemy();
-            e.SetPosition(pos, board);
+            Enemy e = GetEnemy(toSpawn[i]);
+            e.SetPosition(spawnLocations[i], board);
             enemiesOnLevel.Add(e);
         }
     }
@@ -102,22 +160,21 @@ public class EnemySpawner : MonoBehaviour {
         }
     }
 
-    Enemy GetEnemy()
+    KeyValuePair<Enemy, List<KeyValuePair<int, int>>>[] GetValidEnemies()
     {
-        //TODO: Missing shuffle
-        var prefabWithTiers = enemyPrefabs
-            .Select(e => new { enemy = e, tiers = e.GetTiersInDifficutlyRange(minEnemyDifficutly, maxEnemyDifficutly)})
-            .Where(e=> e.tiers.Count > 0)
-            .ToArray()
-            .First();
+        return enemyPrefabs
+            .Select(e => new KeyValuePair<Enemy, List<KeyValuePair<int, int>>>(
+                e, e.GetTiersInDifficutlyRange(minEnemyDifficutly, maxEnemyDifficutly)))
+            .Where(e => e.Value.Count > 0)
+            .ToArray();
+    }
 
-        //TODO: Missing shuffle
-        KeyValuePair<int, int> tier = prefabWithTiers.tiers.First();
+    Enemy GetEnemy(KeyValuePair<Enemy, int> prefabAndTier)
+    {
 
-        Enemy enemy = Instantiate(prefabWithTiers.enemy, enemyParent, false);
-        enemy.SetTier(tier.Key);
 
-        //TODO: Incur difficulty load
+        Enemy enemy = Instantiate(prefabAndTier.Key, enemyParent, false);
+        enemy.SetTier(prefabAndTier.Value);
                
         return enemy;
     }

@@ -35,6 +35,11 @@ public class Enemy : MonoBehaviour {
         return filteredTiers;
     }
 
+    public int GetDifficulty(int tier)
+    {
+        return tiers[tier].difficulty;
+    }
+
     #endregion
 
     [SerializeField]

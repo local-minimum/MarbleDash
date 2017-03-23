@@ -139,7 +139,7 @@ public class Level : MonoBehaviour {
         ballPath.GeneratePathHoles();
         boxPlacer.Generate();
         bumperPlacer.AllocateBumpPlacements();
-        enemySpawner.AllocatePlaces();
+        enemySpawner.AllocatePlacesAndDecideEnemies();
         previousLevel = true;
     }
 
