@@ -8,6 +8,35 @@ public enum EnemyMode {Standing, Patroling, Hunting, Attacking};
 
 public class Enemy : MonoBehaviour {
 
+    #region Tiers
+
+    [SerializeField]
+    EnemyTier[] tiers;
+
+    [SerializeField]
+    EnemyTier activeTier;
+
+    public void SetTier(int tier)
+    {
+        activeTier = tiers[tier];
+        bodyProperties.SetInitial(activeTier);
+    }
+
+    public List<KeyValuePair<int, int>> GetTiersInDifficutlyRange(int min, int max)
+    {
+        List<KeyValuePair<int, int>> filteredTiers = new List<KeyValuePair<int, int>>();
+        for (int i=0; i<tiers.Length; i++)
+        {
+            if (tiers[i].difficulty <= max && tiers[i].difficulty >= min)
+            {
+                filteredTiers.Add(new KeyValuePair<int, int>(i, tiers[i].difficulty));
+            }
+        }
+        return filteredTiers;
+    }
+
+    #endregion
+
     [SerializeField]
     Destructable bodyProperties;
 

@@ -22,4 +22,9 @@ public class EnemyTier {
 
     //List of behaviours to select from each turn
     public EnemyMode[] availableModes;
+
+    //One per submesh
+    public int[] damageAbsorption;
+    public int[] damageReflection;
+    
 }

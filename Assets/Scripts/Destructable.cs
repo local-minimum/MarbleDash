@@ -139,4 +139,10 @@ public class Destructable : MonoBehaviour {
 
         }
     }
+
+    public void SetInitial(EnemyTier tier)
+    {
+        maxHealth = tier.startHealth;
+        health = maxHealth;
+    }
 }
