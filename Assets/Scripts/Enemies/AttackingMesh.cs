@@ -21,7 +21,7 @@ public class AttackingMesh : MonoBehaviour {
     {
         get
         {
-            return enemy.Behaviour == EnemyMode.Attacking ? Random.Range(minDmg, maxDmg) : 0;
+            return enemy.Behaviour == EnemyMode.Attack1 ? Random.Range(minDmg, maxDmg) : 0;
         }
     }
 

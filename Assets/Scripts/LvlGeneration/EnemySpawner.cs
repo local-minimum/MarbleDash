@@ -13,7 +13,7 @@ public class EnemySpawner : MonoBehaviour {
         {
             if (_instance == null)
             {
-                _instance =FindObjectOfType<EnemySpawner>();
+                _instance = FindObjectOfType<EnemySpawner>();
             }
             return _instance;
         }
@@ -24,6 +24,12 @@ public class EnemySpawner : MonoBehaviour {
 
     [SerializeField]
     int enemiesAtLevel = 3;
+
+    [SerializeField]
+    int minEnemyDifficutly = 0;
+
+    [SerializeField]
+    int maxEnemyDifficutly = 1;
 
     [SerializeField]
     int minSpawnDistanceFromPlayerDrop = 3;
@@ -98,7 +104,22 @@ public class EnemySpawner : MonoBehaviour {
 
     Enemy GetEnemy()
     {
-        return Instantiate(enemyPrefabs[PlayerRunData.stats.lvlRnd.Range(0, enemyPrefabs.Length)], enemyParent, false);
+        //TODO: Missing shuffle
+        var prefabWithTiers = enemyPrefabs
+            .Select(e => new { enemy = e, tiers = e.GetTiersInDifficutlyRange(minEnemyDifficutly, maxEnemyDifficutly)})
+            .Where(e=> e.tiers.Count > 0)
+            .ToArray()
+            .First();
+
+        //TODO: Missing shuffle
+        KeyValuePair<int, int> tier = prefabWithTiers.tiers.First();
+
+        Enemy enemy = Instantiate(prefabWithTiers.enemy, enemyParent, false);
+        enemy.SetTier(tier.Key);
+
+        //TODO: Incur difficulty load
+               
+        return enemy;
     }
 
     public void iDied(Enemy deader)

@@ -7,7 +7,11 @@ public class EnemyTier {
 
     public int difficulty;
 
-    public int startHealth;
+    //List of behaviours to select from each turn
+    public EnemyMode[] availableModes;
+
+    public int startHealthMin;
+    public int startHealthMax;
 
     //Consider each attack type have an attack value range
     //Need as many as the included attack modes in the enum
@@ -19,9 +23,6 @@ public class EnemyTier {
 
     //Behaviour cooldowns
     public int[] behaviourCoolDowns;
-
-    //List of behaviours to select from each turn
-    public EnemyMode[] availableModes;
 
     //One per submesh
     public int[] damageAbsorption;

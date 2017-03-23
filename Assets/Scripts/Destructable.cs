@@ -142,7 +142,7 @@ public class Destructable : MonoBehaviour {
 
     public void SetInitial(EnemyTier tier)
     {
-        maxHealth = tier.startHealth;
+        maxHealth = PlayerRunData.stats.lvlRnd.Range(tier.startHealthMin, tier.startHealthMax);
         health = maxHealth;
     }
 }

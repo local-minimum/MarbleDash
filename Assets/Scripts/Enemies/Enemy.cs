@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum EnemyMode {Standing, Patroling, Hunting, Attacking};
+public enum EnemyMode {Standing, Walking, Patroling, Hunting, Tracking, Homing,
+    Attack1, Attack2, Attack3, Attack4, Attack5};
 
 
 public class Enemy : MonoBehaviour {
@@ -12,8 +13,7 @@ public class Enemy : MonoBehaviour {
 
     [SerializeField]
     EnemyTier[] tiers;
-
-    [SerializeField]
+    
     EnemyTier activeTier;
 
     public void SetTier(int tier)
@@ -192,7 +192,7 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void Attack(GridPos playerDirection)
     {
-        behaviour = EnemyMode.Attacking;
+        behaviour = EnemyMode.Attack1;
         Debug.Log("Attacks");
         StartCoroutine(LookTowards(playerDirection));
 
@@ -237,7 +237,7 @@ public class Enemy : MonoBehaviour {
     public virtual bool AllowsAttack(ContactPoint[] contactPoints, out int reflectedDamage)
     {
         reflectedDamage = 0;
-        return !attackedThisTurn && behaviour != EnemyMode.Attacking;
+        return !attackedThisTurn && behaviour != EnemyMode.Attack1;
     }
 
     public virtual void HurtEffect(int amount)

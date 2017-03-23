@@ -242,6 +242,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 267433b220956734d8b30e0c833a277e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tiers:
+  - difficulty: 1
+    availableModes: 00000000010000000300000006000000
+    startHealthMin: 4
+    startHealthMax: 5
+    minAttack: 01000000
+    maxAttack: 03000000
+    behaviourProbWeights: []
+    behaviourCoolDowns: 
+    damageAbsorption: 
+    damageReflection: 
   bodyProperties: {fileID: 114205736543487812}
   localPlacementOffset: {x: 0, y: 0, z: 0.5}
   attackAnim: Slap
