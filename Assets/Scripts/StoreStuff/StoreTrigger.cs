@@ -22,10 +22,14 @@ public class StoreTrigger : MonoBehaviour {
     int playerLayer;
     ParticleSystem ps;
 
+
     void Start()
     {
         playerLayer = LayerMask.NameToLayer("player");
-        ps = GetComponent<ParticleSystem>();
+        if (ps == null)
+        {
+            ps = GetComponent<ParticleSystem>();
+        }
         if (PlayerRunData.stats.InStore)
         {
             StartStoreTrigger();
@@ -47,8 +51,16 @@ public class StoreTrigger : MonoBehaviour {
     }
 
     public void StartStoreTrigger()
-    {
+    {        
         gameObject.SetActive(true);
         ps.Play();
+    }
+
+    public void EmitExtra(int amount, Color c)
+    {
+        Debug.Log("Extra emission");
+        var emitParams = new ParticleSystem.EmitParams();
+        emitParams.startColor = c;
+        ps.Emit(emitParams, amount);
     }
 }

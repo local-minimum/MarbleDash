@@ -181,8 +181,8 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Convex: 1
-  m_InflateMesh: 0
-  m_SkinWidth: 0.01
+  m_InflateMesh: 1
+  m_SkinWidth: 0.1
   m_Mesh: {fileID: 4300000, guid: 37e097ad82b83e54b951d4d6efb60951, type: 3}
 --- !u!65 &65945257759012174
 BoxCollider:
@@ -251,7 +251,7 @@ MonoBehaviour:
     behaviourProbWeights:
     - 0.1
     - 1
-    - 4
+    - 20
     - 1
     behaviourCoolDowns: 03000000
     damageAbsorption: 
@@ -261,6 +261,7 @@ MonoBehaviour:
   - Slap
   localPlacementOffset: {x: 0, y: 0, z: 0.5}
   attackRange: 1
+  huntRange: 4
   attackDelay: 0.4
   jumpFractionDuration: 0.4
   heightCurve:

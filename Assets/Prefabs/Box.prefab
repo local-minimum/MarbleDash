@@ -123,8 +123,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lootProbability: 0.75
-  minCoin: 4
-  maxCoin: 10
+  minCoin: 10
+  maxCoin: 20
   MaterialSequencePrefabs:
   - {fileID: 2100000, guid: d7ca6dc2d09814646a7c68a38de29b63, type: 2}
   - {fileID: 2100000, guid: ff82daaecbdfc8146b15dd18fee280b4, type: 2}

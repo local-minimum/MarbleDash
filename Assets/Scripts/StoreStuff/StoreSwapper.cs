@@ -11,7 +11,6 @@ public class StoreSwapper : MonoBehaviour {
     [SerializeField]
     float remainTime = 5;
 
-    [SerializeField]
     bool storeSwappingAcitve = false;
 
     static StoreSwapper _instance;
@@ -48,9 +47,14 @@ public class StoreSwapper : MonoBehaviour {
     }
 
     void Update () {
-	    if (storeSwappingAcitve && Time.timeSinceLevelLoad - lastChange > remainTime)
+        if (storeSwappingAcitve && Time.timeSinceLevelLoad - lastChange > remainTime)
         {
             SwapStore();
+        } else if (storeSwappingAcitve && 
+            !swapWarned && 
+            remainTime - (Time.timeSinceLevelLoad - lastChange) < swapWarnAhead)
+        {
+            WarnForSwap();
         } else if (!storeSwappingAcitve)
         {
             DisableStore();
@@ -61,6 +65,23 @@ public class StoreSwapper : MonoBehaviour {
 
     int activeStoreIndex = -1;
     StoreTrigger activeStore;
+
+    [SerializeField]
+    int swapWarningEmision = 100;
+
+    [SerializeField]
+    float swapWarnAhead = 0.75f;
+
+    [SerializeField]
+    Color swapWarnColor = Color.red;
+
+    bool swapWarned;
+
+    void WarnForSwap()
+    {
+        activeStore.EmitExtra(swapWarningEmision, swapWarnColor);
+        swapWarned = true;
+    }
 
     void SwapStore()
     {
@@ -79,6 +100,7 @@ public class StoreSwapper : MonoBehaviour {
         activeStore = holeTile.GetComponentInChildren<StoreTrigger>(true);
         activeStore.StartStoreTrigger();
         lastChange = Time.timeSinceLevelLoad;
+        swapWarned = false;
     }
 
     void DisableStore()

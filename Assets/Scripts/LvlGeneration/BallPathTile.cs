@@ -309,6 +309,9 @@ public class BallPathTile : MonoBehaviour {
         StartCoroutine(NewLevel(playerT));
     }
 
+    [SerializeField]
+    int levelCompleteBonus = 60;
+
     IEnumerator<WaitForSeconds> NewLevel(Transform playerT)
     {
         float progress = 0f;
@@ -316,7 +319,8 @@ public class BallPathTile : MonoBehaviour {
         Vector3 localStart = transform.InverseTransformPoint(playerT.position);
         Vector3 firstTarget = new Vector3(0, 0, 0.5f);
         float centerTime = (localStart - firstTarget).magnitude * 0.5f;
-
+        CoinFountains.instance.ShowerMe(transform);
+        PlayerRunData.stats.Coin += levelCompleteBonus;
         while (progress < centerTime)
         {
             progress += delta;

@@ -379,7 +379,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holesParent: {fileID: 348438437}
   remainTime: 8
-  storeSwappingAcitve: 0
+  swapWarningEmision: 240
+  swapWarnAhead: 2.25
+  swapWarnColor: {r: 0.753, g: 0.352404, b: 0, a: 0.616}
 --- !u!1 &350515344
 GameObject:
   m_ObjectHideFlags: 0
@@ -12448,6 +12450,7 @@ MonoBehaviour:
   pathMat: {fileID: 2100000, guid: cc19a07f1b1b4104c88bc8bad51a5383, type: 2}
   middleWidth: 0.5
   offColor: {r: 0, g: 0, b: 0, a: 0}
+  levelCompleteBonus: 40
   foreshadowDecay: 0.125
   foreshadowFactor: 0.5
   foreshadowTrunctation: 0.25
@@ -12736,6 +12739,7 @@ MonoBehaviour:
   pathMat: {fileID: 2100000, guid: cc19a07f1b1b4104c88bc8bad51a5383, type: 2}
   middleWidth: 0.5
   offColor: {r: 0, g: 0, b: 0, a: 0}
+  levelCompleteBonus: 60
   foreshadowDecay: 0.125
   foreshadowFactor: 0.4
   foreshadowTrunctation: 0.25
@@ -13049,7 +13053,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 2025833198}
-  enemiesAtLevel: 3
+  enemyDifficultyLoadPerLevel: 3
+  enemyDifficultyLoadMinRelative: -3
+  enemyDifficutlyLoadMaxRelative: 4
+  enemyDifficultyLoadMinAbs: 3
+  minEnemyDifficutly: 0
+  maxEnemyDifficutly: 1
+  minEnemyDiffIncreaseEach: 2
+  minEnemyDiffIncreaseAmount: 1
+  maxEnemyDifficultyIncreaseEach: 5
+  maxEnemyDiffIncreaseAmount: 6
+  minSpawnDistanceFromPlayerDrop: 3
+  minEnemyDifficultyCap: 1
   enemyPrefabs:
   - {fileID: 114647270488527920, guid: b6c71d122c0d6f74995b607623426974, type: 2}
   enemyParent: {fileID: 2043342521}
