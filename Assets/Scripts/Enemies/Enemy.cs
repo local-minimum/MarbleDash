@@ -188,14 +188,14 @@ public class Enemy : MonoBehaviour {
         attackedThisTurn = false;
         if (!ForceBehaviourSequence())
         {
-             var availableModes = activeTier.availableModes
+            GridPos playerOffset = (player.onTile - pos);
+            //Debug.Log(playerOffset.EightMagnitude);
+            var availableModes = activeTier.availableModes
                 .Select((e, i) => new KeyValuePair<int, EnemyMode>(i, e))
-                .Where(o => !OnCoolDown(o.Key, turnIndex))
+                .Where(o => !OnCoolDown(o.Key, turnIndex) && PlayerInRange(playerOffset, o.Value))
                 .ToList();
 
-            GridPos playerOffset = (player.onTile - pos);
-
-            var attacks = availableModes.Where(o => PlayerInRange(playerOffset, o.Value)).ToList();
+            var attacks = availableModes.Where(o => IsAttack(o.Value)).ToList();
 
             if (attacks.Count > 0)
             {
@@ -209,6 +209,7 @@ public class Enemy : MonoBehaviour {
 
         UpdateCoolDown(turnIndex);
         InvokeSelectedModeExecution(turnTime, player);
+        //Debug.Log(behaviour);
     }
 
     void UpdateCoolDown(int turnId)
@@ -298,14 +299,21 @@ public class Enemy : MonoBehaviour {
         return false;
     }
 
+    [SerializeField]
+    int huntRange = 4;
+
     protected virtual bool PlayerInRange(GridPos playerOffset, EnemyMode mode)
     {
         if (IsAttack(mode))
         {
+            //TODO: Support more ranges or is that just overwrite
             return playerOffset.EightMagnitude <= attackRange;
+        } else if (mode == EnemyMode.Hunting)
+        {
+            return playerOffset.EightMagnitude <= 4;
         } else
         {
-            return false;
+            return true;
         }
     }
 
@@ -432,7 +440,9 @@ public class Enemy : MonoBehaviour {
         yield return new WaitForSeconds(delay);
         TriggerAttackAnimation();
         yield return new WaitForSeconds(delay);
-        behaviour = EnemyMode.Hunting;
+        
+        //To allow being hurt again
+        behaviour = EnemyMode.None;
     }
 
     protected virtual void Move(GridPos offset, float maxTime)
@@ -447,14 +457,6 @@ public class Enemy : MonoBehaviour {
         {
             pos -= offset;
             board.Occupy(pos, Occupancy.Enemy);
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.layer == playerLayer)
-        {
-            behaviour = EnemyMode.Hunting;
         }
     }
 
@@ -565,5 +567,4 @@ public class Enemy : MonoBehaviour {
         transform.localPosition = targetPos; 
 
     }
-
 }
