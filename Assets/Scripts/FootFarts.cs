@@ -7,13 +7,26 @@ public class FootFarts : MonoBehaviour {
     [SerializeField]
     Renderer fartTarget;
 
+    [SerializeField]
+    ParticleSystem ps;
+
+    [SerializeField]
+    int particles;
+
+    [SerializeField]
+    float emitProb = 0.5f;
+    
     private void Awake()
     {
-        //Just to be sure for now
-        Material m = fartTarget.material;
-        fartTarget.material = Instantiate(m);
+        if (fartTarget)
+        {
+            //Just to be sure for now
+            Material m = fartTarget.material;
+            fartTarget.material = Instantiate(m);
+        }
     }
 
+    ParticleSystem.EmitParams emitParams = new ParticleSystem.EmitParams();
 
     private void OnCollisionStay(Collision collision)
     {
@@ -21,8 +34,17 @@ public class FootFarts : MonoBehaviour {
         Renderer r = collision.gameObject.GetComponent<Renderer>();
 
         Color c = GetUVColor(cPoint, r.material);
-        
-        fartTarget.material.color = c;
+
+        if (fartTarget)
+        {
+            fartTarget.material.color = c;
+        }
+
+        if (ps && Random.value < emitProb)
+        {
+            emitParams.startColor = c;
+            ps.Emit(emitParams, particles);
+        }
     }
 
     static Color GetUVColor(ContactPoint cPoint, Material mat)
