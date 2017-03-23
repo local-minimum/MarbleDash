@@ -109,17 +109,17 @@ public class FootFarts : MonoBehaviour {
         Vector2 ca = c - a;
 
         Vector3 A = verts[tris[bestTri]];
-        Vector3 B = verts[tris[bestTri]];
-        Vector3 C = verts[tris[bestTri]];
+        Vector3 B = verts[tris[bestTri + 1]];
+        Vector3 C = verts[tris[bestTri + 2]];
 
         Vector3 BA = B - A;
         Vector3 CA = C - A;
         Vector3 ptA = pt - A;
 
-        float dBA = Vector3.Dot(ptA, BA);
-        float dCA = Vector3.Dot(ptA, CA);
+        float dBA = Vector3.Dot(ptA, BA) / BA.magnitude;
+        float dCA = Vector3.Dot(ptA, CA) / CA.magnitude;
 
-        return a + (ba * dBA + ca * dCA) / 2f; //TODO: is it reall div 2 here?
+        return a + (ba * dBA + ca * dCA); //TODO: I think this is wrong?
     }
 }
 

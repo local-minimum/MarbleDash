@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum EnemyMode {Standing, Walking, Patroling, Hunting, Tracking, Homing,
+public enum EnemyMode {Standing, Walking, Patroling, Hunting, Tracking, Homing, Haste,
     Attack1, Attack2, Attack3, Attack4, Attack5};
 
 
@@ -165,6 +165,10 @@ public class Enemy : MonoBehaviour {
     private void Lvl_OnTurnTick(PlayerController player, float turntime)
     {
         attackedThisTurn = false;
+        if (!ForceBehaviourSequence())
+        {
+
+        }
         GridPos playerDirection = (player.onTile - pos);
         if (playerDirection.EightMagnitude <= attackRange)
         {
@@ -180,6 +184,12 @@ public class Enemy : MonoBehaviour {
         {
             ExecuteRest(turntime);
         }
+    }
+
+    protected virtual bool ForceBehaviourSequence()
+    {
+        //Implement transition states here if needed.
+        return false;
     }
 
     protected virtual void ExecuteRest(float turnTime)
