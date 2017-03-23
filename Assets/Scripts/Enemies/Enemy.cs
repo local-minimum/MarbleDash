@@ -40,6 +40,11 @@ public class Enemy : MonoBehaviour {
         return tiers[tier].difficulty;
     }
 
+    public int GetMaxDifficulty()
+    {
+        return tiers[tiers.Length - 1].difficulty;
+    }
+
     #endregion
 
     [SerializeField]

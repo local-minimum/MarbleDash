@@ -41,7 +41,22 @@ public class EnemySpawner : MonoBehaviour {
     int maxEnemyDifficutly = 1;
 
     [SerializeField]
+    int minEnemyDiffIncreaseEach = 2;
+
+    [SerializeField]
+    int minEnemyDiffIncreaseAmount = 1;
+
+    [SerializeField]
+    int maxEnemyDifficultyIncreaseEach = 5;
+
+    [SerializeField]
+    int maxEnemyDiffIncreaseAmount = 6;
+
+    [SerializeField]
     int minSpawnDistanceFromPlayerDrop = 3;
+
+    [SerializeField]
+    int minEnemyDifficultyCap = 1;
 
     List<GridPos> spawnLocations = new List<GridPos>();
 
@@ -50,7 +65,7 @@ public class EnemySpawner : MonoBehaviour {
 
     [SerializeField]
     Transform enemyParent;
-
+    
     private void Awake()
     {
         if (_instance == null || _instance == this)
@@ -78,6 +93,19 @@ public class EnemySpawner : MonoBehaviour {
     {
         targetDifficultyLoad = PlayerRunData.stats.currentLevel * enemyDifficultyLoadPerLevel;
         currentDifficultyLoad = 0;
+        int level = PlayerRunData.stats.currentLevel;
+        if (level % minEnemyDiffIncreaseEach == 0)
+        {
+            minEnemyDifficutly = Mathf.Min(minEnemyDifficultyCap, minEnemyDifficutly + minEnemyDiffIncreaseAmount);
+            
+        }
+        if (level % maxEnemyDifficultyIncreaseEach == 0)
+        {
+            maxEnemyDifficutly = Mathf.Min(
+                enemyPrefabs.Max(e => e.GetMaxDifficulty()),
+                maxEnemyDifficutly + maxEnemyDiffIncreaseAmount);
+        }
+
         toSpawn.Clear();
 
         var validPrefabs = GetValidEnemies();
