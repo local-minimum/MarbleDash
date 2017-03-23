@@ -144,35 +144,39 @@ public class PlayerController : MonoBehaviour {
             if (enemy)
             {
                 
-                int deflectedHurt = 0;
-                if (!enemy.AllowsAttack(collision.contacts, out deflectedHurt))
+                int reflectedDamage = 0;
+                int hitPart;
+                int attack = destructable.GetVelocityForce();
+                if (!enemy.AllowsAttack(collision.contacts, attack, out reflectedDamage, out hitPart))
                 {
                     AttackingMesh am = collision.gameObject.GetComponentInChildren<AttackingMesh>();
                     if (am)
                     {
                         int dmg = am.RollDamage;
-                        destructable.Hurt(dmg + deflectedHurt);
+                        //Should be addition because you get reflection hurt and enemy attack you hurt
+                        destructable.Hurt(dmg + reflectedDamage, hitPart);
                     } else
                     {
-                        if (deflectedHurt > 0)
+                        if (reflectedDamage > 0)
                         {
-                            destructable.Hurt(deflectedHurt);
+                            destructable.Hurt(reflectedDamage, hitPart);
                         }
                     }
 
                 } else if (otherDest.GetVelocityForce() < destructable.GetVelocityForce()) {
-                    otherDest.Hurt(destructable.GetVelocityForce() - deflectedHurt);
+                    otherDest.Hurt(attack - reflectedDamage, hitPart);
                 } else
                 {
                     Debug.Log("Hurting " + otherDest.name + " refused");
                 }
-                if (deflectedHurt > 0) {
-                    destructable.Hurt(deflectedHurt);
+                if (reflectedDamage > 0) {
+                    //Invoke self hurt
+                    destructable.Hurt(reflectedDamage, 0);
                 }
             }
             else
             {
-                otherDest.Hurt(destructable.GetVelocityForce());
+                otherDest.Hurt(destructable.GetVelocityForce(), 0);
             }
         }
     }

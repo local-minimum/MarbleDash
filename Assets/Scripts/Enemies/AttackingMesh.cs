@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class AttackingMesh : MonoBehaviour {
 
-    [SerializeField]
-    int minDmg;
-
-    [SerializeField]
-    int maxDmg;
 
     Enemy enemy;
 
@@ -21,7 +16,7 @@ public class AttackingMesh : MonoBehaviour {
     {
         get
         {
-            return enemy.Behaviour == EnemyMode.Attack1 ? Random.Range(minDmg, maxDmg) : 0;
+            return enemy.GetAttackStrength();
         }
     }
 

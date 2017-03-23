@@ -43,13 +43,11 @@ public class Enemy : MonoBehaviour {
     #endregion
 
     [SerializeField]
-    Destructable bodyProperties;
+    EnemyDestructable bodyProperties;
 
     Level lvl;
 
     int playerLayer;
-
-    bool attackedThisTurn;
 
     EnemyMode behaviour = EnemyMode.Patroling;
 
@@ -59,6 +57,57 @@ public class Enemy : MonoBehaviour {
         {
             return behaviour;
         }
+    }
+
+
+    bool attackedThisTurn;
+
+    public bool IsAttacking
+    {
+        get
+        {
+            return IsAttack(behaviour);
+        }
+    }
+
+    bool IsAttack(EnemyMode behaviour)
+    {
+        return behaviour == EnemyMode.Attack1 || behaviour == EnemyMode.Attack2 || behaviour == EnemyMode.Attack3 ||
+            behaviour == EnemyMode.Attack4 || behaviour == EnemyMode.Attack5;
+    }
+
+    public int GetAttackStrength()
+    {
+        int idAttack = 0;
+
+        if (IsAttacking)
+        {
+            for (int i=0, l=activeTier.availableModes.Length; i<l; i++)
+            {
+                if (IsAttack(activeTier.availableModes[i]))
+                {
+                    if (behaviour == activeTier.availableModes[i])
+                    {
+                        int min = activeTier.minAttack[activeTier.minAttack.Length - 1];
+                        if (activeTier.minAttack.Length < idAttack)
+                        {
+                            min = activeTier.minAttack[idAttack];
+                        }
+
+                        int max = activeTier.maxAttack[activeTier.maxAttack.Length - 1];
+                        if (activeTier.maxAttack.Length < idAttack)
+                        {
+                            max = activeTier.maxAttack[idAttack];
+                        }
+
+                        return Random.Range(min, max);
+                    }
+                    idAttack++;
+                }
+            }
+        }
+
+        return 0;
     }
 
     bool isAlive = true;
@@ -239,10 +288,26 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    public virtual bool AllowsAttack(ContactPoint[] contactPoints, out int reflectedDamage)
+    public virtual bool AllowsAttack(ContactPoint[] contactPoints, int attack, out int reflectedDamage, out int bodyPart)
     {
-        reflectedDamage = 0;
-        return !attackedThisTurn && behaviour != EnemyMode.Attack1;
+
+        bodyPart = GetBodyPart(contactPoints);
+
+        if (activeTier.damageReflection != null && activeTier.damageReflection.Length > bodyPart)
+        {
+            reflectedDamage = Mathf.Min(attack, activeTier.damageReflection[bodyPart]);
+        } else
+        {
+            reflectedDamage = 0;
+        }
+
+        return !attackedThisTurn && !IsAttacking;
+    }
+
+    public int GetBodyPart(ContactPoint[] points)
+    {
+        //TODO: Body part detection from submeshes potentially
+        return 0;
     }
 
     public virtual void HurtEffect(int amount)

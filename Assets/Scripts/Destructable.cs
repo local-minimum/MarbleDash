@@ -7,9 +7,9 @@ public class Destructable : MonoBehaviour {
     public event HealthChange OnHealthChange;
 
     [SerializeField, HideInInspector]
-    int maxHealth;
+    protected int maxHealth;
 
-    int health;
+    protected int health;
 
     virtual public int Health {
         get
@@ -95,9 +95,14 @@ public class Destructable : MonoBehaviour {
 
     }
 
-    public void Hurt(int points)
+    protected virtual int DamageAbsorption(int hitPart)
     {
-        points = Mathf.Min(points, Health);
+        return 0;
+    }
+
+    public void Hurt(int points, int hitPart)
+    {
+        points = Mathf.Min(points - DamageAbsorption(hitPart), Health);
         Health -= points;
         if (Health <= 0)
         {
@@ -140,9 +145,4 @@ public class Destructable : MonoBehaviour {
         }
     }
 
-    public void SetInitial(EnemyTier tier)
-    {
-        maxHealth = PlayerRunData.stats.lvlRnd.Range(tier.startHealthMin, tier.startHealthMax);
-        health = maxHealth;
-    }
 }
