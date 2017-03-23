@@ -244,18 +244,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tiers:
   - difficulty: 1
-    availableModes: 00000000010000000300000006000000
+    availableModes: 01000000020000000400000008000000
     startHealthMin: 4
     startHealthMax: 5
     minAttack: 01000000
     maxAttack: 03000000
-    behaviourProbWeights: []
-    behaviourCoolDowns: 
+    behaviourProbWeights:
+    - 0.1
+    - 1
+    - 4
+    - 1
+    behaviourCoolDowns: 03000000
     damageAbsorption: 
     damageReflection: 
   bodyProperties: {fileID: 114462557831289960}
+  attackAnim:
+  - Slap
   localPlacementOffset: {x: 0, y: 0, z: 0.5}
-  attackAnim: Slap
   attackRange: 1
   attackDelay: 0.4
   jumpFractionDuration: 0.4

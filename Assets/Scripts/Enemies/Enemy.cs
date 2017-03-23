@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public enum EnemyMode {Standing, Walking, Patroling, Hunting, Tracking, Homing, Haste,
+public enum EnemyMode {None, Standing, Walking, Patroling, Hunting, Tracking, Homing, Haste,
     Attack1, Attack2, Attack3, Attack4, Attack5};
 
 
@@ -59,6 +59,7 @@ public class Enemy : MonoBehaviour {
         }
     }
 
+    #region Attack
 
     bool attackedThisTurn;
 
@@ -77,38 +78,62 @@ public class Enemy : MonoBehaviour {
     }
 
     public int GetAttackStrength()
+    {        
+        int idAttack = GetAttackModeAsIndex(behaviour);
+        if (idAttack < 0)
+        {
+            return 0;
+        } else 
+        {
+            int min = activeTier.minAttack[activeTier.minAttack.Length - 1];
+            if (activeTier.minAttack.Length < idAttack)
+            {
+                min = activeTier.minAttack[idAttack];
+            }
+
+            int max = activeTier.maxAttack[activeTier.maxAttack.Length - 1];
+            if (activeTier.maxAttack.Length < idAttack)
+            {
+                max = activeTier.maxAttack[idAttack];
+            }
+
+            return Random.Range(min, max);
+        }
+    }
+
+    int GetAttackModeAsIndex(EnemyMode mode)
     {
         int idAttack = 0;
 
-        if (IsAttacking)
+        if (IsAttack(mode))
         {
-            for (int i=0, l=activeTier.availableModes.Length; i<l; i++)
+            for (int i = 0, l = activeTier.availableModes.Length; i < l; i++)
             {
-                if (IsAttack(activeTier.availableModes[i]))
+                if (mode == activeTier.availableModes[i])
                 {
-                    if (behaviour == activeTier.availableModes[i])
-                    {
-                        int min = activeTier.minAttack[activeTier.minAttack.Length - 1];
-                        if (activeTier.minAttack.Length < idAttack)
-                        {
-                            min = activeTier.minAttack[idAttack];
-                        }
-
-                        int max = activeTier.maxAttack[activeTier.maxAttack.Length - 1];
-                        if (activeTier.maxAttack.Length < idAttack)
-                        {
-                            max = activeTier.maxAttack[idAttack];
-                        }
-
-                        return Random.Range(min, max);
-                    }
+                    return idAttack;
+                } else if (IsAttack(activeTier.availableModes[i]))
+                {
                     idAttack++;
                 }
             }
         }
-
-        return 0;
+        return -1;
     }
+
+    [SerializeField]
+    string[] attackAnim;
+
+    void TriggerAttackAnimation()
+    {
+        int attackIndex = GetAttackModeAsIndex(behaviour);
+        if (attackIndex >= 0 && attackIndex < attackAnim.Length)
+        {
+            anim.SetTrigger(attackAnim[attackIndex]);
+        }
+    }
+
+    #endregion
 
     bool isAlive = true;
 
@@ -117,9 +142,6 @@ public class Enemy : MonoBehaviour {
 
     [SerializeField]
     Vector3 localPlacementOffset = new Vector3(0, 0, 0.5f);
-
-    [SerializeField]
-    string attackAnim;
 
     [SerializeField]
     int attackRange = 2;
@@ -161,39 +183,116 @@ public class Enemy : MonoBehaviour {
         lvl.OnTurnTick -= Lvl_OnTurnTick;  
     }
 
-    private void Lvl_OnTurnTick(PlayerController player, int turnIndex, float turntime)
+    private void Lvl_OnTurnTick(PlayerController player, int turnIndex, float turnTime)
     {
         attackedThisTurn = false;
         if (!ForceBehaviourSequence())
         {
+             var availableModes = activeTier.availableModes
+                .Select((e, i) => new KeyValuePair<int, EnemyMode>(i, e))
+                .Where(o => !OnCoolDown(o.Key, turnIndex))
+                .ToList();
 
-            GridPos playerDirection = (player.onTile - pos);
-            if (playerDirection.EightMagnitude <= attackRange)
+            GridPos playerOffset = (player.onTile - pos);
+
+            var attacks = availableModes.Where(o => PlayerInRange(playerOffset, o.Value)).ToList();
+
+            if (attacks.Count > 0)
             {
-                Attack(playerDirection);
+                behaviour = SelectModeFromAvailable(attacks);
+            } else
+            {
+                behaviour = SelectModeFromAvailable(availableModes.Where(o => !IsAttack(o.Value)).ToList());
             }
-            else if (behaviour == EnemyMode.Hunting)
+
+        }
+
+        UpdateCoolDown(turnIndex);
+        InvokeSelectedModeExecution(turnTime, player);
+    }
+
+    void UpdateCoolDown(int turnId)
+    {
+        lastModeInvocation[behaviour] = turnId;
+    }
+
+    void InvokeSelectedModeExecution(float turnTime, PlayerController player)
+    {
+        switch (behaviour)
+        {
+            case EnemyMode.None:
+                break;
+            case EnemyMode.Standing:
+                ExecuteStanding(turnTime);
+                break;
+            case EnemyMode.Patroling:
+                ExecutePatroling(turnTime);
+                break;
+            case EnemyMode.Walking:
+                ExecuteWalking(turnTime);
+                break;
+            case EnemyMode.Hunting:
+                ExecuteHunt(player, turnTime);
+                break;
+            case EnemyMode.Homing:
+                ExecutHoming(player, turnTime);
+                break;
+            case EnemyMode.Haste:
+                ExecutHaste(player, turnTime);
+                break;
+            case EnemyMode.Attack1:
+                ExecuteAttack1(player, turnTime);
+                break;
+            case EnemyMode.Attack2:
+                ExecuteAttack2(player, turnTime);
+                break;
+            case EnemyMode.Attack3:
+                ExecuteAttack3(player, turnTime);
+                break;
+            case EnemyMode.Attack4:
+                ExecuteAttack4(player, turnTime);
+                break;
+            case EnemyMode.Attack5:
+                ExecuteAttack5(player, turnTime);
+                break;
+        }
+    }
+
+    EnemyMode SelectModeFromAvailable(List<KeyValuePair<int, EnemyMode>> options)
+    {
+        int l = options.Count;
+        float totWeights = 0;
+
+        for (int i=0; i<l; i++)
+        {
+            totWeights += activeTier.behaviourProbWeights[options[i].Key];
+        }
+
+        float val = Random.Range(0, totWeights);
+
+        for (int i=0; i<l; i++)
+        {
+            if (val <= activeTier.behaviourProbWeights[options[i].Key])
             {
-                ExecuteHunt(player, turntime);
-            }
-            else if (behaviour == EnemyMode.Patroling)
+                return options[i].Value;
+            } else
             {
-                ExecutePatrol(turntime);
-            }
-            else
-            {
-                ExecuteRest(turntime);
+                val -= activeTier.behaviourProbWeights[options[i].Key];
             }
         }
+
+        return options[l - 1].Value;
     }
 
     Dictionary<EnemyMode, int> lastModeInvocation = new Dictionary<EnemyMode, int>();
 
-    protected virtual bool OnCoolDown(EnemyMode mode, int turnId)
+    protected virtual bool OnCoolDown(int modeIndex, int turnId)
     {
-        if (lastModeInvocation.ContainsKey(mode))
-        {
+        EnemyMode mode = activeTier.availableModes[modeIndex];
 
+        if (lastModeInvocation.ContainsKey(mode) && activeTier.behaviourCoolDowns.Length > modeIndex)
+        {
+            return turnId - lastModeInvocation[mode] < activeTier.behaviourCoolDowns[modeIndex];
         }
 
         return false;
@@ -216,9 +315,55 @@ public class Enemy : MonoBehaviour {
         return false;
     }
 
-    protected virtual void ExecuteRest(float turnTime)
+    #region EnemyModeExecutions
+
+    protected virtual void ExecuteAttack2(PlayerController player, float turnTime)
     {
-        behaviour = EnemyMode.Patroling;
+
+    }
+
+    protected virtual void ExecuteAttack3(PlayerController player, float turnTime)
+    {
+
+    }
+
+    protected virtual void ExecuteAttack4(PlayerController player, float turnTime)
+    {
+
+    }
+
+    protected virtual void ExecuteAttack5(PlayerController player, float turnTime)
+    {
+
+    }
+
+    protected virtual void ExecutHaste(PlayerController player, float turnTime)
+    {
+
+    }
+
+    protected virtual void ExecutHoming(PlayerController player, float turnTime)
+    {
+
+    }
+
+    protected virtual void ExecuteWalking(float turnTime)
+    {
+        int[,] context = board.GetNotOccupancyContext(pos,
+            Occupancy.BallPathTarget,
+            Occupancy.Enemy,
+            Occupancy.Obstacle,
+            Occupancy.Wall,
+            Occupancy.WallBreakable,
+            Occupancy.WallIllusory,
+            Occupancy.Hole);
+        GridPos moveDirection = SelectMoveOffset(BoardGrid.ContextToOffsets(context));
+        Move(moveDirection, turnTime);
+    }
+
+    protected virtual void ExecuteStanding(float turnTime)
+    {
+       
     }
 
     protected virtual void ExecuteHunt(PlayerController player, float turnTime)
@@ -250,19 +395,9 @@ public class Enemy : MonoBehaviour {
         return context;
     }
 
-    protected virtual void ExecutePatrol(float turnTime)
+    protected virtual void ExecutePatroling(float turnTime)
     {
-        
-        int[,] context = board.GetNotOccupancyContext(pos,
-            Occupancy.BallPathTarget,
-            Occupancy.Enemy,
-            Occupancy.Obstacle,
-            Occupancy.Wall,
-            Occupancy.WallBreakable,
-            Occupancy.WallIllusory,
-            Occupancy.Hole);
-        GridPos moveDirection = SelectMoveOffset(BoardGrid.ContextToOffsets(context));
-        Move(moveDirection, turnTime);
+
     }
 
     protected virtual GridPos SelectMoveOffset(List<GridPos> offsets)
@@ -275,13 +410,10 @@ public class Enemy : MonoBehaviour {
         return offsets[Random.Range(0, offsets.Count)];
     }
 
-    [SerializeField]
-    float attackDelay = 0.4f;
-
-    protected virtual void Attack(GridPos playerDirection)
+    protected virtual void ExecuteAttack1(PlayerController player, float turnTime)
     {
-        behaviour = EnemyMode.Attack1;
-        Debug.Log("Attacks");
+        GridPos playerDirection = (player.onTile - pos);
+       
         StartCoroutine(LookTowards(playerDirection));
 
         if (anim)
@@ -290,11 +422,15 @@ public class Enemy : MonoBehaviour {
         }
 
     }
+    #endregion
+
+    [SerializeField]
+    float attackDelay = 0.4f;
 
     IEnumerator<WaitForSeconds> DelayAttackTrigger(float delay)
     {
         yield return new WaitForSeconds(delay);
-        anim.SetTrigger(attackAnim) ;
+        TriggerAttackAnimation();
         yield return new WaitForSeconds(delay);
         behaviour = EnemyMode.Hunting;
     }
@@ -429,4 +565,5 @@ public class Enemy : MonoBehaviour {
         transform.localPosition = targetPos; 
 
     }
+
 }
