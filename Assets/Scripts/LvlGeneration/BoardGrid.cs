@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Occupancy { Free, BallPathSource, BallPathTarget, BallPath, Wall, WallBreakable, WallIllusory, Hole, Obstacle, Enemy, Player};
+public enum Occupancy { Free, BallPathSource, BallPathTarget, BallPath, Wall, WallBreakable, WallIllusory, Hole, Obstacle, Enemy, Player, NoGrip};
 public enum Direction { None, North, South, West, East };
 
 [System.Serializable]

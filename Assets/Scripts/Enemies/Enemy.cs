@@ -140,8 +140,6 @@ public class Enemy : MonoBehaviour {
 
     #endregion
 
-    bool isAlive = true;
-
     GridPos pos = new GridPos(-1, -1);
     BoardGrid board;
 
@@ -500,7 +498,7 @@ public class Enemy : MonoBehaviour {
     {
         FloatTextManager.ShowText(transform, amount.ToString());
         attackedThisTurn = true;
-        isAlive = false;
+
         board.Free(pos, Occupancy.Enemy);
         Splatterer.instance.SplatMe(transform);
         EnemySpawner.instance.iDied(this);
