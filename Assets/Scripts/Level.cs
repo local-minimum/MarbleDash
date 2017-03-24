@@ -79,6 +79,7 @@ public class Level : MonoBehaviour {
             Destroy(gameObject);
         }
     }
+
     void Start () {
         StartCoroutine(TurnTicker());
         Generate();

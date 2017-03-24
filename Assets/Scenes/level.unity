@@ -13053,7 +13053,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 2025833198}
-  enemyDifficultyLoadPerLevel: 3
+  enemyDifficultyLoadPerLevel: 2
   enemyDifficultyLoadMinRelative: -3
   enemyDifficutlyLoadMaxRelative: 4
   enemyDifficultyLoadMinAbs: 3
