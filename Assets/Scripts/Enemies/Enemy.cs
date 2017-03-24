@@ -177,6 +177,7 @@ public class Enemy : MonoBehaviour {
         anim = GetComponent<Animator>();
     }
 
+    /*
     private void OnEnable()
     {
         lvl = Level.instance;
@@ -186,9 +187,9 @@ public class Enemy : MonoBehaviour {
     private void OnDisable()
     {
         lvl.OnTurnTick -= Lvl_OnTurnTick;  
-    }
+    }*/
 
-    private void Lvl_OnTurnTick(PlayerController player, int turnIndex, float turnTime)
+    public void Lvl_OnTurnTick(PlayerController player, int turnIndex, float turnTime)
     {
         attackedThisTurn = false;
         if (!ForceBehaviourSequence())

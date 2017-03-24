@@ -85,6 +85,30 @@ public class EnemySpawner : MonoBehaviour {
         }
     }
 
+    Level lvl;
+
+    private void OnEnable()
+    {
+        Level lvl = Level.instance;
+        lvl.OnTurnTick += Instance_OnTurnTick;
+    }
+
+    private void OnDisable()
+    {
+        if (lvl)
+        {
+            lvl.OnTurnTick -= Instance_OnTurnTick;
+        }
+    }
+
+    private void Instance_OnTurnTick(PlayerController player, int turnIndex, float tickTime)
+    {
+        for (int i=0, l=enemiesOnLevel.Count; i<l; i++)
+        {
+            enemiesOnLevel[i].Lvl_OnTurnTick(player, turnIndex, tickTime);
+        }
+    }
+
     List<KeyValuePair<Enemy, int>> toSpawn = new List<KeyValuePair<Enemy, int>>();
     int targetDifficultyLoad;
     int currentDifficultyLoad;
