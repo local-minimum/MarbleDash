@@ -100,8 +100,7 @@ public class PlayerController : MonoBehaviour {
         {
             onTile = offTile;
         }
-
-        
+     
     }
 
     void TrackGridPos()
