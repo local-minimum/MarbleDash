@@ -90,7 +90,7 @@ public class EnemySpawner : MonoBehaviour {
 
     private void OnEnable()
     {
-        Level lvl = Level.instance;
+        lvl = Level.instance;
         lvl.OnTurnTick += Instance_OnTurnTick;
     }
 

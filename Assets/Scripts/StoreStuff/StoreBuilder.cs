@@ -49,7 +49,7 @@ public class StoreBuilder : MonoBehaviour {
 
     void TilesHoleAndHoles()
     {
-        List<GridPos> walls = new List<GridPos>();
+
         board.InactivatePreviousTiles();
         foreach(GridPos pos in board.Find(Occupancy.Free))
         {

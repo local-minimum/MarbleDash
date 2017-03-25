@@ -53,8 +53,6 @@ public class Enemy : MonoBehaviour {
 
     Level lvl;
 
-    int playerLayer;
-
     EnemyMode behaviour = EnemyMode.Patroling;
 
     public EnemyMode Behaviour
@@ -172,7 +170,6 @@ public class Enemy : MonoBehaviour {
 
     private void Start()
     {
-        playerLayer = LayerMask.NameToLayer("player");
         anim = GetComponent<Animator>();
     }
 
@@ -315,7 +312,7 @@ public class Enemy : MonoBehaviour {
             return playerOffset.EightMagnitude <= attackRange;
         } else if (mode == EnemyMode.Hunting)
         {
-            return playerOffset.EightMagnitude <= 4;
+            return playerOffset.EightMagnitude <= huntRange;
         } else
         {
             return true;
