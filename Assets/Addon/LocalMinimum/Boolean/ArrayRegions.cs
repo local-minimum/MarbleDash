@@ -59,5 +59,6 @@ namespace LocalMinimum.Boolean
             return labels;
         }
 
+
     }
 }

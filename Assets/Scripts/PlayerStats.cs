@@ -161,6 +161,9 @@ public class PlayerStats : ScriptableObject {
     [SerializeField]
     int totalCoin;
 
+    [SerializeField]
+    int coinSpent;
+
     public int Coin
     {
         get
@@ -176,7 +179,10 @@ public class PlayerStats : ScriptableObject {
             }
             if (value > coin)
             {
-                totalCoin = value - coin;
+                totalCoin += value - coin;
+            } else if (coin > value)
+            {
+                coinSpent += coin - value;
             }
             coin = value;
         }
@@ -231,6 +237,8 @@ public class PlayerStats : ScriptableObject {
         holeDamage = 10;
 
         coin = 0;
+        totalCoin = 0;
+        coinSpent = 0;
         if (OnCoinChange != null)
         {
             OnCoinChange(0, 0);
