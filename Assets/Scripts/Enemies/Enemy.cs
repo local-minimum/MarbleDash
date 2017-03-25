@@ -491,6 +491,7 @@ public class Enemy : MonoBehaviour {
         FloatTextManager.ShowText(transform, amount.ToString());
         attackedThisTurn = true;
         Splatterer.instance.SplatMe(transform);
+        PlayerRunData.stats.damageDealt += amount;
         Debug.Log("Hurt " + name);
     }
 
@@ -498,7 +499,8 @@ public class Enemy : MonoBehaviour {
     {
         FloatTextManager.ShowText(transform, amount.ToString());
         attackedThisTurn = true;
-
+        PlayerRunData.stats.damageDealt += amount;
+        PlayerRunData.stats.enemiesDestroyed++;
         board.Free(pos, Occupancy.Enemy);
         Splatterer.instance.SplatMe(transform);
         EnemySpawner.instance.iDied(this);

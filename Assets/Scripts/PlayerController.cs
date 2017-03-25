@@ -246,12 +246,13 @@ public class PlayerController : MonoBehaviour {
 
     public void HurtMe(int amount)
     {
-        
+        PlayerRunData.stats.damageTaken += amount;
         Debug.Log("Player hurt");
     }
 
     public void KillMe(int amount)
     {
+        PlayerRunData.stats.damageTaken += amount;
         Debug.Log("Player should be dead");
         KillReset("");
     }

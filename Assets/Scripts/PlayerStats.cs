@@ -83,10 +83,19 @@ public class PlayerStats : ScriptableObject {
 
         _currentLevel++;
     }
-    
-    public int damageTaken;
+
     #endregion
 
+    #region Damage
+    public int damageTaken;
+
+    public int damageDealt;
+
+    public int enemiesDestroyed;
+
+    #endregion
+
+    public int boxesBroken;
     #region Stores
     [SerializeField]
     System.Random _storeRnd;
