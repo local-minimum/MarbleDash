@@ -74,6 +74,9 @@ public class CoinBox : MonoBehaviour {
 
     void Break(int amount)
     {
+
+        PlayerRunData.stats.boxesBroken++;
+
         if (Random.value < lootProbability)
         {
 
