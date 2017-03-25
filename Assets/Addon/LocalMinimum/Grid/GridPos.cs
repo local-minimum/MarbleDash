@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace LocalMinimum.Grid
 {
+    public enum Neighbourhood {Cross, Eight };
 
     public enum Direction { None, North, South, West, East };
 
@@ -151,6 +152,26 @@ namespace LocalMinimum.Grid
         public bool IsZero()
         {
             return x == 0 && y == 0;
+        }
+
+        public IEnumerable<GridPos> GetNeighbours(Neighbourhood neighbourhood)
+        {
+            for (int x = -1; x < 2; x++)
+            {
+                for (int y = -1; y < 2; y++)
+                {
+                    if (neighbourhood == Neighbourhood.Cross && Mathf.Abs(x) == Mathf.Abs(y))
+                    {
+                        continue;
+                    }
+                    if (x == 0 && y == 0)
+                    {
+                        continue;
+                    }
+
+                    yield return new GridPos(this.x + x, this.y + y);
+                }
+            }
         }
     }
 
