@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LocalMinimum.Grid;
 
 public class CoinBox : MonoBehaviour {
 
@@ -68,8 +69,8 @@ public class CoinBox : MonoBehaviour {
         }
 
         mr.material.color = Color.Lerp(deadColor, healthyColor, destructable.PartialHealth);
-        //Debug.Log(destructable.PartialHealth);
-        //Animate to cracked state if not there
+
+        //TODO: Animate to cracked state if not there
     }
 
     void Break(int amount)

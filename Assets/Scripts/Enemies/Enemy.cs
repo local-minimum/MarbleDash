@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using LocalMinimum.Grid;
 
 public enum EnemyMode {None, Standing, Walking, Patroling, Hunting, Tracking, Homing, Haste,
     Attack1, Attack2, Attack3, Attack4, Attack5};

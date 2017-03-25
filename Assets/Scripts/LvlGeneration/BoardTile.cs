@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LocalMinimum.Grid;
 
 public enum TileType { Solid, Hole };
 

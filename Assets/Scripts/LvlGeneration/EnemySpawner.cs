@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using LocalMinimum.Grid;
 
 public class EnemySpawner : MonoBehaviour {
 
