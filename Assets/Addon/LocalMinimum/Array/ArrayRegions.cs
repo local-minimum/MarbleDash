@@ -71,13 +71,14 @@ namespace LocalMinimum.Boolean
             return labels;
         }
 
-        public static int[,] DistanceToEgde(this bool[,] filter, bool treatEdgeAsBorder = false)
+        public static int[,] DistanceToEgde(this bool[,] filter, bool treatBorderAsEdge = false)
         {
-            return filter.Distance(filter.Edge(treatEdgeAsBorder).ToCoordinates());
+            return filter.Distance(filter.Edge(treatBorderAsEdge));
         }
 
-        public static int[,] Distance(this bool[,] filter, List<Coordinate> sources)
+        public static int[,] Distance(this bool[,] filter, bool[,] seed)
         {
+            List<Coordinate> sources = seed.ToCoordinates();
             int w = filter.GetLength(0);
             int h = filter.GetLength(1);
             int lastX = w - 1;
@@ -87,6 +88,8 @@ namespace LocalMinimum.Boolean
 
             int index = 0;
             int length = sources.Count;
+            //Debug.Log(length);
+            int initialLength = length;
 
             while (index < length)
             {
@@ -99,12 +102,23 @@ namespace LocalMinimum.Boolean
                 {
                     if (distances[x - 1, y] < 0)
                     {
-                        sources.Add(new Coordinate(x - 1, y));
-                        length++;
+                        if (!seed[x - 1, y])
+                        {
+                            sources.Add(new Coordinate(x - 1, y));
+                            seed[x - 1, y] = true;
+                            length++;
+                        }
                     }
-                    else 
+                    else if (index >= initialLength)
                     {
-                        lowest = Mathf.Min(lowest, distances[x - 1, y]);
+                        if (lowest < 0)
+                        {
+                            lowest = distances[x - 1, y];
+                        }
+                        else
+                        {
+                            lowest = Mathf.Min(lowest, distances[x - 1, y]);
+                        }
                     }
                 }
 
@@ -112,23 +126,47 @@ namespace LocalMinimum.Boolean
                 {
                     if (distances[x + 1, y] < 0)
                     {
-                        sources.Add(new Coordinate(x + 1, y));
-                        length++;
+                        if (!seed[x + 1, y])
+                        {
+                            sources.Add(new Coordinate(x + 1, y));
+                            length++;
+                            seed[x + 1, y] = true;
+                        }
                     }
-                    else
+                    else if (index >= initialLength)
                     {
-                        lowest = Mathf.Min(lowest, distances[x + 1, y]);
+                        if (lowest < 0)
+                        {
+                            lowest = distances[x + 1, y];
+                        }
+                        else
+                        {
+                            lowest = Mathf.Min(lowest, distances[x + 1, y]);
+                        }
                     }
                 }
 
                 if (y != 0 && filter[x, y - 1])
                 {
-                    if (distances[x, y - 1] < 0) {
-                        sources.Add(new Coordinate(x, y - 1));
-                        length++;
+                    if (distances[x, y - 1] < 0)
+                    {
+                        if (!seed[x, y - 1])
+                        {
+                            sources.Add(new Coordinate(x, y - 1));
+                            length++;
+                            seed[x, y - 1] = true;
+                        }
                     }
-                    else {
-                        lowest = Mathf.Min(lowest, distances[x, y - 1]);
+                    else if (index >= initialLength)
+                    {
+                        if (lowest < 0)
+                        {
+                            lowest = distances[x, y - 1];
+                        }
+                        else
+                        {
+                            lowest = Mathf.Min(lowest, distances[x, y - 1]);
+                        }
                     }
                     
                 }
@@ -136,15 +174,27 @@ namespace LocalMinimum.Boolean
                 if (y != lastY && filter[x, y + 1]) {
                     if (distances[x, y + 1] < 0)
                     {
-                        sources.Add(new Coordinate(x, y + 1));
-                        length++;
+                        if (!seed[x, y + 1])
+                        {
+                            sources.Add(new Coordinate(x, y + 1));
+                            length++;
+                            seed[x, y + 1] = true;
+                        }
                     }
-                    else
+                    else if (index >= initialLength)
                     {
-                        lowest = Mathf.Min(lowest, distances[x, y + 1]);
+                        if (lowest < 0)
+                        {
+                            lowest = distances[x, y + 1];
+                        }
+                        else
+                        {
+                            lowest = Mathf.Min(lowest, distances[x, y + 1]);
+                        }
                     }
                 }
 
+                //Debug.Log(string.Format("{0}, {1} ({2}) {3} {4}", x, y, index, index >= initialLength, lowest));
                 distances[x, y] = lowest + 1;
                 index++;
             }
@@ -152,7 +202,7 @@ namespace LocalMinimum.Boolean
             return distances;
         }
 
-        public static bool[,] Edge(this bool[,] input, bool treatEdgeAsBorder = false)
+        public static bool[,] Edge(this bool[,] input, bool treatBorderAsEdge = false)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);
@@ -164,9 +214,14 @@ namespace LocalMinimum.Boolean
             {
                 for (int y = 0; y < h; y++)
                 {
+                    if (!input[x, y])
+                    {
+                        continue;
+                    }
+
                     if (x == 0 || y == 0 || x == lastX || y == lastY)
                     {
-                        if (treatEdgeAsBorder)
+                        if (treatBorderAsEdge)
                         {
                             output[x, y] = true;
                         }
@@ -260,10 +315,28 @@ namespace LocalMinimum.Boolean
             return input;
         }
 
+        public static int[,] Fill(this int[,] input, bool[,] filter, int value)
+        {
+            int w = filter.GetLength(0);
+            int h = filter.GetLength(1);
+            
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (filter[x, y])
+                    {
+                        input[x, y] = value;
+                    }
+                }
+            }
+            return input;
+        }
+
         public static bool[,] Invert(this bool[,] input)
         {
-            int w = 0;
-            int h = 0;
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
             bool[,] inverted = new bool[w, h];
             for (int x = 0; x < w; x++)
             {
@@ -281,5 +354,42 @@ namespace LocalMinimum.Boolean
             return inverted;
         }
 
-     }
+        public static int Max(this int[,] input)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            int val = input[0, 0];
+
+            for (int x =0; x<w; x++)
+            {
+                for (int y=0; y<h; y++)
+                {
+                    if (input[x, y] > val)
+                    {
+                        val = input[x, y];
+                    }
+                }
+            }
+            return val;
+        }
+
+        public static int Min(this int[,] input)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            int val = input[0, 0];
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (input[x, y] < val)
+                    {
+                        val = input[x, y];
+                    }
+                }
+            }
+            return val;
+        }
+    }
 }
