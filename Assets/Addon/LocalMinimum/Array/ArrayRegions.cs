@@ -22,6 +22,8 @@ namespace LocalMinimum.Boolean
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);
+            int lastX = w - 1;
+            int lastY = h - 1;
 
             int[,] labels = new int[w, h];
             labelCount = 0;
@@ -36,34 +38,47 @@ namespace LocalMinimum.Boolean
 
                     labelCount++;
 
-                    List<KeyValuePair<int, int>> queue = new List<KeyValuePair<int, int>>();
-
-                    queue.Add(new KeyValuePair<int, int>(x, y));
-
-                    while (queue.Count > 0)
+                    List<Coordinate> queue = new List<Coordinate>();
+                    queue.Clear();
+                    queue.Add(new Coordinate(x, y));
+                    input[x, y] = false;
+                    int index = 0;
+                    int length = 1;
+                    while (length > index)
                     {
 
-                        KeyValuePair<int, int> cur = queue[0];
-                        queue.RemoveAt(0);
-                        labels[cur.Key, cur.Value] = labelCount;
+                        Coordinate cur = queue[index];
+                        int curX = cur.x;
+                        int curY = cur.y;
 
-                        if (cur.Key > 0 && labels[cur.Key - 1, cur.Value] == 0)
+                        labels[curX, curY] = labelCount;
+
+                        if (curX > 0 && input[curX - 1, curY])
                         {
-                            queue.Add(new KeyValuePair<int, int>(cur.Key - 1, cur.Value));
+                            queue.Add(new Coordinate(curX - 1, curY));
+                            input[curX - 1, curY] = false;
+                            length++;
                         }
-                        if (cur.Value > 0 && labels[cur.Key, cur.Value - 1] == 0)
+                        if (curY > 0 && input[curX, curY - 1])
                         {
-                            queue.Add(new KeyValuePair<int, int>(cur.Key, cur.Value - 1));
+                            queue.Add(new Coordinate(curX, curY - 1));
+                            input[curX, curY - 1] = false;
+                            length++;
                         }
-                        if (cur.Key < w - 1 && labels[cur.Key + 1, cur.Value] == 0)
+                        if (curX != lastX && input[curX + 1, curY])
                         {
-                            queue.Add(new KeyValuePair<int, int>(cur.Key + 1, cur.Value));
+                            queue.Add(new Coordinate(curX + 1, curY));
+                            input[curX + 1, curY] = false;
+                            length++;
                         }
-                        if (cur.Value < h - 1 && labels[cur.Key, cur.Value + 1] == 0)
+                        if (curY != lastY && input[curX, curY + 1])
                         {
-                            queue.Add(new KeyValuePair<int, int>(cur.Value, cur.Key + 1));
+                            queue.Add(new Coordinate(curX, curY + 1));
+                            input[curX, curY + 1] = false;
+                            length++;
                         }
 
+                        index++;
                     }
                 }
             }

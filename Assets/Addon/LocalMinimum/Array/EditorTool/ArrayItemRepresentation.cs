@@ -32,6 +32,10 @@ namespace LocalMinimum.Boolean.Editor
 
         public void SetColor(Color c)
         {
+            if (r == null)
+            {
+                Awake();
+            }
             r.material.color = c;
         }
 

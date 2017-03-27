@@ -28,7 +28,13 @@ namespace LocalMinimum.Boolean.Editor {
 
         public void Clicked(int x, int y)
         {
-            if (boolIsActive)
+            if (!boolIsActive)
+            {
+                boolRepresentation[x, y] = !boolRepresentation[x, y];
+                boolIsActive = true;
+                UpdateEveryone();
+            }
+            else           
             {
                 boolRepresentation[x, y] = !boolRepresentation[x, y];
                 itemRepresentation[x, y].SetColor(Color.Lerp(colorZero, colorOne, boolRepresentation[x, y] ? 1 : 0));
@@ -107,6 +113,13 @@ namespace LocalMinimum.Boolean.Editor {
             UpdateEveryone();
         }
 
+        public void Label()
+        {
+            int labels;
+            intRepresentation = boolRepresentation.Label(out labels);
+            boolIsActive = false;
+            UpdateEveryone();
+        }
 
         void UpdateEveryone()
         {

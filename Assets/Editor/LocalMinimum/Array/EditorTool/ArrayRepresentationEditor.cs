@@ -43,6 +43,10 @@ namespace LocalMinimum.Boolean.Editor
             }
             EditorGUILayout.EndHorizontal();
 
+            if (GUILayout.Button("Label (bool -> int)"))
+            {
+                myTaget.Label();
+            }
 
         }
     }
