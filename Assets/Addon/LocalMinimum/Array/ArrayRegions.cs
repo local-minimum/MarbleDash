@@ -18,6 +18,16 @@ namespace LocalMinimum.Boolean
 
     public static class ArrayRegions
     {
+        /// <summary>
+        /// Enumerate pixel region in the boolean filter.
+        /// 
+        /// First identified region starts at 1.
+        /// 
+        /// It doesn't consider diagonal as evidence for connected region.
+        /// </summary>
+        /// <param name="input">The bolean filter for all regions</param>
+        /// <param name="labelCount">The number of regions identified</param>
+        /// <returns>Int array with positive values as region identifiers</returns>
         public static int[,] Label(this bool[,] input, out int labelCount)
         {
             int w = input.GetLength(0);
@@ -86,11 +96,24 @@ namespace LocalMinimum.Boolean
             return labels;
         }
 
+        /// <summary>
+        /// Gives each pixel the taxicab distance to nearest edge of region.
+        /// </summary>
+        /// <param name="filter">Regions</param>
+        /// <param name="treatBorderAsEdge">If border or array should be treated as an edge</param>
+        /// <returns>Int array with -1 meaning outside region and zero and positive the distance to edge</returns>
         public static int[,] DistanceToEgde(this bool[,] filter, bool treatBorderAsEdge = false)
         {
             return filter.Distance(filter.Edge(treatBorderAsEdge));
         }
 
+        /// <summary>
+        /// Gives the distance to the seed position(s) for all positions within the same
+        /// region as a seed.
+        /// </summary>
+        /// <param name="filter">The regions</param>
+        /// <param name="seed">The seeding positions marked as true</param>
+        /// <returns>Int array with -1 meaning outside region and zero being seed and positive distance to seed</returns>
         public static int[,] Distance(this bool[,] filter, bool[,] seed)
         {
             List<Coordinate> sources = seed.ToCoordinates();
@@ -217,6 +240,12 @@ namespace LocalMinimum.Boolean
             return distances;
         }
 
+        /// <summary>
+        /// Get the edge of regions
+        /// </summary>
+        /// <param name="input">The regions</param>
+        /// <param name="treatBorderAsEdge">If border or array should be treated as an edge</param>
+        /// <returns>An edge filter</returns>
         public static bool[,] Edge(this bool[,] input, bool treatBorderAsEdge = false)
         {
             int w = input.GetLength(0);
@@ -271,6 +300,14 @@ namespace LocalMinimum.Boolean
             return output;
         }
 
+        /// <summary>
+        /// Produces a boolean filter for where int array equals a value.
+        /// 
+        /// Useful in combination with Label
+        /// </summary>
+        /// <param name="input">the input data</param>
+        /// <param name="value">the sought value</param>
+        /// <returns>boolean filter array</returns>
         public static bool[,] Equals(this int[,] input, int value)
         {
             int w = input.GetLength(0);
@@ -290,6 +327,11 @@ namespace LocalMinimum.Boolean
             return output;
         }
 
+        /// <summary>
+        /// Converts a bolean filter array to list of coordinates of true values.
+        /// </summary>
+        /// <param name="input">Filter array</param>
+        /// <returns>Coordinate list</returns>
         public static List<Coordinate> ToCoordinates(this bool[,] input)
         {
             List<Coordinate> coordinates = new List<Coordinate>();
@@ -310,11 +352,24 @@ namespace LocalMinimum.Boolean
             return coordinates;
         }
 
+        /// <summary>
+        /// Creates a filled array with certain value.
+        /// </summary>
+        /// <param name="w">Width</param>
+        /// <param name="h">Height</param>
+        /// <param name="value">Fill value</param>
+        /// <returns>int array with only fill value</returns>
         public static int[,] Fill(int w, int h, int value)
         {
             return new int[w, h].Fill(value);
         }
 
+        /// <summary>
+        /// Creates a filled array with certain value.
+        /// </summary>
+        /// <param name="input">the template array</param>
+        /// <param name="value">Fill value</param>
+        /// <returns>int array with only fill value</returns>
         public static int[,] Fill(this int[,] input, int value)
         {
             int w = input.GetLength(0);
@@ -330,6 +385,13 @@ namespace LocalMinimum.Boolean
             return input;
         }
 
+        /// <summary>
+        /// Fills a region of input with a value
+        /// </summary>
+        /// <param name="input">The original data</param>
+        /// <param name="filter">Where to fill</param>
+        /// <param name="value">fill value</param>
+        /// <returns>updated data</returns>
         public static int[,] Fill(this int[,] input, bool[,] filter, int value)
         {
             int w = filter.GetLength(0);
@@ -348,6 +410,11 @@ namespace LocalMinimum.Boolean
             return input;
         }
 
+        /// <summary>
+        /// Inverts true and false states of array
+        /// </summary>
+        /// <param name="input">the data</param>
+        /// <returns>the inverted data</returns>
         public static bool[,] Invert(this bool[,] input)
         {
             int w = input.GetLength(0);
@@ -369,6 +436,11 @@ namespace LocalMinimum.Boolean
             return inverted;
         }
 
+        /// <summary>
+        /// Maximum value in array
+        /// </summary>
+        /// <param name="input">2d int array</param>
+        /// <returns>maximum value</returns>
         public static int Max(this int[,] input)
         {
             int w = input.GetLength(0);
@@ -388,6 +460,11 @@ namespace LocalMinimum.Boolean
             return val;
         }
 
+        /// <summary>
+        /// Minumum value in array
+        /// </summary>
+        /// <param name="input">2d int array</param>
+        /// <returns>minimum value</returns>
         public static int Min(this int[,] input)
         {
             int w = input.GetLength(0);
@@ -405,6 +482,194 @@ namespace LocalMinimum.Boolean
                 }
             }
             return val;
+        }
+
+        /// <summary>
+        /// Number of true values in array
+        /// </summary>
+        /// <param name="input">Bolean 2d array</param>
+        /// <returns>true value count</returns>
+        public static int Count(this bool[,] input)
+        {
+            int count = 0;
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (input[x, y])
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Elementwise application of a function
+        /// </summary>
+        /// <param name="input">Data</param>
+        /// <param name="func">The function</param>
+        /// <returns>Result</returns>
+        public static int[,] Map(this int[,] input, System.Func<int, int> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    input[x, y] = func(input[x, y]);
+                    
+                }
+            }
+            return input;
+
+        }
+
+        /// <summary>
+        /// Elementwise application of a function
+        /// </summary>
+        /// <param name="input">Data</param>
+        /// <param name="func">The function</param>
+        /// <returns>Result</returns>
+        public static bool[,] Map(this int[,] input, System.Func<int, bool> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            bool[,] result = new bool[w, h];
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    result[x, y] = func(input[x, y]);
+
+                }
+            }
+            return result;
+
+        }
+
+        /// <summary>
+        /// Apply function to corresponding elements and get result
+        /// </summary>
+        /// <param name="input">First array</param>
+        /// <param name="other">Second array</param>
+        /// <param name="func">function that takes two elements, one from each</param>
+        /// <returns>Outpu of function</returns>
+        public static int[,] Zip(this int[,] input, int[,] other, System.Func<int, int, int> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    input[x, y] = func(input[x, y], other[x, y]);
+
+                }
+            }
+            return input;
+        }
+
+        /// <summary>
+        /// Apply function to corresponding elements and get result
+        /// </summary>
+        /// <param name="input">First array</param>
+        /// <param name="other">Second array</param>
+        /// <param name="func">function that takes two elements, one from each</param>
+        /// <returns>Outpu of function</returns>
+        public static int[,] Zip(this int[,] input, bool[,] other, System.Func<int, bool, int> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    input[x, y] = func(input[x, y], other[x, y]);
+
+                }
+            }
+            return input;
+        }
+
+        /// <summary>
+        /// Apply function to corresponding elements and get result
+        /// </summary>
+        /// <param name="input">First array</param>
+        /// <param name="other">Second array</param>
+        /// <param name="func">function that takes two elements, one from each</param>
+        /// <returns>Outpu of function</returns>
+        public static bool[,] Zip(this int[,] input, int[,] other, System.Func<int, int, bool> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            bool[,] result = new bool[w, h];
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    result[x, y] = func(input[x, y], other[x, y]);
+
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Apply function to corresponding elements and get result
+        /// </summary>
+        /// <param name="input">First array</param>
+        /// <param name="other">Second array</param>
+        /// <param name="func">function that takes two elements, one from each</param>
+        /// <returns>Outpu of function</returns>
+        public static bool[,] Zip(this int[,] input, bool[,] other, System.Func<int, bool, bool> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            bool[,] result = new bool[w, h];
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    result[x, y] = func(input[x, y], other[x, y]);
+
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Apply function to corresponding elements and get result
+        /// </summary>
+        /// <param name="input">First array</param>
+        /// <param name="other">Second array</param>
+        /// <param name="func">function that takes two elements, one from each</param>
+        /// <returns>Outpu of function</returns>
+        public static bool[,] Zip(this bool[,] input, bool[,] other, System.Func<bool, bool, bool> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    input[x, y] = func(input[x, y], other[x, y]);
+
+                }
+            }
+            return input;
         }
     }
 }
