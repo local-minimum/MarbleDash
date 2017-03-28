@@ -163,11 +163,11 @@ namespace LocalMinimum.Arrays
         /// <param name="filter">The regions</param>
         /// <param name="seed">The seeding positions marked as true</param>
         /// <returns>Int array with -1 meaning outside region and zero being seed and positive distance to seed</returns>
-        public static int[,] Distance(this bool[,] filter, Coordinate seed)
+        public static int[,] Distance(this bool[,] filter, Coordinate seed, Neighbourhood neighbourhood = Neighbourhood.Cross)
         {
             bool[,] arrSeed = new bool[filter.GetLength(0), filter.GetLength(1)];
             arrSeed[seed.x, seed.y] = true;
-            return filter.Distance(arrSeed);
+            return filter.Distance(arrSeed, neighbourhood);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace LocalMinimum.Arrays
         /// <param name="filter">The regions</param>
         /// <param name="seed">The seeding positions marked as true</param>
         /// <returns>Int array with -1 meaning outside region and zero being seed and positive distance to seed</returns>
-        public static int[,] Distance(this bool[,] filter, bool[,] seed)
+        public static int[,] Distance(this bool[,] filter, bool[,] seed, Neighbourhood neighbourhood = Neighbourhood.Cross)
         {
             List<Coordinate> sources = seed.ToCoordinates();
             int w = filter.GetLength(0);
@@ -191,6 +191,8 @@ namespace LocalMinimum.Arrays
             int length = sources.Count;
             //Debug.Log(length);
             int initialLength = length;
+
+            bool testDiagonals = neighbourhood == Neighbourhood.Eight;
 
             while (index < length)
             {
@@ -295,6 +297,107 @@ namespace LocalMinimum.Arrays
                     }
                 }
 
+                if (testDiagonals)
+                {
+
+                    if (x != 0 && y != lastY && filter[x - 1, y + 1])
+                    {
+                        if (distances[x - 1, y + 1] < 0)
+                        {
+                            if (!seed[x - 1, y + 1])
+                            {
+                                sources.Add(new Coordinate(x - 1, y + 1));
+                                length++;
+                                seed[x - 1, y + 1] = true;
+                            }
+                        }
+                        else if (index >= initialLength)
+                        {
+                            if (lowest < 0)
+                            {
+                                lowest = distances[x - 1, y + 1];
+                            }
+                            else
+                            {
+                                lowest = Mathf.Min(lowest, distances[x - 1, y + 1]);
+                            }
+                        }
+                    }
+
+
+                    if (x != lastX && y != lastY && filter[x + 1, y + 1])
+                    {
+                        if (distances[x + 1, y + 1] < 0)
+                        {
+                            if (!seed[x + 1, y + 1])
+                            {
+                                sources.Add(new Coordinate(x + 1, y + 1));
+                                length++;
+                                seed[x + 1, y + 1] = true;
+                            }
+                        }
+                        else if (index >= initialLength)
+                        {
+                            if (lowest < 0)
+                            {
+                                lowest = distances[x + 1, y + 1];
+                            }
+                            else
+                            {
+                                lowest = Mathf.Min(lowest, distances[x + 1, y + 1]);
+                            }
+                        }
+                    }
+
+                    if (x != lastX && y != 0 && filter[x + 1, y - 1])
+                    {
+                        if (distances[x + 1, y - 1] < 0)
+                        {
+                            if (!seed[x + 1, y - 1])
+                            {
+                                sources.Add(new Coordinate(x + 1, y - 1));
+                                length++;
+                                seed[x + 1, y - 1] = true;
+                            }
+                        }
+                        else if (index >= initialLength)
+                        {
+                            if (lowest < 0)
+                            {
+                                lowest = distances[x + 1, y - 1];
+                            }
+                            else
+                            {
+                                lowest = Mathf.Min(lowest, distances[x + 1, y - 1]);
+                            }
+                        }
+                    }
+
+                    if (x != 0 && y != 0 && filter[x - 1, y - 1])
+                    {
+                        if (distances[x - 1, y - 1] < 0)
+                        {
+                            if (!seed[x - 1, y - 1])
+                            {
+                                sources.Add(new Coordinate(x - 1, y - 1));
+                                length++;
+                                seed[x - 1, y - 1] = true;
+                            }
+                        }
+                        else if (index >= initialLength)
+                        {
+                            if (lowest < 0)
+                            {
+                                lowest = distances[x - 1, y - 1];
+                            }
+                            else
+                            {
+                                lowest = Mathf.Min(lowest, distances[x - 1, y - 1]);
+                            }
+                        }
+                    }
+
+                }
                 //Debug.Log(string.Format("{0}, {1} ({2}) {3} {4}", x, y, index, index >= initialLength, lowest));
                 distances[x, y] = lowest + 1;
                 index++;
@@ -562,8 +665,9 @@ namespace LocalMinimum.Arrays
             {
                 Coordinate cur = positions[0];
                 int val = input[cur.x, cur.y];
-                for (int i = 0; i < l; i++)
+                for (int i = 1; i < l; i++)
                 {
+                    cur = positions[i];
                     int curVal = input[cur.x, cur.y];
                     if (val > curVal)
                     {
@@ -627,6 +731,30 @@ namespace LocalMinimum.Arrays
                 }
             }
             return input;
+
+        }
+
+        /// <summary>
+        /// Elementwise application of a function
+        /// </summary>
+        /// <param name="input">Data</param>
+        /// <param name="func">The function</param>
+        /// <returns>Result</returns>
+        public static int[,] Map(this bool[,] input, System.Func<bool, int> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            int[,] output = new int[w, h];
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    output[x, y] = func(input[x, y]);
+
+                }
+            }
+            return output;
 
         }
 

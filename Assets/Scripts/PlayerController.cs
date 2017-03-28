@@ -184,7 +184,8 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    public int[,] distanceToPlayer;
+    public int[,] enemyDistancesCross;
+    public int[,] enemyDistancesEight;
      
     GridPos offTile = new GridPos(-1, -1);
     GridPos _onTile = new GridPos(-1, -1);
@@ -208,7 +209,8 @@ public class PlayerController : MonoBehaviour {
                 if (boardGrid.IsValidPosition(value))
                 {
                     boardGrid.Occupy(value, Occupancy.Player);
-                    distanceToPlayer = lvl.playerConnectivity.HasValue(lvl.playerConnectivity[value.x, value.y]).Distance(value);
+                    enemyDistancesCross = lvl.enemyConnectivity4.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value);
+                    enemyDistancesEight = lvl.enemyConnectivity8.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value, LocalMinimum.Arrays.Neighbourhood.Eight);
                     Debug.Log("Player on tile " + value);
                 }
             }
@@ -262,4 +264,50 @@ public class PlayerController : MonoBehaviour {
         Debug.Log("Player should be dead");
         KillReset("");
     }
+
+#if UNITY_EDITOR
+
+    [SerializeField]
+    Vector3 gizmoOffset;
+
+    public enum GizmoContent { EnemyCross, EnemyEight};
+
+    [SerializeField]
+    GizmoContent gizmoContent;
+
+    private void OnDrawGizmosSelected()
+    {
+
+        int[,] connectivity;
+        switch (gizmoContent)
+        {
+            case GizmoContent.EnemyCross:
+                connectivity = enemyDistancesCross;
+                break;
+            case GizmoContent.EnemyEight:
+                connectivity = enemyDistancesEight;
+                break;
+            default:
+                connectivity = null;
+                break;
+        }
+
+        if (connectivity == null)
+        {
+            return;
+        }
+
+        int size = boardGrid.Size;
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+
+                Gizmos.DrawIcon(boardGrid.transform.TransformPoint(boardGrid.GetLocalPosition(x, y)) + gizmoOffset, "numberIcon_" + (connectivity[x, y] < 21 ? connectivity[x, y].ToString() : "plus") + ".png", true);
+            }
+        }
+    }
+
+#endif
+
 }

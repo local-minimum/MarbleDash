@@ -80,5 +80,33 @@ namespace LocalMinimum.Arrays
             return offsets;
         }
 
+        public static string ToCSV(this int[,] input, string delim = ",", string newRow = "\n")
+        {
+            string output = "";
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            int lastY = h - 1;
+            int lastX = w - 1;
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    output += input[x, y];
+
+                    if (y != lastY)
+                    {
+                        output += delim;
+                    }
+                }
+
+                if (x != lastX)
+                {
+                    output += newRow;
+                }
+            }
+            return output;
+
+        }
     }
 }

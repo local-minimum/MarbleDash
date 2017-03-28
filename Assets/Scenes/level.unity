@@ -3787,6 +3787,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   board: {fileID: 2025833196}
   forceMultiplier: 1
+  gizmoOffset: {x: 0.2, y: 1.2, z: 0.2}
+  gizmoContent: 1
 --- !u!114 &1113420216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13021,11 +13023,14 @@ MonoBehaviour:
   ball: {fileID: 1113420215}
   boxPlacer: {fileID: 2025833202}
   enemySpawner: {fileID: 2025833203}
-  labels: 0
+  playerConnectivityLabels: 0
+  enemyConnectivityLabels4: 0
+  enemyConnectivityLabels8: 0
   dropHeight: 7
   turnTime: 1.4
   firstTickDelay: 2
-  gizmoOffset: {x: 0.2, y: 1, z: 0.2}
+  gizmoOffset: {x: 0.2, y: 1.2, z: 0.2}
+  gizmoContent: 0
 --- !u!114 &2025833202
 MonoBehaviour:
   m_ObjectHideFlags: 0

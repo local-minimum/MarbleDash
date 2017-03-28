@@ -241,7 +241,7 @@ public class Enemy : MonoBehaviour {
                 ExecuteHunt(player, turnTime);
                 break;
             case EnemyMode.Homing:
-                ExecutHoming(player, turnTime);
+                ExecuteHoming(player, turnTime);
                 break;
             case EnemyMode.Haste:
                 ExecutHaste(player, turnTime);
@@ -355,10 +355,16 @@ public class Enemy : MonoBehaviour {
 
     }
 
-    protected virtual void ExecutHoming(PlayerController player, float turnTime)
+    protected virtual void ExecuteHoming(PlayerController player, float turnTime)
     {
-        int[,] context = player.distanceToPlayer.GetContext(3, pos);
+        int[,] context = player.enemyDistancesEight.GetContext(3, pos);
+
+        //Debug.Log(context.ToCSV());
+
         bool[,] bestMoves = context.HasMinValue();
+
+        //Debug.Log(bestMoves.Map(e => e ? 1 : 0).ToCSV());
+
         Coordinate[] valid = Convolution.ContextFilterToOffsets(bestMoves);
 
         Move(SelectMoveOffset(valid), turnTime);
@@ -388,7 +394,7 @@ public class Enemy : MonoBehaviour {
     protected virtual void ExecuteHunt(PlayerController player, float turnTime)
     {
 
-        int[,] context = player.distanceToPlayer.GetContext(3, pos);
+        int[,] context = player.enemyDistancesEight.GetContext(3, pos);
         bool[,] bestMoves = context.HasMinValue();
         Coordinate[] valid = Convolution.ContextFilterToOffsets(bestMoves);
 
