@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace LocalMinimum.Grid
@@ -18,6 +17,16 @@ namespace LocalMinimum.Grid
         {
             this.x = x;
             this.y = y;
+        }
+
+        static public implicit operator Boolean.Coordinate(GridPos pos)
+        {
+            return new Boolean.Coordinate(pos.x, pos.y);
+        }
+
+        static public implicit operator int[](GridPos pos)
+        {
+            return new int[] { pos.x, pos.y };
         }
 
         public void RotateCW()

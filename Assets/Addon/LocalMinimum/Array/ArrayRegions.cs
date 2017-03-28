@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace LocalMinimum.Boolean
 {
+    /// <summary>
+    /// Minimal x, y coordinate struct with no functionality.
+    /// 
+    /// For more features, GridPos has equal structure and implicit casts exists.
+    /// </summary>
     public struct Coordinate
     {
         public int x;
@@ -13,6 +18,11 @@ namespace LocalMinimum.Boolean
         {
             this.x = x;
             this.y = y;
+        }
+
+        public static implicit operator Grid.GridPos(Coordinate coord)
+        {
+            return new Grid.GridPos(coord.x, coord.y);
         }
     }
 
