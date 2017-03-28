@@ -124,6 +124,20 @@ namespace LocalMinimum.Boolean
         /// <param name="filter">The regions</param>
         /// <param name="seed">The seeding positions marked as true</param>
         /// <returns>Int array with -1 meaning outside region and zero being seed and positive distance to seed</returns>
+        public static int[,] Distance(this bool[,] filter, Coordinate seed)
+        {
+            bool[,] arrSeed = new bool[filter.GetLength(0), filter.GetLength(1)];
+            arrSeed[seed.x, seed.y] = true;
+            return filter.Distance(arrSeed);
+        }
+
+        /// <summary>
+        /// Gives the distance to the seed position(s) for all positions within the same
+        /// region as a seed.
+        /// </summary>
+        /// <param name="filter">The regions</param>
+        /// <param name="seed">The seeding positions marked as true</param>
+        /// <returns>Int array with -1 meaning outside region and zero being seed and positive distance to seed</returns>
         public static int[,] Distance(this bool[,] filter, bool[,] seed)
         {
             List<Coordinate> sources = seed.ToCoordinates();
@@ -318,7 +332,7 @@ namespace LocalMinimum.Boolean
         /// <param name="input">the input data</param>
         /// <param name="value">the sought value</param>
         /// <returns>boolean filter array</returns>
-        public static bool[,] Equals(this int[,] input, int value)
+        public static bool[,] HasValue(this int[,] input, int value)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using LocalMinimum.Grid;
+using LocalMinimum.Boolean;
 
 public class PlayerController : MonoBehaviour {
 
@@ -28,6 +29,7 @@ public class PlayerController : MonoBehaviour {
 
     Destructable destructable;
     BoardGrid boardGrid;
+    Level lvl;
 
     private void Awake()
     {
@@ -41,6 +43,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Start () {
+        lvl = Level.instance;
         rb = GetComponent<Rigidbody>();
         groundLayer = LayerMask.NameToLayer("ground");
         destructableLayer = LayerMask.NameToLayer("destructables");
@@ -71,8 +74,8 @@ public class PlayerController : MonoBehaviour {
     {
         StoreSwapper.instance.HideAllStores();
         PlayerRunData.stats.Reset();
-        Level.instance.Generate();
-        Level.instance.Implement();
+        lvl.Generate();
+        lvl.Implement();
     }
 
 	void Update () {
@@ -181,6 +184,8 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    public int[,] distanceToPlayer;
+     
     GridPos offTile = new GridPos(-1, -1);
     GridPos _onTile = new GridPos(-1, -1);
 
@@ -203,6 +208,7 @@ public class PlayerController : MonoBehaviour {
                 if (boardGrid.IsValidPosition(value))
                 {
                     boardGrid.Occupy(value, Occupancy.Player);
+                    distanceToPlayer = lvl.regionLabels.HasValue(lvl.regionLabels[value.x, value.y]).Distance(value);
                     Debug.Log("Player on tile " + value);
                 }
             }
