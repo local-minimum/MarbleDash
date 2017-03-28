@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace LocalMinimum.Arrays
 {
+
+    public enum Neighbourhood { Cross, Eight };
+
     /// <summary>
     /// Minimal x, y coordinate struct with no functionality.
     /// 
@@ -38,13 +41,13 @@ namespace LocalMinimum.Arrays
         /// <param name="input">The bolean filter for all regions</param>
         /// <param name="labelCount">The number of regions identified</param>
         /// <returns>Int array with positive values as region identifiers</returns>
-        public static int[,] Label(this bool[,] input, out int labelCount)
+        public static int[,] Label(this bool[,] input, out int labelCount, Neighbourhood neighbourhood = Neighbourhood.Cross)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);
             int lastX = w - 1;
             int lastY = h - 1;
-
+            bool doEight = neighbourhood == Neighbourhood.Eight;
             int[,] labels = new int[w, h];
             labelCount = 0;
             for (int x = 0; x < w; x++)
@@ -79,23 +82,59 @@ namespace LocalMinimum.Arrays
                             input[curX - 1, curY] = false;
                             length++;
                         }
+
                         if (curY > 0 && input[curX, curY - 1])
                         {
                             queue.Add(new Coordinate(curX, curY - 1));
                             input[curX, curY - 1] = false;
                             length++;
                         }
+
                         if (curX != lastX && input[curX + 1, curY])
                         {
                             queue.Add(new Coordinate(curX + 1, curY));
                             input[curX + 1, curY] = false;
                             length++;
                         }
+
                         if (curY != lastY && input[curX, curY + 1])
                         {
                             queue.Add(new Coordinate(curX, curY + 1));
                             input[curX, curY + 1] = false;
                             length++;
+                        }
+
+                        if (doEight)
+                        {
+
+                            if (curX > 0 && curY > 0 && input[curX - 1, curY - 1])
+                            {
+                                queue.Add(new Coordinate(curX - 1, curY - 1));
+                                input[curX - 1, curY - 1] = false;
+                                length++;
+                            }
+
+                            if (curX > 0 && curY != lastY && input[curX - 1, curY + 1])
+                            {
+                                queue.Add(new Coordinate(curX - 1, curY + 1));
+                                input[curX - 1, curY + 1] = false;
+                                length++;
+                            }
+
+                            if (curX != lastX && curY != lastY && input[curX + 1, curY + 1])
+                            {
+                                queue.Add(new Coordinate(curX + 1, curY + 1));
+                                input[curX + 1, curY + 1] = false;
+                                length++;
+                            }
+
+                            if (curX != lastX && curY > 0 && input[curX + 1, curY - 1])
+                            {
+                                queue.Add(new Coordinate(curX + 1, curY - 1));
+                                input[curX + 1, curY - 1] = false;
+                                length++;
+                            }
+
                         }
 
                         index++;

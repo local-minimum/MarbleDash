@@ -268,8 +268,6 @@ public class BoardGrid : MonoBehaviour {
         }
         return filt;
     }
-
-    public enum Neighbourhood { Cross, Eight};
     
     public IEnumerable<GridPos> Neighbours(GridPos pos, Neighbourhood neighbourhood)
     {

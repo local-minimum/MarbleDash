@@ -185,7 +185,7 @@ public class BallPath : MonoBehaviour {
 
     public void SetPath(int length)
     {
-        List<GridPos> crossNeighbours = boardGrid.Neighbours(startPos, BoardGrid.Neighbourhood.Cross).ToList();
+        List<GridPos> crossNeighbours = boardGrid.Neighbours(startPos, Neighbourhood.Cross).ToList();
         GridPos direction = crossNeighbours[PlayerRunData.stats.lvlRnd.Range(0, crossNeighbours.Count)] - startPos;
         GridPos pos = startPos + direction;
         System.Random rnd = PlayerRunData.stats.lvlRnd;
@@ -199,7 +199,7 @@ public class BallPath : MonoBehaviour {
             boardGrid.Occupy(pos, Occupancy.BallPath);
 
             crossNeighbours = boardGrid
-                .Neighbours(pos, BoardGrid.Neighbourhood.Cross)
+                .Neighbours(pos, Neighbourhood.Cross)
                 .Where(e => !path.Contains(e) && e != startPos)
                 .ToList();
 
@@ -220,7 +220,7 @@ public class BallPath : MonoBehaviour {
                     next = crossNeighbours[rnd.Range(0, crossNeighbours.Count)];                    
 
                     nextNeighbours = boardGrid
-                        .Neighbours(next, BoardGrid.Neighbourhood.Eight)
+                        .Neighbours(next, Neighbourhood.Eight)
                         .Where(e => !boardGrid.IsFree(e))
                         .ToList();
                    
@@ -266,7 +266,7 @@ public class BallPath : MonoBehaviour {
                             boardGrid.Free(path[idE]);
                         }
                         path.Clear();
-                        crossNeighbours = boardGrid.Neighbours(startPos, BoardGrid.Neighbourhood.Cross).ToList();
+                        crossNeighbours = boardGrid.Neighbours(startPos, Neighbourhood.Cross).ToList();
                         next = crossNeighbours[rnd.Range(0, crossNeighbours.Count)];
                         pos = startPos;
                         //Debug.Log("Clearing path");

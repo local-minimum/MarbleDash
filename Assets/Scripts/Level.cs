@@ -50,11 +50,19 @@ public class Level : MonoBehaviour {
     EnemySpawner enemySpawner;
 
     [HideInInspector]
-    public int labels;
+    public int playerConnectivityLabels;
 
-    public bool[,] passableFilter;
+    public int[,] playerConnectivity;
 
-    public int[,] regionLabels;
+    [HideInInspector]
+    public int enemyConnectivityLabels4;
+
+    public int[,] enemyConnectivity4;
+
+    [HideInInspector]
+    public int enemyConnectivityLabels8;
+
+    public int[,] enemyConnectivity8;
 
     bool previousLevel = false;
 
@@ -152,8 +160,15 @@ public class Level : MonoBehaviour {
         boxPlacer.Generate();
         bumperPlacer.AllocateBumpPlacements();
         enemySpawner.AllocatePlacesAndDecideEnemies();
-        passableFilter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
-        regionLabels = passableFilter.Label(out labels);
+
+        bool[,] filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.Hole);
+        playerConnectivity = filter.Label(out playerConnectivityLabels);
+
+        filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
+        enemyConnectivity4 = filter.Label(out enemyConnectivityLabels4);
+
+        filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
+        enemyConnectivity8 = filter.Label(out enemyConnectivityLabels8, Neighbourhood.Eight);
         previousLevel = true;
     }
 
@@ -191,11 +206,29 @@ public class Level : MonoBehaviour {
     [SerializeField]
     Vector3 gizmoOffset;
 
+    public enum GizmoContent { Player, EnemyCross, EnemyEight};
+
+    [SerializeField]
+    GizmoContent gizmoContent;
+
     private void OnDrawGizmosSelected()
     {
-        if (regionLabels == null)
+        if (playerConnectivity == null)
         {
             return;
+        }
+        int[,] connectivity;
+        switch (gizmoContent)
+        {
+            case GizmoContent.EnemyCross:
+                connectivity = enemyConnectivity4;
+                break;
+            case GizmoContent.EnemyEight:
+                connectivity = enemyConnectivity8;
+                break;
+            default:
+                connectivity = playerConnectivity;
+                break;
         }
 
         int size = boardGrid.Size;
@@ -204,7 +237,7 @@ public class Level : MonoBehaviour {
             for (int y = 0; y < size; y++)
             {
 
-                Gizmos.DrawIcon(boardGrid.transform.TransformPoint(boardGrid.GetLocalPosition(x, y)) + gizmoOffset, "numberIcon_" + (regionLabels[x, y] < 21 ? regionLabels[x, y].ToString() : "plus") + ".png", true);
+                Gizmos.DrawIcon(boardGrid.transform.TransformPoint(boardGrid.GetLocalPosition(x, y)) + gizmoOffset, "numberIcon_" + (connectivity[x, y] < 21 ? connectivity[x, y].ToString() : "plus") + ".png", true);
             }
         }
     }

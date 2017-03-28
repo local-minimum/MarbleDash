@@ -208,7 +208,7 @@ public class PlayerController : MonoBehaviour {
                 if (boardGrid.IsValidPosition(value))
                 {
                     boardGrid.Occupy(value, Occupancy.Player);
-                    distanceToPlayer = lvl.regionLabels.HasValue(lvl.regionLabels[value.x, value.y]).Distance(value);
+                    distanceToPlayer = lvl.playerConnectivity.HasValue(lvl.playerConnectivity[value.x, value.y]).Distance(value);
                     Debug.Log("Player on tile " + value);
                 }
             }
