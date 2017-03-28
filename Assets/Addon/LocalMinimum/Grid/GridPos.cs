@@ -19,9 +19,9 @@ namespace LocalMinimum.Grid
             this.y = y;
         }
 
-        static public implicit operator Boolean.Coordinate(GridPos pos)
+        static public implicit operator Arrays.Coordinate(GridPos pos)
         {
-            return new Boolean.Coordinate(pos.x, pos.y);
+            return new Arrays.Coordinate(pos.x, pos.y);
         }
 
         static public implicit operator int[](GridPos pos)

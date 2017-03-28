@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using LocalMinimum.Boolean;
+using LocalMinimum.Arrays;
 
 public delegate void TurnTick(PlayerController player, int turnIndex, float tickTime);
 public delegate void NewLevel();
@@ -185,4 +185,29 @@ public class Level : MonoBehaviour {
         ball.Inert();
         ball.EmoteStatus();
     }
+
+#if UNITY_EDITOR
+
+    [SerializeField]
+    Vector3 gizmoOffset;
+
+    private void OnDrawGizmosSelected()
+    {
+        if (regionLabels == null)
+        {
+            return;
+        }
+
+        int size = boardGrid.Size;
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+
+                Gizmos.DrawIcon(boardGrid.transform.TransformPoint(boardGrid.GetLocalPosition(x, y)) + gizmoOffset, "numberIcon_" + (regionLabels[x, y] < 21 ? regionLabels[x, y].ToString() : "plus") + ".png", true);
+            }
+        }
+    }
+
+#endif
 }

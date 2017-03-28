@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using LocalMinimum.Grid;
-using LocalMinimum.Boolean;
+using LocalMinimum.Arrays;
 
 public class PlayerController : MonoBehaviour {
 

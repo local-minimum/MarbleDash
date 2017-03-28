@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using LocalMinimum.Grid;
+using LocalMinimum.Arrays;
 
 public enum EnemyMode {None, Standing, Walking, Patroling, Hunting, Tracking, Homing, Haste,
     Attack1, Attack2, Attack3, Attack4, Attack5};
@@ -221,6 +222,8 @@ public class Enemy : MonoBehaviour {
 
     void InvokeSelectedModeExecution(float turnTime, PlayerController player)
     {
+        Debug.Log(behaviour);
+
         switch (behaviour)
         {
             case EnemyMode.None:
@@ -354,6 +357,11 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecutHoming(PlayerController player, float turnTime)
     {
+        int[,] context = player.distanceToPlayer.GetContext(3, pos);
+        bool[,] bestMoves = context.HasMinValue();
+        Coordinate[] valid = Convolution.ContextFilterToOffsets(bestMoves);
+
+        Move(SelectMoveOffset(valid), turnTime);
 
     }
 
@@ -367,8 +375,9 @@ public class Enemy : MonoBehaviour {
             Occupancy.WallBreakable,
             Occupancy.WallIllusory,
             Occupancy.Hole);
-        GridPos moveDirection = SelectMoveOffset(BoardGrid.ContextToOffsets(context));
-        Move(moveDirection, turnTime);
+
+        Coordinate[] valid = Convolution.ContextFilterToOffsets(context.Map(e => e == 1));        
+        Move(SelectMoveOffset(valid), turnTime);
     }
 
     protected virtual void ExecuteStanding(float turnTime)
@@ -378,13 +387,12 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecuteHunt(PlayerController player, float turnTime)
     {
-        GridPos playerDirection = (player.onTile - pos);
-        int[,] context = DirectionFilteredContext(
-        board.GetOccupancyContext(pos, Occupancy.Free, Occupancy.BallPath, Occupancy.Player),
-        playerDirection.NineNormalized);
 
-        GridPos moveDirection = SelectMoveOffset(BoardGrid.ContextToOffsets(context));
-        Move(moveDirection, turnTime);
+        int[,] context = player.distanceToPlayer.GetContext(3, pos);
+        bool[,] bestMoves = context.HasMinValue();
+        Coordinate[] valid = Convolution.ContextFilterToOffsets(bestMoves);
+
+        Move(SelectMoveOffset(valid), turnTime);
         
     }
 
@@ -410,14 +418,14 @@ public class Enemy : MonoBehaviour {
 
     }
 
-    protected virtual GridPos SelectMoveOffset(List<GridPos> offsets)
+    protected virtual GridPos SelectMoveOffset(Coordinate[] offsets)
     {
-        if (offsets.Count == 0)
+        if (offsets.Length == 0)
         {
             behaviour = EnemyMode.Standing;
             return new GridPos(0, 0);
         }
-        return offsets[Random.Range(0, offsets.Count)];
+        return offsets[Random.Range(0, offsets.Length)];
     }
 
     protected virtual void ExecuteAttack1(PlayerController player, float turnTime)

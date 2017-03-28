@@ -4043,7 +4043,7 @@ ParticleSystem:
   moveWithTransform: 2
   moveWithCustomTransform: {fileID: 400166932}
   scalingMode: 1
-  randomSeed: -1904816516
+  randomSeed: -612854480
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -6727,7 +6727,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 454896886
+  randomSeed: -1435445836
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -9773,7 +9773,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 770417600
+  randomSeed: 484690908
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -13021,9 +13021,11 @@ MonoBehaviour:
   ball: {fileID: 1113420215}
   boxPlacer: {fileID: 2025833202}
   enemySpawner: {fileID: 2025833203}
+  labels: 0
   dropHeight: 7
   turnTime: 1.4
   firstTickDelay: 2
+  gizmoOffset: {x: 0.2, y: 1, z: 0.2}
 --- !u!114 &2025833202
 MonoBehaviour:
   m_ObjectHideFlags: 0

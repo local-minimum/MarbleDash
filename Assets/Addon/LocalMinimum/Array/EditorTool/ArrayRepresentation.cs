@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LocalMinimum.Boolean.Editor {
+namespace LocalMinimum.Arrays.Editor {
 
     public class ArrayRepresentation : MonoBehaviour {
 

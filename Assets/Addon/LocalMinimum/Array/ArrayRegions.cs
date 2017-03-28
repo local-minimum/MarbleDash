@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LocalMinimum.Boolean
+namespace LocalMinimum.Arrays
 {
     /// <summary>
     /// Minimal x, y coordinate struct with no functionality.
@@ -351,6 +351,7 @@ namespace LocalMinimum.Boolean
             return output;
         }
 
+
         /// <summary>
         /// Converts a bolean filter array to list of coordinates of true values.
         /// </summary>
@@ -506,6 +507,41 @@ namespace LocalMinimum.Boolean
                 }
             }
             return val;
+        }
+
+        /// <summary>
+        /// Minumum value in array
+        /// </summary>
+        /// <param name="input">2d int array</param>
+        /// <param name="filter">filter</param>
+        /// <returns>minimum value</returns>
+        public static int Min(this int[,] input, bool[,] filter)
+        {
+            List<Coordinate> positions = filter.ToCoordinates();
+            int l = positions.Count;
+            if (l > 0)
+            {
+                Coordinate cur = positions[0];
+                int val = input[cur.x, cur.y];
+                for (int i = 0; i < l; i++)
+                {
+                    int curVal = input[cur.x, cur.y];
+                    if (val > curVal)
+                    {
+                        val = curVal;
+                    }
+                }
+                return val;
+            } else
+            {
+                throw new System.ArgumentException("Filter had no true value");
+            }
+            
+        }
+
+        public static bool[,] HasMinValue(this int[,] input, int omitValue = -1)
+        {
+            return input.HasValue(input.Min(input.Map(e => e != omitValue)));
         }
 
         /// <summary>

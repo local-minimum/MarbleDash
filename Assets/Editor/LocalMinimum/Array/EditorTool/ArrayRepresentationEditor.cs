@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 
 
-namespace LocalMinimum.Boolean.Editor
+namespace LocalMinimum.Arrays.Editor
 {
     [CustomEditor(typeof(ArrayRepresentation))]
     public class ArrayRepresentationEditor : UnityEditor.Editor

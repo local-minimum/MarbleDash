@@ -359,11 +359,8 @@ public class BoardGrid : MonoBehaviour {
 
     public int[,] GetNotOccupancyContext(GridPos pos, params Occupancy[] filter)
     {
-        int mask = 1 << (int)filter[0];
-        for (int i = 1; i < filter.Length; i++)
-        {
-            mask |= 1 << (int)filter[i];
-        }
+        int mask = GetOccupancyFilter(filter); 
+                    
         int[,] ret = new int[3, 3];
         for (int yOff = -1; yOff < 2; yOff++)
         {
@@ -402,28 +399,6 @@ public class BoardGrid : MonoBehaviour {
         }
 
         return count;
-    }
-
-    public static List<GridPos> ContextToOffsets(int[,] context)
-    {
-        List<GridPos> relPositions = new List<GridPos>();
-        for (int yOff = -1; yOff < 2; yOff++)
-        {
-            for (int xOff = -1; xOff < 2; xOff++)
-            {
-                if (xOff == 0 && yOff == 0)
-                {
-                    continue;
-                }
-
-                if (context[xOff + 1, yOff + 1] == 1)
-                {
-                    relPositions.Add(new GridPos(xOff, yOff));
-                }
-            }
-        }
-
-        return relPositions;
     }
 
     [SerializeField, Range(-1, 1)]

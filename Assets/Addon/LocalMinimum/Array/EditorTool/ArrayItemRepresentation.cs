@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace LocalMinimum.Boolean.Editor
+namespace LocalMinimum.Arrays.Editor
 {
 
 
