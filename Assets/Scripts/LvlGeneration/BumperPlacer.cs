@@ -29,7 +29,7 @@ public class BumperPlacer : MonoBehaviour {
         if (bumperTargetCount > 0)
         {
             GridPos[] positions = board.Find(Occupancy.Free)
-                .Where(e => BoardGrid.CountContextOccupied(board.GetOccupancyNonFree(e), false, true) < 2)
+                .Where(e => BoardGrid.CountContextOccupied(board.GetOccupancyContextNonFree(e), false, true) < 2)
                 .ToArray()
                 .Shuffle();
 

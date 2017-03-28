@@ -245,13 +245,7 @@ public class BoardGrid : MonoBehaviour {
 
     public IEnumerable<GridPos> FindIsOnlyAny(params Occupancy[] occupancy)
     {
-
-        int filt = 1 << (int)occupancy[0];
-        for (int i=1; i<occupancy.Length; i++)
-        {
-            filt |= 1 << (int)occupancy[i];
-        }
-        int notFilt = ~filt;
+        int notFilt = ~GetOccupancyFilter(occupancy);
 
         for (int x = 0; x < size; x++)
         {
@@ -263,6 +257,16 @@ public class BoardGrid : MonoBehaviour {
                 }
             }
         }
+    }
+
+    int GetOccupancyFilter(params Occupancy[] occupancy)
+    {
+        int filt = 1 << (int)occupancy[0];
+        for (int i = 1; i < occupancy.Length; i++)
+        {
+            filt |= 1 << (int)occupancy[i];
+        }
+        return filt;
     }
 
     public enum Neighbourhood { Cross, Eight};
@@ -286,7 +290,26 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
-    public int[,] GetOccupancyNonFree(GridPos pos)
+    public bool[,] GetFilterNotAny(params Occupancy[] occupancy)
+    {
+        bool[,] filter = new bool[size, size];
+        int occupancyFilter = GetOccupancyFilter(occupancy);
+
+        for (int x=0; x<size; x++)
+        {
+            for (int y=0; y<size; y++)
+            {
+                if ((gridOccupancy[x, y] & occupancyFilter) == 0)
+                {
+                    filter[x, y] = true;
+                }
+            }
+        }
+
+        return filter;
+    }
+
+    public int[,] GetOccupancyContextNonFree(GridPos pos)
     {
         int mask = 1 <<  (int) Occupancy.Free;    
         int[,] ret = new int[3, 3];

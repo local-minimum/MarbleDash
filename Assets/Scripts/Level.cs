@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LocalMinimum.Boolean;
 
 public delegate void TurnTick(PlayerController player, int turnIndex, float tickTime);
 public delegate void NewLevel();
@@ -47,6 +48,13 @@ public class Level : MonoBehaviour {
 
     [SerializeField]
     EnemySpawner enemySpawner;
+
+    [HideInInspector]
+    public int labels;
+
+    public bool[,] passableFilter;
+
+    public int[,] regionLabels;
 
     bool previousLevel = false;
 
@@ -144,6 +152,8 @@ public class Level : MonoBehaviour {
         boxPlacer.Generate();
         bumperPlacer.AllocateBumpPlacements();
         enemySpawner.AllocatePlacesAndDecideEnemies();
+        passableFilter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
+        regionLabels = passableFilter.Label(out labels);
         previousLevel = true;
     }
 
