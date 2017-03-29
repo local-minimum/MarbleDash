@@ -3,22 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using LocalMinimum.Grid;
-
-public static class CollectionsHelper
-{
-    public static GridPos[] Shuffle(this GridPos[] data)
-    {
-        List<KeyValuePair<double, GridPos>> list = new List<KeyValuePair<double, GridPos>>();
-
-
-        for(int i=0; i<data.Length; i++)
-        {
-            list.Add(new KeyValuePair<double, GridPos>(PlayerRunData.stats.lvlRnd.NextDouble(), data[i]));
-        }
-      
-        return list.OrderBy(e => e.Key).Select(e => e.Value).ToArray();
-    }
-}
+using LocalMinimum.Collections;
 
 public class BoxPlacer : MonoBehaviour {
 

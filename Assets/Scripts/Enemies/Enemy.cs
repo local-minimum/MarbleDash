@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using LocalMinimum.Grid;
 using LocalMinimum.Arrays;
+using LocalMinimum.Collections;
 
 public enum EnemyMode {None, Standing, Walking, Patroling, Hunting, Tracking, Homing, Haste,
     Attack1, Attack2, Attack3, Attack4, Attack5};
@@ -152,6 +153,7 @@ public class Enemy : MonoBehaviour {
     GridPos contextPosition;
     int[,] context;
     List<GridPos> targetCheckpoints = new List<GridPos>();
+    int activeTargetIndex;
     int[,] targetDistanceMap;
     int turnsWithThisAction;
     EnemyMode previousBehaviour = EnemyMode.None;
@@ -178,6 +180,7 @@ public class Enemy : MonoBehaviour {
 
     private void Start()
     {
+        lvl = Level.instance;
         anim = GetComponent<Animator>();
     }
 
@@ -367,17 +370,13 @@ public class Enemy : MonoBehaviour {
             targetCheckpoints.Add(player.onTile);
         }
 
-        context = player.enemyDistancesEight.GetContext(3, pos);
-        contextPosition = pos;
+        SetContextFromDistanceMapAndPosition(player.enemyDistancesEight);
 
-        //Set those context that are occupied by others as inaccessible
-        //but keep value for self position
-        int centerVal = context[1, 1];
-        context = context.Zip(
-            board.GetOccupancyContext(pos, Occupancy.Enemy, Occupancy.Player), 
-            (a, b) => b == 1 ? -1 : a);
-        context[1, 1] = centerVal;
+        SelectContextDirectionAndMove(turnTime);
+    }
 
+    protected void SelectContextDirectionAndMove(float turnTime)
+    {
         //Debug.Log(context.ToCSV());
 
         bool[,] bestMoves = context.HasMinValue();
@@ -390,21 +389,61 @@ public class Enemy : MonoBehaviour {
 
     }
 
+    [SerializeField]
+    protected int preferredWalkTargetDistance = 7;
+
+    [SerializeField]
+    protected int clearWalkTargetsAtLength = 5;
+
+
     protected virtual void ExecuteWalking(float turnTime)
     {
-        context = board.GetNotOccupancyContext(pos,
-            Occupancy.BallPathTarget,
-            Occupancy.Enemy,
-            Occupancy.Obstacle,
-            Occupancy.Wall,
-            Occupancy.WallBreakable,
-            Occupancy.WallIllusory,
-            Occupancy.Hole);
+        if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count && pos != targetCheckpoints[activeTargetIndex])
+        {
+            //TODO: Maybe more stuck testing like not having approached target for several rounds
 
+            GridPos target = targetCheckpoints[activeTargetIndex];
+
+            if (lvl.enemyConnectivity8[pos.x, pos.y] != lvl.enemyConnectivity8[target.x, target.y])
+            {
+                activeTargetIndex++;
+            }
+
+        } else if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count - 1)
+        {
+            activeTargetIndex++;            
+            SetTargetDistances(activeTargetIndex);
+        } else
+        {
+            //New target
+            Coordinate target = GetPossibleTargetsInMyRegion(preferredWalkTargetDistance, pos);
+            if (activeTargetIndex >= clearWalkTargetsAtLength - 1)
+            {
+                targetCheckpoints.Clear();
+            }
+            targetCheckpoints.Add(pos);
+            targetCheckpoints.Add(target);
+            activeTargetIndex = targetCheckpoints.Count - 1;
+            SetTargetDistances(activeTargetIndex);
+        }
+
+        SetContextFromDistanceMapAndPosition(targetDistanceMap);
+
+        SelectContextDirectionAndMove(turnTime);
+    }
+
+    protected void SetContextFromDistanceMapAndPosition(int[,] distances)
+    {
+        context = distances.GetContext(3, pos);
         contextPosition = pos;
 
-        Coordinate[] valid = Convolution.ContextFilterToOffsets(context.Map(e => e == 1));        
-        Move(SelectMoveOffset(valid), turnTime);
+        //Set those context that are occupied by others as inaccessible
+        //but keep value for self position
+        int centerVal = context[1, 1];
+        context = context.Zip(
+            board.GetOccupancyContext(pos, Occupancy.Enemy, Occupancy.Player),
+            (a, b) => b == 1 ? -1 : a);
+        context[1, 1] = centerVal;
     }
 
     protected virtual void ExecuteStanding(float turnTime)
@@ -602,6 +641,22 @@ public class Enemy : MonoBehaviour {
 
     }
 
+    protected virtual Coordinate GetPossibleTargetsInMyRegion(int preferredDistance, Coordinate pos)
+    {
+        int targetRegion = lvl.enemyConnectivity8[pos.x, pos.y];
+        int[,] distanceToMe = lvl.enemyConnectivity8.HasValue(targetRegion).Distance(pos, LocalMinimum.Arrays.Neighbourhood.Eight);
+        preferredDistance = Mathf.Min(distanceToMe.Max(), preferredDistance);
+        return distanceToMe.Where(e => e >= preferredDistance).ToArray().Shuffle().First();
+
+    }
+
+    protected virtual void SetTargetDistances(int targetIndex)
+    {
+        GridPos target = targetCheckpoints[targetIndex];
+        int targetRegion = lvl.enemyConnectivity8[target.x, target.y];
+        targetDistanceMap = lvl.enemyConnectivity8.HasValue(targetRegion).Distance(target, LocalMinimum.Arrays.Neighbourhood.Eight);
+        activeTargetIndex = targetIndex;
+    }
 
 #if UNITY_EDITOR
 
@@ -620,22 +675,44 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     Color gizmosTargetColor = Color.magenta;
 
+    [SerializeField]
+    Color gizmosEnemyToTargetColor = Color.cyan;
+
     private void OnDrawGizmosSelected()
     {
+
+        //BEHAVIOUR MOOD
 
         Gizmos.DrawIcon(
             board.transform.TransformPoint(board.GetLocalPosition(pos)) + gizmoModeOffset,
             "numberIcon_" + ((int) behaviour) + ".png", true);
 
-        Gizmos.color = gizmosTargetColor;
-        Vector3 prev = transform.position + gizmosTargetOffset;
-        for (int i=0, l=targetCheckpoints.Count; i<l; i++)
+        //CHECKPOINTS
+
+        if (targetCheckpoints != null && targetCheckpoints.Count > 0)
         {
-            Vector3 cur = board.transform.TransformPoint(board.GetLocalPosition(targetCheckpoints[i])) + gizmosTargetOffset;
-            Gizmos.DrawLine(prev, cur);
-            Gizmos.DrawCube(cur, Vector3.one * gizmosTargetSize);
-            prev = cur;
+            Gizmos.color = gizmosTargetColor;
+            Vector3 prev = board.transform.TransformPoint(board.GetLocalPosition(targetCheckpoints[0])) + gizmosTargetOffset;
+            Vector3 cur;
+            for (int i = 1, l = targetCheckpoints.Count; i < l; i++)
+            {
+                cur = board.transform.TransformPoint(board.GetLocalPosition(targetCheckpoints[i])) + gizmosTargetOffset;
+                Gizmos.DrawLine(prev, cur);
+                Gizmos.DrawCube(cur, Vector3.one * gizmosTargetSize);
+                prev = cur;
+            }
+
+            if (activeTargetIndex >= 0 && activeTargetIndex < targetCheckpoints.Count)
+            {
+                prev = transform.position + gizmosTargetOffset;
+                cur = board.transform.TransformPoint(board.GetLocalPosition(targetCheckpoints[activeTargetIndex])) + gizmosTargetOffset;
+                Gizmos.color = gizmosEnemyToTargetColor;
+                Gizmos.DrawLine(prev, cur);
+            }
         }
+
+
+        // CONTEXT
 
         if (context == null)
         {

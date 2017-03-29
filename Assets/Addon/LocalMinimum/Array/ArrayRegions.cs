@@ -898,5 +898,27 @@ namespace LocalMinimum.Arrays
             }
             return input;
         }
+
+        public static List<Coordinate> Where<T>(this T[,] input, System.Func<T, bool> func)
+        {
+            List<Coordinate> coords = new List<Coordinate>();
+
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (func(input[x, y]))
+                    {
+                        coords.Add(new Coordinate(x, y));
+                    }
+                    
+                }
+            }
+
+            return coords;
+        }
     }
 }
