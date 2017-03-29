@@ -219,8 +219,11 @@ public class PlayerController : MonoBehaviour {
                 if (boardGrid.IsValidPosition(value))
                 {
                     boardGrid.Occupy(value, Occupancy.Player);
-                    enemyDistancesCross = lvl.enemyConnectivity4.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value);
-                    enemyDistancesEight = lvl.enemyConnectivity8.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value, LocalMinimum.Arrays.Neighbourhood.Eight);
+                    if (lvl != null && lvl.enemyConnectivity4 != null)
+                    {
+                        enemyDistancesCross = lvl.enemyConnectivity4.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value);
+                        enemyDistancesEight = lvl.enemyConnectivity8.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value, LocalMinimum.Arrays.Neighbourhood.Eight);
+                    }
                     Debug.Log("Player on tile " + value);
                 }
             }
