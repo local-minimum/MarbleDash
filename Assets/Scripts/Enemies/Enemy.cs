@@ -357,6 +357,9 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecuteHoming(PlayerController player, float turnTime)
     {
+
+        //TODO: Filter out alternatives if needed
+
         int[,] context = player.enemyDistancesEight.GetContext(3, pos);
 
         //Debug.Log(context.ToCSV());
