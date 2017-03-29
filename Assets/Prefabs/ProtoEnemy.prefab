@@ -307,6 +307,11 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 0
   jumpHeightAxis: {x: 0, y: 0, z: 1}
+  gizmoContextOffset: {x: 0.3, y: 2, z: 0.3}
+  gizmoModeOffset: {x: -0.3, y: 2, z: -0.3}
+  gizmosTargetOffset: {x: 0, y: 2, z: 0}
+  gizmosTargetSize: 0.3
+  gizmosTargetColor: {r: 1, g: 0, b: 1, a: 1}
 --- !u!114 &114761515697560430
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -27,6 +27,14 @@ public class PlayerController : MonoBehaviour {
 
     bool grounded = false;
 
+    public bool Grounded
+    {
+        get
+        {
+            return grounded;
+        }
+    }
+
     Destructable destructable;
     BoardGrid boardGrid;
     Level lvl;

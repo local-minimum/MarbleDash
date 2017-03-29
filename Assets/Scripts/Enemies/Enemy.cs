@@ -149,6 +149,11 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     int attackRange = 2;
 
+    GridPos contextPosition;
+    int[,] context;
+    List<GridPos> targetCheckpoints = new List<GridPos>();
+    int[,] targetDistanceMap;
+
     public void SetPosition(GridPos pos, BoardGrid board)
     {        
         this.pos = pos;
@@ -173,18 +178,6 @@ public class Enemy : MonoBehaviour {
     {
         anim = GetComponent<Animator>();
     }
-
-    /*
-    private void OnEnable()
-    {
-        lvl = Level.instance;
-        lvl.OnTurnTick += Lvl_OnTurnTick;   
-    }
-
-    private void OnDisable()
-    {
-        lvl.OnTurnTick -= Lvl_OnTurnTick;  
-    }*/
 
     public void Lvl_OnTurnTick(PlayerController player, int turnIndex, float turnTime)
     {
@@ -357,10 +350,22 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecuteHoming(PlayerController player, float turnTime)
     {
+        if (player.Grounded)
+        {
+            targetCheckpoints.Clear();
+            targetCheckpoints.Add(player.onTile);
+        }
 
-        //TODO: Filter out alternatives if needed
+        context = player.enemyDistancesEight.GetContext(3, pos);
+        contextPosition = pos;
 
-        int[,] context = player.enemyDistancesEight.GetContext(3, pos);
+        //Set those context that are occupied by others as inaccessible
+        //but keep value for self position
+        int centerVal = context[1, 1];
+        context = context.Zip(
+            board.GetOccupancyContext(pos, Occupancy.Enemy, Occupancy.Player), 
+            (a, b) => b == 1 ? -1 : a);
+        context[1, 1] = centerVal;
 
         //Debug.Log(context.ToCSV());
 
@@ -376,7 +381,7 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecuteWalking(float turnTime)
     {
-        int[,] context = board.GetNotOccupancyContext(pos,
+        context = board.GetNotOccupancyContext(pos,
             Occupancy.BallPathTarget,
             Occupancy.Enemy,
             Occupancy.Obstacle,
@@ -384,6 +389,8 @@ public class Enemy : MonoBehaviour {
             Occupancy.WallBreakable,
             Occupancy.WallIllusory,
             Occupancy.Hole);
+
+        contextPosition = pos;
 
         Coordinate[] valid = Convolution.ContextFilterToOffsets(context.Map(e => e == 1));        
         Move(SelectMoveOffset(valid), turnTime);
@@ -396,13 +403,8 @@ public class Enemy : MonoBehaviour {
 
     protected virtual void ExecuteHunt(PlayerController player, float turnTime)
     {
-
-        int[,] context = player.enemyDistancesEight.GetContext(3, pos);
-        bool[,] bestMoves = context.HasMinValue();
-        Coordinate[] valid = Convolution.ContextFilterToOffsets(bestMoves);
-
-        Move(SelectMoveOffset(valid), turnTime);
-        
+        //Default implementation doesn't separate the two with regards to execution
+        ExecuteHoming(player, turnTime);        
     }
 
     int[,] DirectionFilteredContext(int[,] context, GridPos direction)
@@ -588,4 +590,66 @@ public class Enemy : MonoBehaviour {
         transform.localPosition = targetPos; 
 
     }
+
+
+#if UNITY_EDITOR
+
+    [SerializeField]
+    Vector3 gizmoContextOffset;
+
+    [SerializeField]
+    Vector3 gizmoModeOffset;
+
+    [SerializeField]
+    Vector3 gizmosTargetOffset;
+
+    [SerializeField]
+    float gizmosTargetSize = 0.2f;
+
+    [SerializeField]
+    Color gizmosTargetColor = Color.magenta;
+
+    private void OnDrawGizmosSelected()
+    {
+
+        Gizmos.DrawIcon(
+            board.transform.TransformPoint(board.GetLocalPosition(pos)) + gizmoModeOffset,
+            "numberIcon_" + ((int) behaviour) + ".png", true);
+
+        Gizmos.color = gizmosTargetColor;
+        Vector3 prev = transform.position + gizmosTargetOffset;
+        for (int i=0, l=targetCheckpoints.Count; i<l; i++)
+        {
+            Vector3 cur = board.transform.TransformPoint(board.GetLocalPosition(targetCheckpoints[i])) + gizmosTargetOffset;
+            Gizmos.DrawLine(prev, cur);
+            Gizmos.DrawCube(cur, Vector3.one * gizmosTargetSize);
+            prev = cur;
+        }
+
+        if (context == null)
+        {
+            return;
+        }
+
+        int w = context.GetLength(0);
+        int h = context.GetLength(1);
+        int minX = contextPosition.x - (w - 1) / 2;
+        int minY = contextPosition.y - (h - 1) / 2;
+        int maxX = minX + w;
+        int maxY = minY + h;
+
+        for (int offX = minX, x = 0; offX < maxX; offX++, x++)
+        {
+            for (int offY = minY, y = 0; offY < maxY; offY++, y++)
+            {
+
+                Gizmos.DrawIcon(
+                    board.transform.TransformPoint(board.GetLocalPosition(offX, offY)) + gizmoContextOffset,
+                    "numberIcon_" + (context[x, y] < 21 ? context[x, y].ToString() : "plus") + ".png", true);
+            }
+        }
+    }
+
+#endif
+
 }
