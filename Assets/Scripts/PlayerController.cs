@@ -76,6 +76,8 @@ public class PlayerController : MonoBehaviour {
     public void Thaw()
     {
         rb.isKinematic = false;
+        rb.detectCollisions = true;
+        rb.WakeUp();
     }
 
     public void KillReset(string message)

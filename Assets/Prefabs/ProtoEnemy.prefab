@@ -182,7 +182,7 @@ MeshCollider:
   serializedVersion: 2
   m_Convex: 1
   m_InflateMesh: 1
-  m_SkinWidth: 0.1
+  m_SkinWidth: 0.15
   m_Mesh: {fileID: 4300000, guid: 37e097ad82b83e54b951d4d6efb60951, type: 3}
 --- !u!65 &65945257759012174
 BoxCollider:
@@ -243,7 +243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tiers:
   - difficulty: 1
-    availableModes: 06000000060000000600000008000000
+    availableModes: 02000000020000000200000008000000
     startHealthMin: 4
     startHealthMax: 5
     minAttack: 01000000
@@ -262,6 +262,8 @@ MonoBehaviour:
   localPlacementOffset: {x: 0, y: 0, z: 0.5}
   attackRange: 1
   huntRange: 4
+  preferredWalkTargetDistance: 7
+  clearWalkTargetsAtLength: 5
   attackDelay: 0.4
   jumpFractionDuration: 0.4
   heightCurve:
@@ -312,6 +314,7 @@ MonoBehaviour:
   gizmosTargetOffset: {x: 0, y: 2, z: 0}
   gizmosTargetSize: 0.3
   gizmosTargetColor: {r: 1, g: 0, b: 1, a: 1}
+  gizmosEnemyToTargetColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!114 &114761515697560430
 MonoBehaviour:
   m_ObjectHideFlags: 1
