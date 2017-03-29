@@ -153,6 +153,8 @@ public class Enemy : MonoBehaviour {
     int[,] context;
     List<GridPos> targetCheckpoints = new List<GridPos>();
     int[,] targetDistanceMap;
+    int turnsWithThisAction;
+    EnemyMode previousBehaviour = EnemyMode.None;
 
     public void SetPosition(GridPos pos, BoardGrid board)
     {        
@@ -203,6 +205,15 @@ public class Enemy : MonoBehaviour {
 
         }
 
+        if (behaviour == previousBehaviour)
+        {
+            turnsWithThisAction++;
+        } else
+        {
+            turnsWithThisAction = 0;
+        }
+        previousBehaviour = behaviour;
+
         UpdateCoolDown(turnIndex);
         InvokeSelectedModeExecution(turnTime, player);
         //Debug.Log(behaviour);
@@ -215,7 +226,7 @@ public class Enemy : MonoBehaviour {
 
     void InvokeSelectedModeExecution(float turnTime, PlayerController player)
     {
-        Debug.Log(behaviour);
+        //Debug.Log(behaviour);
 
         switch (behaviour)
         {
