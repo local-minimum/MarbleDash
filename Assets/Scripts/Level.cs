@@ -152,6 +152,25 @@ public class Level : MonoBehaviour {
         PlayerController.instance.Thaw();
     }
 
+    [SerializeField, Range(1, 20)]
+    int enterStoreEach = 7;
+
+    public void MakeNextLevel()
+    {
+        StopTheMotion();
+
+        if (PlayerRunData.stats.currentLevel % enterStoreEach == 0)
+        {
+            StoreSwapper.instance.EnterStore();
+        }
+        else {
+            PlayerRunData.stats.NextLevel();
+            Generate();
+            StoreSwapper.instance.HideAllStores();
+            Implement();
+        }
+    }
+
     public void Generate()
     {
         ballPath.GeneratePath(previousLevel);

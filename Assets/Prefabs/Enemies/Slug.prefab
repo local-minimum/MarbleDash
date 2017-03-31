@@ -228,15 +228,28 @@ MonoBehaviour:
   - difficulty: 2
     firstLevel: 1
     availableModes: 0200000001000000
-    startHealthMin: 8
-    startHealthMax: 20
+    startHealthMin: 10
+    startHealthMax: 13
+    minAttack: 
+    maxAttack: 
+    behaviourProbWeights:
+    - 0.9
+    - 0.1
+    behaviourCoolDowns: 0000000003000000
+    damageAbsorption: 01000000
+    damageReflection: 
+  - difficulty: 3
+    firstLevel: 3
+    availableModes: 0200000001000000
+    startHealthMin: 10
+    startHealthMax: 13
     minAttack: 
     maxAttack: 
     behaviourProbWeights:
     - 0.9
     - 0.1
     behaviourCoolDowns: 0000000008000000
-    damageAbsorption: 01000000
+    damageAbsorption: 0100000001000000
     damageReflection: 
   bodyProperties: {fileID: 114462557831289960}
   attackAnim: []
@@ -296,8 +309,8 @@ MonoBehaviour:
   gizmosTargetSize: 0.2
   gizmosTargetColor: {r: 1, g: 0, b: 1, a: 1}
   gizmosEnemyToTargetColor: {r: 0, g: 1, b: 1, a: 1}
-  trailLengthBase: 2
-  trailLengthPerTier: 1
+  trailLengthBase: 1
+  trailLengthPerTier: 2
   turnTimeMultiplier: 1.75
   slimedColor: {r: 0.60784805, g: 0.6985294, b: 0.041089963, a: 1}
   slimeColorIntensity: 0.75

@@ -3786,7 +3786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 2025833196}
-  forceMultiplier: 1
+  forceMultiplier: 0.5
   gizmoOffset: {x: 0.2, y: 1.2, z: 0.2}
   gizmoContent: 1
 --- !u!114 &1113420216
@@ -12920,7 +12920,7 @@ MonoBehaviour:
   rotationMagnitude: 8
   outerEulerAxis: {x: 1, y: 0, z: 0}
   innerEulerAxis: {x: 0, y: 1, z: 0}
-  delay: 0.082
+  delay: 0.7
 --- !u!4 &2025833197
 Transform:
   m_ObjectHideFlags: 0
@@ -13027,8 +13027,9 @@ MonoBehaviour:
   enemyConnectivityLabels4: 0
   enemyConnectivityLabels8: 0
   dropHeight: 7
-  turnTime: 1.4
+  turnTime: 0.7
   firstTickDelay: 2
+  enterStoreEach: 7
   gizmoOffset: {x: 0.2, y: 1.2, z: 0.2}
   gizmoContent: 0
 --- !u!114 &2025833202

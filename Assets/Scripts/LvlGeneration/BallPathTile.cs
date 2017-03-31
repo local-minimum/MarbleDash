@@ -348,11 +348,7 @@ public class BallPathTile : MonoBehaviour {
         ShadowCastingMode onShadows = playerRend.shadowCastingMode;
         playerRend.shadowCastingMode = ShadowCastingMode.Off;
         yield return new WaitForSeconds(delta);
-        Level.instance.StopTheMotion();
-        PlayerRunData.stats.NextLevel();
-        Level.instance.Generate();
-        StoreSwapper.instance.HideAllStores();
-        Level.instance.Implement();
+        Level.instance.MakeNextLevel();
         yield return new WaitForSeconds(0.5f);
         playerRend.shadowCastingMode = onShadows;
         yield return new WaitForSeconds(delta);

@@ -45,7 +45,7 @@ public class EnemyTypeSlug : Enemy {
     IEnumerator<WaitForSeconds> DelaySlimeUpdate(GridPos target, float turnTime)
     {
         //Debug.Log(target);
-        int trailLength = trailLengthPerTier * PlayerRunData.stats.currentLevel + trailLengthBase;
+        int trailLength = trailLengthPerTier * (activeTierIndex + 1) + trailLengthBase;
         
         yield return new WaitForSeconds(timeBeforeUnslime * turnTime);
 
@@ -65,7 +65,6 @@ public class EnemyTypeSlug : Enemy {
         slimedTiles.Add(addTile);
         addTile.Slime(slimedColor, slimeColorIntensity);
         
-
     }
 
     protected override bool ForceBehaviourSequence()

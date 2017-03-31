@@ -7,7 +7,7 @@ using LocalMinimum.Arrays;
 using LocalMinimum.Collections;
 
 public enum EnemyMode {None, Standing, Walking, Patroling, Hunting, Tracking, Homing, Haste,
-    Attack1, Attack2, Attack3, Attack4, Attack5};
+    Attack1, Attack2, Attack3, Attack4, Attack5, Hiding};
 
 
 public class Enemy : MonoBehaviour {
@@ -18,10 +18,12 @@ public class Enemy : MonoBehaviour {
     EnemyTier[] tiers;
     
     EnemyTier activeTier;
+    protected int activeTierIndex;
 
     public void SetTier(int tier)
     {
         activeTier = tiers[tier];
+        activeTargetIndex = tier;
         bodyProperties.SetInitial(activeTier);
     }
 
@@ -55,7 +57,7 @@ public class Enemy : MonoBehaviour {
 
     Level lvl;
 
-    EnemyMode behaviour = EnemyMode.Patroling;
+    EnemyMode behaviour = EnemyMode.None;
 
     public EnemyMode Behaviour
     {
@@ -280,6 +282,10 @@ public class Enemy : MonoBehaviour {
             case EnemyMode.Attack5:
                 ExecuteAttack5(player, turnTime);
                 break;
+            case EnemyMode.Hiding:
+                ExecuteHiding(player, turnTime);
+                break;
+
         }
     }
 
@@ -359,6 +365,11 @@ public class Enemy : MonoBehaviour {
 
     #region EnemyModeExecutions
 
+    protected virtual GridPos ExecuteHiding(PlayerController player, float turnTime)
+    {
+        throw new System.NotImplementedException();
+    }
+
     protected virtual GridPos ExecuteAttack2(PlayerController player, float turnTime)
     {
         throw new System.NotImplementedException();
@@ -433,6 +444,11 @@ public class Enemy : MonoBehaviour {
             if (lvl.enemyConnectivity8[pos.x, pos.y] != lvl.enemyConnectivity8[target.x, target.y])
             {
                 activeTargetIndex++;
+            }
+
+            if (targetDistanceMap == null)
+            {
+                SetTargetDistances(activeTargetIndex);
             }
 
         } else if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count - 1)
