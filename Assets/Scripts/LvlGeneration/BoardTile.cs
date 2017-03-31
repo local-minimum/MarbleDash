@@ -33,4 +33,36 @@ public class BoardTile : MonoBehaviour {
             return _pos;
         }
     }
+
+    int slimeCount;
+
+    Color baseColor;
+    Renderer rend;
+
+    void Awake()
+    {
+        rend = GetComponentInChildren<Renderer>();
+        baseColor = rend.material.color;
+    }
+
+    void OnEnable()
+    {
+        rend.material.color = baseColor;
+        slimeCount = 0;
+    }
+
+    public void Slime(Color slimeColor, float amount)
+    {
+        slimeCount++;
+        rend.material.color = Color.Lerp(baseColor, slimeColor, amount);
+    }
+
+    public void RemoveSlime()
+    {
+        slimeCount--;
+        if (slimeCount <= 0)
+        {
+            rend.material.color = baseColor;
+        }
+    }
 }

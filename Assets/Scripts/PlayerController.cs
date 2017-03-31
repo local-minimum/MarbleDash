@@ -107,14 +107,26 @@ public class PlayerController : MonoBehaviour {
         {
             if (!rb.isKinematic)
             {
-                rb.AddForce(board.Slope * forceMultiplier);
+                if (HasTracktion())
+                {
+                    rb.AddForce(board.Slope * forceMultiplier);
+                }
                 TrackGridPos();
+            } else
+            {
+                
             }
         } else
         {
             onTile = offTile;
         }
      
+    }
+
+    
+    bool HasTracktion()
+    {
+        return boardGrid.OnBoard(_onTile) && !boardGrid.HasOccupancy(_onTile, Occupancy.NoGrip);
     }
 
     void TrackGridPos()

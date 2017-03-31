@@ -13065,7 +13065,7 @@ MonoBehaviour:
   enemyDifficutlyLoadMaxRelative: 4
   enemyDifficultyLoadMinAbs: 3
   minEnemyDifficutly: 0
-  maxEnemyDifficutly: 1
+  maxEnemyDifficutly: 2
   minEnemyDiffIncreaseEach: 2
   minEnemyDiffIncreaseAmount: 1
   maxEnemyDifficultyIncreaseEach: 5
@@ -13074,6 +13074,7 @@ MonoBehaviour:
   minEnemyDifficultyCap: 1
   enemyPrefabs:
   - {fileID: 114647270488527920, guid: b6c71d122c0d6f74995b607623426974, type: 2}
+  - {fileID: 114107199844396286, guid: 710a9f567ca73d24fb5d0f631407f9b2, type: 2}
   enemyParent: {fileID: 2043342521}
 --- !u!1 &2043342520
 GameObject:

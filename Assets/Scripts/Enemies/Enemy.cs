@@ -25,12 +25,12 @@ public class Enemy : MonoBehaviour {
         bodyProperties.SetInitial(activeTier);
     }
 
-    public List<KeyValuePair<int, int>> GetTiersInDifficutlyRange(int min, int max)
+    public List<KeyValuePair<int, int>> GetTiersInDifficutlyRange(int lvlIndex, int min, int max)
     {
         List<KeyValuePair<int, int>> filteredTiers = new List<KeyValuePair<int, int>>();
         for (int i=0; i<tiers.Length; i++)
         {
-            if (tiers[i].difficulty <= max && tiers[i].difficulty >= min)
+            if (tiers[i].firstLevel <= lvlIndex && tiers[i].difficulty <= max && tiers[i].difficulty >= min)
             {
                 filteredTiers.Add(new KeyValuePair<int, int>(i, tiers[i].difficulty));
             }
@@ -141,8 +141,8 @@ public class Enemy : MonoBehaviour {
 
     #endregion
 
-    GridPos pos = new GridPos(-1, -1);
-    BoardGrid board;
+    protected GridPos pos = new GridPos(-1, -1);
+    protected BoardGrid board;
 
     [SerializeField]
     Vector3 localPlacementOffset = new Vector3(0, 0, 0.5f);
@@ -359,32 +359,33 @@ public class Enemy : MonoBehaviour {
 
     #region EnemyModeExecutions
 
-    protected virtual void ExecuteAttack2(PlayerController player, float turnTime)
+    protected virtual GridPos ExecuteAttack2(PlayerController player, float turnTime)
     {
-
+        throw new System.NotImplementedException();
     }
 
-    protected virtual void ExecuteAttack3(PlayerController player, float turnTime)
+    protected virtual GridPos ExecuteAttack3(PlayerController player, float turnTime)
     {
-
+        throw new System.NotImplementedException();
     }
 
-    protected virtual void ExecuteAttack4(PlayerController player, float turnTime)
+    protected virtual GridPos ExecuteAttack4(PlayerController player, float turnTime)
     {
-
+        throw new System.NotImplementedException();
     }
 
-    protected virtual void ExecuteAttack5(PlayerController player, float turnTime)
+    protected virtual GridPos ExecuteAttack5(PlayerController player, float turnTime)
     {
-
+        throw new System.NotImplementedException();
     }
 
-    protected virtual void ExecutHaste(PlayerController player, float turnTime)
+    protected virtual GridPos ExecutHaste(PlayerController player, float turnTime)
     {
 
+        throw new System.NotImplementedException();
     }
 
-    protected virtual void ExecuteHoming(PlayerController player, float turnTime)
+    protected virtual GridPos ExecuteHoming(PlayerController player, float turnTime)
     {
         if (player.Grounded)
         {
@@ -394,10 +395,10 @@ public class Enemy : MonoBehaviour {
 
         SetContextFromDistanceMapAndPosition(player.enemyDistancesEight);
 
-        SelectContextDirectionAndMove(turnTime);
+        return SelectContextDirectionAndMove(turnTime);
     }
 
-    protected void SelectContextDirectionAndMove(float turnTime)
+    protected GridPos SelectContextDirectionAndMove(float turnTime)
     {
         //Debug.Log(context.ToCSV());
 
@@ -407,8 +408,11 @@ public class Enemy : MonoBehaviour {
 
         Coordinate[] valid = Convolution.ContextFilterToOffsets(bestMoves);
 
-        Move(SelectMoveOffset(valid), turnTime);
-
+        GridPos offset = SelectMoveOffset(valid);
+        GridPos next = pos + offset;
+        Move(offset, turnTime);
+        //Debug.Log(string.Format("From {0} with {1} to {2}", pos, offset, pos + offset));
+        return next;
     }
 
     [SerializeField]
@@ -418,7 +422,7 @@ public class Enemy : MonoBehaviour {
     protected int clearWalkTargetsAtLength = 5;
 
 
-    protected virtual void ExecuteWalking(float turnTime)
+    protected virtual GridPos ExecuteWalking(float turnTime)
     {
         if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count && pos != targetCheckpoints[activeTargetIndex])
         {
@@ -451,7 +455,7 @@ public class Enemy : MonoBehaviour {
 
         SetContextFromDistanceMapAndPosition(targetDistanceMap);
 
-        SelectContextDirectionAndMove(turnTime);
+        return SelectContextDirectionAndMove(turnTime);
     }
 
     protected void SetContextFromDistanceMapAndPosition(int[,] distances)
@@ -468,15 +472,15 @@ public class Enemy : MonoBehaviour {
         context[1, 1] = centerVal;
     }
 
-    protected virtual void ExecuteStanding(float turnTime)
+    protected virtual GridPos ExecuteStanding(float turnTime)
     {
-       
+        return pos;
     }
 
-    protected virtual void ExecuteHunt(PlayerController player, float turnTime)
+    protected virtual GridPos ExecuteHunt(PlayerController player, float turnTime)
     {
         //Default implementation doesn't separate the two with regards to execution
-        ExecuteHoming(player, turnTime);        
+        return ExecuteHoming(player, turnTime);        
     }
 
     int[,] DirectionFilteredContext(int[,] context, GridPos direction)
@@ -496,9 +500,9 @@ public class Enemy : MonoBehaviour {
         return context;
     }
 
-    protected virtual void ExecutePatroling(float turnTime)
+    protected virtual GridPos ExecutePatroling(float turnTime)
     {
-
+        throw new System.NotImplementedException();
     }
 
     protected virtual GridPos SelectMoveOffset(Coordinate[] offsets)
@@ -511,7 +515,7 @@ public class Enemy : MonoBehaviour {
         return offsets[Random.Range(0, offsets.Length)];
     }
 
-    protected virtual void ExecuteAttack1(PlayerController player, float turnTime)
+    protected virtual GridPos ExecuteAttack1(PlayerController player, float turnTime)
     {
         GridPos playerDirection = (player.onTile - pos);
        
@@ -522,6 +526,7 @@ public class Enemy : MonoBehaviour {
             StartCoroutine(DelayAttackTrigger(attackDelay));
         }
 
+        return pos;
     }
     #endregion
 
@@ -700,7 +705,7 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     Color gizmosEnemyToTargetColor = Color.cyan;
 
-    private void OnDrawGizmosSelected()
+    protected virtual void OnDrawGizmosSelected()
     {
 
         //BEHAVIOUR MOOD

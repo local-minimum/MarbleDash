@@ -7,10 +7,13 @@ public class EnemyTier {
 
     public int difficulty;
 
+    [Tooltip("Available only from this level index")]
+    public int firstLevel;
+
     //List of behaviours to select from each turn
     [Tooltip("All action modes, order of attacks is important for attack values.")]
     public EnemyMode[] availableModes;
-
+    
     public int startHealthMin;
     public int startHealthMax;
 

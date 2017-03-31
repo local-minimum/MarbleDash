@@ -136,6 +136,12 @@ public class EnemySpawner : MonoBehaviour {
 
         var validPrefabs = GetValidEnemies();
 
+        if (validPrefabs.Length == 0)
+        {
+            Debug.LogWarning("No valid enemies for this difficulty");
+            return;
+        }
+
         int iterations = 0;
         int loadDelta = targetDifficultyLoad;
         
@@ -143,7 +149,7 @@ public class EnemySpawner : MonoBehaviour {
         {
             int enemyIndex = PlayerRunData.stats.lvlRnd.Range(0, validPrefabs.Length);
             int enemyTierIndex = PlayerRunData.stats.lvlRnd.Range(0, validPrefabs[enemyIndex].Value.Count);
-            KeyValuePair<int, int> tierData = validPrefabs[enemyIndex].Value[enemyIndex];
+            KeyValuePair<int, int> tierData = validPrefabs[enemyIndex].Value[enemyTierIndex];
 
             if (Mathf.Abs(currentDifficultyLoad + tierData.Value - targetDifficultyLoad) < loadDelta)
             {
@@ -216,9 +222,11 @@ public class EnemySpawner : MonoBehaviour {
 
     KeyValuePair<Enemy, List<KeyValuePair<int, int>>>[] GetValidEnemies()
     {
+        int lvlIndex = PlayerRunData.stats.currentLevel;
+
         return enemyPrefabs
             .Select(e => new KeyValuePair<Enemy, List<KeyValuePair<int, int>>>(
-                e, e.GetTiersInDifficutlyRange(minEnemyDifficutly, maxEnemyDifficutly)))
+                e, e.GetTiersInDifficutlyRange(lvlIndex, minEnemyDifficutly, maxEnemyDifficutly)))
             .Where(e => e.Value.Count > 0)
             .ToArray();
     }

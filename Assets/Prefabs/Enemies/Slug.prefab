@@ -41,10 +41,10 @@ GameObject:
   - component: {fileID: 33895420158296390}
   - component: {fileID: 65945257759012174}
   - component: {fileID: 23069788620925860}
-  - component: {fileID: 114647270488527920}
   - component: {fileID: 54552586301795578}
   - component: {fileID: 95217785068371550}
   - component: {fileID: 114462557831289960}
+  - component: {fileID: 114107199844396286}
   m_Layer: 11
   m_Name: Slug
   m_TagString: Untagged
@@ -213,6 +213,94 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114107199844396286
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1485900632619008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9fc9e29500ea0241811721bbb03082b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tiers:
+  - difficulty: 2
+    firstLevel: 1
+    availableModes: 0200000001000000
+    startHealthMin: 8
+    startHealthMax: 20
+    minAttack: 
+    maxAttack: 
+    behaviourProbWeights:
+    - 0.9
+    - 0.1
+    behaviourCoolDowns: 0000000008000000
+    damageAbsorption: 01000000
+    damageReflection: 
+  bodyProperties: {fileID: 114462557831289960}
+  attackAnim: []
+  localPlacementOffset: {x: 0, y: 0, z: 0.5}
+  attackRange: 2
+  huntRange: 4
+  preferredWalkTargetDistance: 7
+  clearWalkTargetsAtLength: 5
+  attackDelay: 0.4
+  jumpFractionDuration: 0.8
+  heightCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  planarCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: -0.0013192594
+      value: 0
+      inSlope: 2.6370962
+      outSlope: 2.6370962
+      tangentMode: 34
+    - serializedVersion: 2
+      time: 0.075607166
+      value: 0.20286238
+      inSlope: 1.4762796
+      outSlope: 1.4762796
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.9986807
+      value: 1
+      inSlope: 0.8635689
+      outSlope: 0.8635689
+      tangentMode: 34
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  jumpHeightAxis: {x: 0, y: 1, z: 0}
+  gizmoContextOffset: {x: 0.3, y: 2, z: 0.3}
+  gizmoModeOffset: {x: -0.3, y: 2, z: -0.3}
+  gizmosTargetOffset: {x: 0, y: 2, z: 0}
+  gizmosTargetSize: 0.2
+  gizmosTargetColor: {r: 1, g: 0, b: 1, a: 1}
+  gizmosEnemyToTargetColor: {r: 0, g: 1, b: 1, a: 1}
+  trailLengthBase: 2
+  trailLengthPerTier: 1
+  turnTimeMultiplier: 1.75
+  slimedColor: {r: 0.60784805, g: 0.6985294, b: 0.041089963, a: 1}
+  slimeColorIntensity: 0.75
 --- !u!114 &114462557831289960
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -226,87 +314,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 0
   velocityForcePower: 1
-  controller: {fileID: 114647270488527920}
+  controller: {fileID: 114107199844396286}
   hitMessage: HurtEffect
   destroyMessage: KilledEffect
   MaxVelocityForce: 10
---- !u!114 &114647270488527920
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1485900632619008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 267433b220956734d8b30e0c833a277e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tiers:
-  - difficulty: 1
-    availableModes: 01000000020000000400000008000000
-    startHealthMin: 4
-    startHealthMax: 5
-    minAttack: 01000000
-    maxAttack: 03000000
-    behaviourProbWeights:
-    - 0.1
-    - 1
-    - 20
-    - 1
-    behaviourCoolDowns: 03000000
-    damageAbsorption: 
-    damageReflection: 
-  bodyProperties: {fileID: 114462557831289960}
-  attackAnim:
-  - Slap
-  localPlacementOffset: {x: 0, y: 0, z: 0.5}
-  attackRange: 1
-  huntRange: 4
-  attackDelay: 0.4
-  jumpFractionDuration: 0.4
-  heightCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 2
-      time: 0
-      value: 0
-      inSlope: 4.5384464
-      outSlope: 4.5384464
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.49029756
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1.0012937
-      value: 0
-      inSlope: -4.2514977
-      outSlope: -4.2514977
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  planarCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 2
-      time: 0
-      value: 0
-      inSlope: 1.6104165
-      outSlope: 1.6104165
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 1
-      value: 1
-      inSlope: 0.3716359
-      outSlope: 0.3716359
-      tangentMode: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 0
-  jumpHeightAxis: {x: 0, y: 0, z: 1}
 --- !u!114 &114761515697560430
 MonoBehaviour:
   m_ObjectHideFlags: 1
