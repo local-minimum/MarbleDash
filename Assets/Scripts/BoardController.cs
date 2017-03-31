@@ -74,7 +74,7 @@ public class BoardController : MonoBehaviour {
     {
         float innerTarget = Input.GetAxis("Horizontal");
         float outerTarget = Input.GetAxis("Vertical");
-        return new Vector2(outerTarget, innerTarget);
+        return new Vector2(outerTarget, innerTarget) * rotationMagnitude;
     }
 
     Vector2 TiltControl ()

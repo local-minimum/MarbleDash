@@ -18,8 +18,11 @@ public class BoardTile : MonoBehaviour {
         }
     }
 
+    BoardGrid board;
+
     public void SetPosition(BoardGrid board, GridPos pos, float heightOffset, TileType tileType)
     {
+        this.board = board;
         _tileType = tileType;
         _pos = pos;
         name = string.Format("{2} Tile ({0}, {1})", pos.x, pos.y, tileType);
@@ -55,6 +58,10 @@ public class BoardTile : MonoBehaviour {
     {
         slimeCount++;
         rend.material.color = Color.Lerp(baseColor, slimeColor, amount);
+        if (slimeCount == 1)
+        {
+            board.Occupy(pos, Occupancy.NoGrip);
+        }
     }
 
     public void RemoveSlime()
@@ -64,5 +71,6 @@ public class BoardTile : MonoBehaviour {
         {
             rend.material.color = baseColor;
         }
+        board.Free(pos, Occupancy.NoGrip);
     }
 }

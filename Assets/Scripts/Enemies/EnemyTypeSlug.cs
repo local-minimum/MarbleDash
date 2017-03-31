@@ -64,7 +64,7 @@ public class EnemyTypeSlug : Enemy {
         BoardTile addTile = board.GetTile(target).GetComponent<BoardTile>();
         slimedTiles.Add(addTile);
         addTile.Slime(slimedColor, slimeColorIntensity);
-        board.Occupy(target, Occupancy.NoGrip);
+        
 
     }
 

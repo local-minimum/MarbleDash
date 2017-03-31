@@ -762,7 +762,7 @@ ParticleSystem:
   m_GameObject: {fileID: 768109836}
   serializedVersion: 5
   lengthInSec: 5
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -3998,7 +3998,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1236780578}
   serializedVersion: 5
   lengthInSec: 50
-  speed: 1
+  simulationSpeed: 1
   looping: 1
   prewarm: 0
   playOnAwake: 1
@@ -6682,7 +6682,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1317308211}
   serializedVersion: 5
   lengthInSec: 4
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -9728,7 +9728,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1489912450}
   serializedVersion: 5
   lengthInSec: 2
-  speed: 1
+  simulationSpeed: 1
   looping: 0
   prewarm: 0
   playOnAwake: 0
@@ -12917,10 +12917,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outerControl: {fileID: 709332483}
   innerControl: {fileID: 441174230}
-  rotationMagnitude: 5
+  rotationMagnitude: 8
   outerEulerAxis: {x: 1, y: 0, z: 0}
   innerEulerAxis: {x: 0, y: 1, z: 0}
-  delay: 0.5
+  delay: 0.082
 --- !u!4 &2025833197
 Transform:
   m_ObjectHideFlags: 0
