@@ -82,6 +82,7 @@ public class PlayerController : MonoBehaviour {
 
     public void KillReset(string message)
     {
+        onTile = offTile;
         StoreSwapper.instance.HideAllStores();
         PlayerRunData.stats.Reset();
         lvl.Generate();
@@ -136,7 +137,7 @@ public class PlayerController : MonoBehaviour {
 
         if (closest < 0 || closestBoard == null)
         {
-            onTile = _onTile;
+            onTile = offTile;
         } else
         {
             onTile = closestBoard.pos;
@@ -223,8 +224,14 @@ public class PlayerController : MonoBehaviour {
                     {
                         enemyDistancesCross = lvl.enemyConnectivity4.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value);
                         enemyDistancesEight = lvl.enemyConnectivity8.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value, LocalMinimum.Arrays.Neighbourhood.Eight);
+                    } else
+                    {
+                        Debug.Log("Not a level so no connectivity");
                     }
                     Debug.Log("Player on tile " + value);
+                } else
+                {
+                    Debug.Log("Player not on board " + value);
                 }
             }
         }
@@ -272,9 +279,9 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void KillMe(int amount)
-    {
+    {        
         PlayerRunData.stats.damageTaken += amount;
-        Debug.Log("Player should be dead");
+        Debug.Log("Player dead");
         KillReset("");
     }
 

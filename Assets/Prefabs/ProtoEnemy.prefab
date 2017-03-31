@@ -243,14 +243,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tiers:
   - difficulty: 1
-    availableModes: 02000000020000000200000008000000
+    availableModes: 01000000020000000400000008000000
     startHealthMin: 4
     startHealthMax: 5
     minAttack: 01000000
     maxAttack: 03000000
     behaviourProbWeights:
-    - 0
-    - 1
+    - 0.1
+    - 2
     - 20
     - 1
     behaviourCoolDowns: 03000000

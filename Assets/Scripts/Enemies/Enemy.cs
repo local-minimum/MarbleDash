@@ -184,6 +184,18 @@ public class Enemy : MonoBehaviour {
         anim = GetComponent<Animator>();
     }
 
+    protected struct ModeStruct
+    {
+        public EnemyMode mode;
+        public int index;
+
+        public ModeStruct(EnemyMode mode, int index)
+        {
+            this.mode = mode;
+            this.index = index;
+        }
+    }
+
     public void Lvl_OnTurnTick(PlayerController player, int turnIndex, float turnTime)
     {
         attackedThisTurn = false;
@@ -192,18 +204,18 @@ public class Enemy : MonoBehaviour {
             GridPos playerOffset = (player.onTile - pos);
             //Debug.Log(playerOffset.EightMagnitude);
             var availableModes = activeTier.availableModes
-                .Select((e, i) => new KeyValuePair<int, EnemyMode>(i, e))
-                .Where(o => !OnCoolDown(o.Key, turnIndex) && PlayerInRange(playerOffset, o.Value))
+                .Select((e, i) => new ModeStruct(e, i))
+                .Where(o => !OnCoolDown(o.index, turnIndex) && PlayerInValidPosition(o.mode, player) && PlayerInRange(playerOffset, o.mode))
                 .ToList();
 
-            var attacks = availableModes.Where(o => IsAttack(o.Value)).ToList();
+            var attacks = availableModes.Where(o => IsAttack(o.mode)).ToList();
 
             if (attacks.Count > 0)
             {
                 behaviour = SelectModeFromAvailable(attacks);
             } else
             {
-                behaviour = SelectModeFromAvailable(availableModes.Where(o => !IsAttack(o.Value)).ToList());
+                behaviour = SelectModeFromAvailable(availableModes.Where(o => !IsAttack(o.mode)).ToList());
             }
 
         }
@@ -271,30 +283,30 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    EnemyMode SelectModeFromAvailable(List<KeyValuePair<int, EnemyMode>> options)
+    EnemyMode SelectModeFromAvailable(List<ModeStruct> options)
     {
         int l = options.Count;
         float totWeights = 0;
 
         for (int i=0; i<l; i++)
         {
-            totWeights += activeTier.behaviourProbWeights[options[i].Key];
+            totWeights += activeTier.behaviourProbWeights[options[i].index];
         }
 
         float val = Random.Range(0, totWeights);
 
         for (int i=0; i<l; i++)
         {
-            if (val <= activeTier.behaviourProbWeights[options[i].Key])
+            if (val <= activeTier.behaviourProbWeights[options[i].index])
             {
-                return options[i].Value;
+                return options[i].mode;
             } else
             {
-                val -= activeTier.behaviourProbWeights[options[i].Key];
+                val -= activeTier.behaviourProbWeights[options[i].index];
             }
         }
 
-        return options[l - 1].Value;
+        return options[l - 1].mode;
     }
 
     Dictionary<EnemyMode, int> lastModeInvocation = new Dictionary<EnemyMode, int>();
@@ -314,6 +326,16 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     int huntRange = 4;
 
+    protected virtual bool PlayerInValidPosition(EnemyMode mode, PlayerController player)
+    {
+        if (mode == EnemyMode.Homing || mode == EnemyMode.Hunting || mode == EnemyMode.Tracking)
+        {
+            return board.OnBoard(player.onTile) && lvl.enemyConnectivity8[pos.x, pos.y] == lvl.enemyConnectivity8[player.onTile.x, player.onTile.y];
+        }
+
+        return true;
+    }
+
     protected virtual bool PlayerInRange(GridPos playerOffset, EnemyMode mode)
     {
         if (IsAttack(mode))
@@ -322,7 +344,7 @@ public class Enemy : MonoBehaviour {
             return playerOffset.EightMagnitude <= attackRange;
         } else if (mode == EnemyMode.Hunting)
         {
-            return playerOffset.EightMagnitude <= huntRange;
+            return playerOffset.EightMagnitude <= huntRange && lvl.enemyConnectivity8[pos.x, pos.y] == lvl.enemyConnectivity8[pos.x + playerOffset.x, pos.y + playerOffset.y];
         } else
         {
             return true;

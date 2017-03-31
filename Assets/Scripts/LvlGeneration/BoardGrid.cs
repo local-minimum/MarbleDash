@@ -87,6 +87,11 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
+    public bool OnBoard(GridPos pos)
+    {
+        return pos.x >= 0 && pos.x < size && pos.y >= 0 && pos.y < size;
+    }
+
     public Vector3 GetLocalPosition(int x, int y)
     {
         return targetLocalOffset + new Vector3(targetSize.x * (x + 0.5f) / size, targetSize.y * (y + 0.5f) / size);
@@ -171,7 +176,7 @@ public class BoardGrid : MonoBehaviour {
 
         int val = gridOccupancy[pos.x, pos.y];
         int filtVal = 1 << (int)filt;
-        if ((val & filtVal) != filtVal)
+        if ((val & filtVal) == 0)
         {
             Debug.LogWarning(string.Format("Pos {0} doesn't have filter {1} set. Nothing to free.", pos, filt));
         } else
