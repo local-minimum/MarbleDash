@@ -123,7 +123,6 @@ public class PlayerController : MonoBehaviour {
      
     }
 
-    
     bool HasTracktion()
     {
         return boardGrid.OnBoard(_onTile) && !boardGrid.HasOccupancy(_onTile, Occupancy.NoGrip);
