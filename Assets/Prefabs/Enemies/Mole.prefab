@@ -329,6 +329,8 @@ MonoBehaviour:
   throwLength: 7
   prefNearbyHole: 0.2
   minimumHolesInLevel: 3
+  undergroundOffset: {x: 0, y: 0, z: -1.5}
+  hidingOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &114761515697560430
 MonoBehaviour:
   m_ObjectHideFlags: 1

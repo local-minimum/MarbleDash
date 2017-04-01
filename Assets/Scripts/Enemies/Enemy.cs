@@ -648,7 +648,7 @@ public class Enemy : MonoBehaviour {
     AnimationCurve planarCurve;
 
     [SerializeField]
-    Vector3 jumpHeightAxis = Vector3.forward;
+    protected Vector3 jumpHeightAxis = Vector3.forward;
 
     protected IEnumerator<WaitForSeconds> LookTowards(GridPos direction)
     {
@@ -687,6 +687,8 @@ public class Enemy : MonoBehaviour {
         }
     }
 
+    protected Vector3 moveHeightBaseOffset;
+
     protected IEnumerator<WaitForSeconds> JumpToPos(float maxTime, Vector3 targetPos)
     {
         float startTime = Time.timeSinceLevelLoad;
@@ -696,11 +698,11 @@ public class Enemy : MonoBehaviour {
         while (progress < 1)
         {
             progress = (Time.timeSinceLevelLoad - startTime) / duration;
-            transform.localPosition = Vector3.Lerp(startPos, targetPos, planarCurve.Evaluate(progress)) + jumpHeightAxis * heightCurve.Evaluate(progress);
+            transform.localPosition = Vector3.Lerp(startPos, targetPos, planarCurve.Evaluate(progress)) + jumpHeightAxis * heightCurve.Evaluate(progress) + moveHeightBaseOffset;
             yield return new WaitForSeconds(0.016f);
         }
 
-        transform.localPosition = targetPos; 
+        transform.localPosition = targetPos + moveHeightBaseOffset; 
 
     }
 

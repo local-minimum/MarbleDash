@@ -90,7 +90,7 @@ public class EnemyTypeMole : Enemy {
             {
                 underground = true;
                 target = preferred.Shuffle().First();
-                Debug.Log("Player based selection");
+                //Debug.Log("Player based selection");
             }
             else {
                 
@@ -101,7 +101,7 @@ public class EnemyTypeMole : Enemy {
 
                     preferred = lvl.boardHoles
                         .Where(e => e != pos && !claimedBurrows.Contains(e))
-                        .Where(e => GridPos.ChessBoardDistance(e, pos) < nearbyHoleDist)
+                        .Where(e => GridPos.ChessBoardDistance(e, pos) <= nearbyHoleDist)
                         .ToArray();
 
                     if (preferred.Length > 0)
@@ -109,22 +109,23 @@ public class EnemyTypeMole : Enemy {
                         underground = false;
                         target = preferred.Shuffle().First();
                         selectedHole = true;
-                        Debug.Log("Proximity selection");
+                        //Debug.Log("Proximity selection");
                     }
 
                 }
                     
                 if (!selectedHole)
                 {
-                    //Need redoing incase attempted nearby hole without finding one
-                    preferred = lvl.boardHoles.Where(e => e != pos && !claimedBurrows.Contains(e)).ToArray();                    
+                    //Redoing hole filtering is indeed neccesary incase attempted nearby hole without finding one
+                    preferred = lvl.boardHoles.Where(e => e != pos && !claimedBurrows.Contains(e)).ToArray();    
+                                    
                     target = preferred.Shuffle().First();
-                    Debug.Log("Random hole");
                     underground = true;
+                    //Debug.Log("Random hole");
                 }
-                    
+
             }
-            Debug.Log("Selected burrows" + target);
+            //Debug.Log("Selected burrows" + target);
             targetCheckpoints.Add(target);
             claimedBurrows.Add(target);
             SetTargetDistances(0);
@@ -155,5 +156,17 @@ public class EnemyTypeMole : Enemy {
     {
         int taxiDistance = GridPos.TaxiCabDistance(a, b);
         return taxiDistance < throwLength && GridPos.ChessBoardDistance(a, b) == taxiDistance && lvl.nonBlocking.LineInOneRegion(a, b);
+    }
+    [SerializeField]
+    Vector3 undergroundOffset;
+
+    [SerializeField]
+    Vector3 hidingOffset;
+
+    protected override void Move(GridPos offset, float maxTime)
+    {
+        jumpHeightAxis = new Vector3(Mathf.Abs(jumpHeightAxis.x), Mathf.Abs(jumpHeightAxis.y), Mathf.Abs(jumpHeightAxis.z)) * (underground ? -.5f : 1);
+        moveHeightBaseOffset = underground ? undergroundOffset : Vector3.zero;
+        base.Move(offset, maxTime);
     }
 }
