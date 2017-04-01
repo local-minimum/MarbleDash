@@ -32,6 +32,15 @@ namespace LocalMinimum.Collections
 
             return list.OrderBy(e => e.Key).Select(e => e.Value).ToList();
         }
+
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> data)
+        {
+            T[] shuffeled = data.ToArray().Shuffle();
+            for (int i=0, l=shuffeled.Length; i< l; i++)
+            {
+                yield return shuffeled[i];
+            }
+        }
     }
 
 }

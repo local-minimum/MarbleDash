@@ -171,6 +171,37 @@ namespace LocalMinimum.Arrays
         }
 
         /// <summary>
+        /// Maps distance to seeds in a specified region
+        /// </summary>
+        /// <param name="filter">Region specification</param>
+        /// <param name="seeds">Coordinate for seeding distance measures</param>
+        /// <param name="neighbourhood">Neighbourhood type</param>
+        /// <returns>2D int array of distance to seed</returns>
+        public static int[,] Distance(this bool[,] filter, Coordinate[] seeds, Neighbourhood neighbourhood = Neighbourhood.Cross)
+        {
+            bool[,] seed = new bool[filter.GetLength(0), filter.GetLength(1)];
+            for (int i=0, l=seeds.Length; i< l; i++)
+            {
+                seed[seeds[i].x, seeds[i].y] = true;
+            }
+            return filter.Distance(seed, neighbourhood);
+        }
+
+        /// <summary>
+        /// Maps distance to seed coordinates in a specified array size
+        /// </summary>
+        /// <param name="width">Length of outer dimension</param>
+        /// <param name="height">Length of inner dimension</param>
+        /// <param name="seeds">Coordinate for distance seeds</param>
+        /// <param name="neighbourhood">Neighbourhood type</param>
+        /// <returns>2D int array of distance to seeds</returns>
+        public static int[,] Distance(int width, int height, Coordinate[] seeds, Neighbourhood neighbourhood = Neighbourhood.Cross)
+        {
+            bool[,] filter = Fill(width, height, true);
+            return filter.Distance(seeds, neighbourhood);
+        }
+
+        /// <summary>
         /// Gives the distance to the seed position(s) for all positions within the same
         /// region as a seed.
         /// </summary>
@@ -526,9 +557,9 @@ namespace LocalMinimum.Arrays
         /// <param name="h">Height</param>
         /// <param name="value">Fill value</param>
         /// <returns>int array with only fill value</returns>
-        public static int[,] Fill(int w, int h, int value)
+        public static T[,] Fill<T>(int w, int h, T value)
         {
-            return new int[w, h].Fill(value);
+            return new T[w, h].Fill(value);
         }
 
         /// <summary>
@@ -537,7 +568,7 @@ namespace LocalMinimum.Arrays
         /// <param name="input">the template array</param>
         /// <param name="value">Fill value</param>
         /// <returns>int array with only fill value</returns>
-        public static int[,] Fill(this int[,] input, int value)
+        public static T[,] Fill<T>(this T[,] input, T value)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);

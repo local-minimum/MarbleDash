@@ -44,9 +44,9 @@ GameObject:
   - component: {fileID: 54552586301795578}
   - component: {fileID: 95217785068371550}
   - component: {fileID: 114462557831289960}
-  - component: {fileID: 114107199844396286}
+  - component: {fileID: 114667750476220300}
   m_Layer: 11
-  m_Name: Slug
+  m_Name: Mole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92,7 +92,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 0b0d4506ba2be5f4ba3da6348be5cdee, type: 2}
+  - {fileID: 2100000, guid: 03bc4d4bd50985b4db54ff2b683cbb64, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -215,7 +215,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114107199844396286
+--- !u!114 &114462557831289960
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -223,35 +223,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 1485900632619008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9fc9e29500ea0241811721bbb03082b, type: 3}
+  m_Script: {fileID: 11500000, guid: 24924f62ae701a14e89731f764478ccc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 0
+  velocityForcePower: 1
+  controller: {fileID: 114667750476220300}
+  hitMessage: HurtEffect
+  destroyMessage: KilledEffect
+  MaxVelocityForce: 10
+--- !u!114 &114667750476220300
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1485900632619008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa7ba259660a0b4fb615ef3af50a5ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tiers:
-  - difficulty: 2
-    firstLevel: 2
-    availableModes: 0200000001000000
-    startHealthMin: 10
-    startHealthMax: 13
+  - difficulty: 1
+    firstLevel: 1
+    availableModes: 02000000
+    startHealthMin: 5
+    startHealthMax: 5
     minAttack: 
     maxAttack: 
     behaviourProbWeights:
-    - 0.9
-    - 0.1
-    behaviourCoolDowns: 0000000003000000
-    damageAbsorption: 01000000
-    damageReflection: 
-  - difficulty: 3
-    firstLevel: 3
-    availableModes: 0200000001000000
-    startHealthMin: 10
-    startHealthMax: 13
-    minAttack: 
-    maxAttack: 
-    behaviourProbWeights:
-    - 0.9
-    - 0.1
-    behaviourCoolDowns: 0000000008000000
-    damageAbsorption: 0100000001000000
+    - 1
+    behaviourCoolDowns: 
+    damageAbsorption: 
     damageReflection: 
   bodyProperties: {fileID: 114462557831289960}
   attackAnim: []
@@ -267,13 +270,19 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 2
       time: 0
-      value: 0
+      value: 0.000014729332
       inSlope: 0
       outSlope: 0
       tangentMode: 0
     - serializedVersion: 2
+      time: 0.2141218
+      value: 0.10933244
+      inSlope: 0.931762
+      outSlope: 0.931762
+      tangentMode: 0
+    - serializedVersion: 2
       time: 1
-      value: 0
+      value: 0.000014901161
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -284,23 +293,29 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
-      time: -0.0013192594
+      time: 0
       value: 0
-      inSlope: 2.6370962
-      outSlope: 2.6370962
-      tangentMode: 34
-    - serializedVersion: 2
-      time: 0.075607166
-      value: 0.20286238
-      inSlope: 1.4762796
-      outSlope: 1.4762796
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
     - serializedVersion: 2
-      time: 0.9986807
+      time: 0.20737167
+      value: 0.044549517
+      inSlope: 0.4419964
+      outSlope: 0.4419964
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 0.6272092
+      value: 0.7487388
+      inSlope: 1.8009543
+      outSlope: 1.8009543
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
       value: 1
-      inSlope: 0.8635689
-      outSlope: 0.8635689
-      tangentMode: 34
+      inSlope: 0.24983622
+      outSlope: 0.24983622
+      tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
@@ -311,28 +326,9 @@ MonoBehaviour:
   gizmosTargetSize: 0.2
   gizmosTargetColor: {r: 1, g: 0, b: 1, a: 1}
   gizmosEnemyToTargetColor: {r: 0, g: 1, b: 1, a: 1}
-  trailLengthBase: 1
-  trailLengthPerTier: 2
-  turnTimeMultiplier: 1.75
-  slimedColor: {r: 0.60784805, g: 0.6985294, b: 0.041089963, a: 1}
-  slimeColorIntensity: 0.75
---- !u!114 &114462557831289960
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1485900632619008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24924f62ae701a14e89731f764478ccc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 0
-  velocityForcePower: 1
-  controller: {fileID: 114107199844396286}
-  hitMessage: HurtEffect
-  destroyMessage: KilledEffect
-  MaxVelocityForce: 10
+  throwLength: 7
+  prefNearbyHole: 0.2
+  minimumHolesInLevel: 3
 --- !u!114 &114761515697560430
 MonoBehaviour:
   m_ObjectHideFlags: 1

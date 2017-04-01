@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LocalMinimum.Arrays;
 
 namespace LocalMinimum.Grid
 {
@@ -67,6 +68,21 @@ namespace LocalMinimum.Grid
         public static bool IsInRegion(GridPos pos, int[,] array, int filter)
         {
             return IsInside(pos, array) && array[pos.x, pos.y] == filter;
+        }
+
+        public static bool LineInOneRegion(this bool[,] data, GridPos source, GridPos target)
+        {
+            bool sought = data[source.x, source.y];
+            GridPos cur = source;
+            while (cur != target)
+            {
+                cur += (target - cur).NineNormalized;
+                if (data[cur.x, cur.y] != sought)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

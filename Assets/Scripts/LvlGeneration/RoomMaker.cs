@@ -63,7 +63,7 @@ public class RoomMaker : MonoBehaviour {
             GridPos low = boardGrid.Clamp(pos - new GridPos(rnd.Range(0, w), rnd.Range(0, h)));
             GridPos high = boardGrid.Clamp(low + new GridPos(w, h));
 
-            if (GridPos.ShortestDimension(low, high) < seedShapes[0])
+            if (GridPos.ChessBoardDistance(low, high) < seedShapes[0])
             {
                 //Debug.Log(string.Format("Too small room {0} - {1}", low, high));
                 continue;

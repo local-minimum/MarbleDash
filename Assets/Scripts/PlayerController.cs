@@ -231,10 +231,10 @@ public class PlayerController : MonoBehaviour {
                 if (boardGrid.IsValidPosition(value))
                 {
                     boardGrid.Occupy(value, Occupancy.Player);
-                    if (lvl != null && lvl.enemyConnectivity4 != null)
+                    if (lvl != null && lvl.enemyConnectivityCross != null)
                     {
-                        enemyDistancesCross = lvl.enemyConnectivity4.HasValue(lvl.enemyConnectivity4[value.x, value.y]).Distance(value);
-                        enemyDistancesEight = lvl.enemyConnectivity8.HasValue(lvl.enemyConnectivity8[value.x, value.y]).Distance(value, LocalMinimum.Arrays.Neighbourhood.Eight);
+                        enemyDistancesCross = lvl.enemyConnectivityCross.HasValue(lvl.enemyConnectivityCross[value.x, value.y]).Distance(value);
+                        enemyDistancesEight = lvl.enemyConnectivityEight.HasValue(lvl.enemyConnectivityEight[value.x, value.y]).Distance(value, LocalMinimum.Arrays.Neighbourhood.Eight);
                     } else
                     {
                         Debug.LogWarning("Not a level so no connectivity");

@@ -24,7 +24,7 @@ public class EnemyTypeSlug : Enemy {
     [SerializeField, Range(0, 1)]
     float slimeColorIntensity = 0.75f;
 
-    protected override GridPos ExecuteWalking(float turnTime)
+    protected override GridPos ExecuteWalking(PlayerController player, float turnTime)
     {
         if (didWalkThisTurn)
         {
@@ -33,7 +33,7 @@ public class EnemyTypeSlug : Enemy {
         }
         else {
             didWalkThisTurn = true;
-            GridPos walkToPos = base.ExecuteWalking(turnTimeMultiplier * turnTime);
+            GridPos walkToPos = base.ExecuteWalking(player, turnTimeMultiplier * turnTime);
             StartCoroutine(DelaySlimeUpdate(walkToPos, turnTimeMultiplier * turnTime));
             return walkToPos;
         }

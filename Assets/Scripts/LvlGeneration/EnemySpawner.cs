@@ -184,7 +184,7 @@ public class EnemySpawner : MonoBehaviour {
         spawnLocations.Clear();
         GridPos[] potentials = board
             .FindIsOnlyAny(Occupancy.Free, Occupancy.BallPath)
-            .Where(e => GridPos.ShortestDimension(e, playerDrop) >= minSpawnDistanceFromPlayerDrop)
+            .Where(e => GridPos.ChessBoardDistance(e, playerDrop) >= minSpawnDistanceFromPlayerDrop)
             .ToArray()
             .Shuffle();
 
@@ -226,7 +226,7 @@ public class EnemySpawner : MonoBehaviour {
 
         return enemyPrefabs
             .Select(e => new KeyValuePair<Enemy, List<KeyValuePair<int, int>>>(
-                e, e.GetTiersInDifficutlyRange(lvlIndex, minEnemyDifficutly, maxEnemyDifficutly)))
+                e, e.GetTiersInDifficutlyRange(lvl, lvlIndex, minEnemyDifficutly, maxEnemyDifficutly)))
             .Where(e => e.Value.Count > 0)
             .ToArray();
     }

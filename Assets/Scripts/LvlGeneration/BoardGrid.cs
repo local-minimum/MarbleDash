@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using LocalMinimum.Grid;
+using LocalMinimum.Arrays;
 
 public enum Occupancy { Free, BallPathSource, BallPathTarget, BallPath, Wall, WallBreakable, WallIllusory, Hole, Obstacle, Enemy, Player, NoGrip};
 

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using LocalMinimum.Arrays;
+using LocalMinimum.Grid;
+using System.Linq;
 
 public delegate void TurnTick(PlayerController player, int turnIndex, float tickTime);
 public delegate void NewLevel();
@@ -55,14 +57,24 @@ public class Level : MonoBehaviour {
     public int[,] playerConnectivity;
 
     [HideInInspector]
-    public int enemyConnectivityLabels4;
+    public int enemyConnectivityLabelsCross;
 
-    public int[,] enemyConnectivity4;
+    public int[,] enemyConnectivityCross;
 
     [HideInInspector]
-    public int enemyConnectivityLabels8;
+    public int enemyConnectivityLabelsEight;
 
-    public int[,] enemyConnectivity8;
+    public int[,] enemyConnectivityEight;
+
+    public bool[,] enemyHolesConnectivity;
+
+    public bool[,] nonBlocking;
+
+    [HideInInspector]
+    public Coordinate[] boardHoles;
+
+    [HideInInspector]
+    public int enemyHolesLabels;
 
     bool previousLevel = false;
 
@@ -178,16 +190,24 @@ public class Level : MonoBehaviour {
         ballPath.GeneratePathHoles();
         boxPlacer.Generate();
         bumperPlacer.AllocateBumpPlacements();
-        enemySpawner.AllocatePlacesAndDecideEnemies();
 
         bool[,] filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.Hole);
         playerConnectivity = filter.Label(out playerConnectivityLabels);
 
         filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
-        enemyConnectivity4 = filter.Label(out enemyConnectivityLabels4);
+        enemyConnectivityCross = filter.Label(out enemyConnectivityLabelsCross);
 
         filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
-        enemyConnectivity8 = filter.Label(out enemyConnectivityLabels8, Neighbourhood.Eight);
+        enemyConnectivityEight = filter.Label(out enemyConnectivityLabelsEight, Neighbourhood.Eight);
+
+        boardHoles = boardGrid.Find(Occupancy.Hole).Select(e => (Coordinate) e).ToArray();
+        enemyHolesConnectivity = boardGrid.GetFilterNotAny(Occupancy.Hole);
+
+        nonBlocking = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.Obstacle, Occupancy.WallBreakable);
+
+        //This is required to be last
+        enemySpawner.AllocatePlacesAndDecideEnemies();
+
         previousLevel = true;
     }
 
@@ -240,10 +260,10 @@ public class Level : MonoBehaviour {
         switch (gizmoContent)
         {
             case GizmoContent.EnemyCross:
-                connectivity = enemyConnectivity4;
+                connectivity = enemyConnectivityCross;
                 break;
             case GizmoContent.EnemyEight:
-                connectivity = enemyConnectivity8;
+                connectivity = enemyConnectivityEight;
                 break;
             default:
                 connectivity = playerConnectivity;

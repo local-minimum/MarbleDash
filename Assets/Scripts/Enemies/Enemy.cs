@@ -27,17 +27,26 @@ public class Enemy : MonoBehaviour {
         bodyProperties.SetInitial(activeTier);
     }
 
-    public List<KeyValuePair<int, int>> GetTiersInDifficutlyRange(int lvlIndex, int min, int max)
+    public List<KeyValuePair<int, int>> GetTiersInDifficutlyRange(Level lvl, int lvlIndex, int min, int max)
     {
         List<KeyValuePair<int, int>> filteredTiers = new List<KeyValuePair<int, int>>();
-        for (int i=0; i<tiers.Length; i++)
+
+        if (SpecialCriteriaForSelectionFullfilled(lvl))
         {
-            if (tiers[i].firstLevel <= lvlIndex && tiers[i].difficulty <= max && tiers[i].difficulty >= min)
+            for (int i = 0; i < tiers.Length; i++)
             {
-                filteredTiers.Add(new KeyValuePair<int, int>(i, tiers[i].difficulty));
+                if (tiers[i].firstLevel <= lvlIndex && tiers[i].difficulty <= max && tiers[i].difficulty >= min)
+                {
+                    filteredTiers.Add(new KeyValuePair<int, int>(i, tiers[i].difficulty));
+                }
             }
         }
         return filteredTiers;
+    }
+
+    protected virtual bool SpecialCriteriaForSelectionFullfilled(Level lvl)
+    {
+        return true;
     }
 
     public int GetDifficulty(int tier)
@@ -55,9 +64,9 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     EnemyDestructable bodyProperties;
 
-    Level lvl;
+    protected Level lvl;
 
-    EnemyMode behaviour = EnemyMode.None;
+    protected EnemyMode behaviour = EnemyMode.None;
 
     public EnemyMode Behaviour
     {
@@ -154,11 +163,12 @@ public class Enemy : MonoBehaviour {
 
     GridPos contextPosition;
     int[,] context;
-    List<GridPos> targetCheckpoints = new List<GridPos>();
-    int activeTargetIndex;
-    int[,] targetDistanceMap;
+
+    protected List<GridPos> targetCheckpoints = new List<GridPos>();
+    protected int activeTargetIndex;
+    protected int[,] targetDistanceMap;
     int turnsWithThisAction;
-    EnemyMode previousBehaviour = EnemyMode.None;
+    protected EnemyMode previousBehaviour = EnemyMode.None;
 
     public void SetPosition(GridPos pos, BoardGrid board)
     {        
@@ -180,12 +190,21 @@ public class Enemy : MonoBehaviour {
    
     Animator anim;
 
-    private void Start()
+    void Awake()
     {
         lvl = Level.instance;
-        anim = GetComponent<Animator>();
     }
 
+    private void Start()
+    {
+        anim = GetComponent<Animator>();
+        Setup();
+    }
+
+    protected virtual void Setup()
+    {
+
+    }
     protected struct ModeStruct
     {
         public EnemyMode mode;
@@ -227,12 +246,13 @@ public class Enemy : MonoBehaviour {
             turnsWithThisAction++;
         } else
         {
-            turnsWithThisAction = 0;
+            turnsWithThisAction = 1;
         }
-        previousBehaviour = behaviour;
 
         UpdateCoolDown(turnIndex);
         InvokeSelectedModeExecution(turnTime, player);
+
+        previousBehaviour = behaviour;
         //Debug.Log(behaviour);
     }
 
@@ -250,13 +270,13 @@ public class Enemy : MonoBehaviour {
             case EnemyMode.None:
                 break;
             case EnemyMode.Standing:
-                ExecuteStanding(turnTime);
+                ExecuteStanding(player, turnTime);
                 break;
             case EnemyMode.Patroling:
-                ExecutePatroling(turnTime);
+                ExecutePatroling(player, turnTime);
                 break;
             case EnemyMode.Walking:
-                ExecuteWalking(turnTime);
+                ExecuteWalking(player, turnTime);
                 break;
             case EnemyMode.Hunting:
                 ExecuteHunt(player, turnTime);
@@ -336,7 +356,7 @@ public class Enemy : MonoBehaviour {
     {
         if (mode == EnemyMode.Homing || mode == EnemyMode.Hunting || mode == EnemyMode.Tracking)
         {
-            return board.OnBoard(player.onTile) && lvl.enemyConnectivity8[pos.x, pos.y] == lvl.enemyConnectivity8[player.onTile.x, player.onTile.y];
+            return board.OnBoard(player.onTile) && lvl.enemyConnectivityEight[pos.x, pos.y] == lvl.enemyConnectivityEight[player.onTile.x, player.onTile.y];
         }
 
         return true;
@@ -347,10 +367,10 @@ public class Enemy : MonoBehaviour {
         if (IsAttack(mode))
         {
             //TODO: Support more ranges or is that just overwrite
-            return playerOffset.EightMagnitude <= attackRange;
+            return playerOffset.ChessBoardMagnitude <= attackRange;
         } else if (mode == EnemyMode.Hunting)
         {
-            return playerOffset.EightMagnitude <= huntRange && lvl.enemyConnectivity8[pos.x, pos.y] == lvl.enemyConnectivity8[pos.x + playerOffset.x, pos.y + playerOffset.y];
+            return playerOffset.ChessBoardMagnitude <= huntRange && lvl.enemyConnectivityEight[pos.x, pos.y] == lvl.enemyConnectivityEight[pos.x + playerOffset.x, pos.y + playerOffset.y];
         } else
         {
             return true;
@@ -433,7 +453,7 @@ public class Enemy : MonoBehaviour {
     protected int clearWalkTargetsAtLength = 5;
 
 
-    protected virtual GridPos ExecuteWalking(float turnTime)
+    protected virtual GridPos ExecuteWalking(PlayerController player, float turnTime)
     {
         if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count && pos != targetCheckpoints[activeTargetIndex])
         {
@@ -441,7 +461,7 @@ public class Enemy : MonoBehaviour {
 
             GridPos target = targetCheckpoints[activeTargetIndex];
 
-            if (lvl.enemyConnectivity8[pos.x, pos.y] != lvl.enemyConnectivity8[target.x, target.y])
+            if (lvl.enemyConnectivityEight[pos.x, pos.y] != lvl.enemyConnectivityEight[target.x, target.y])
             {
                 activeTargetIndex++;
             }
@@ -488,7 +508,7 @@ public class Enemy : MonoBehaviour {
         context[1, 1] = centerVal;
     }
 
-    protected virtual GridPos ExecuteStanding(float turnTime)
+    protected virtual GridPos ExecuteStanding(PlayerController player, float turnTime)
     {
         return pos;
     }
@@ -516,7 +536,7 @@ public class Enemy : MonoBehaviour {
         return context;
     }
 
-    protected virtual GridPos ExecutePatroling(float turnTime)
+    protected virtual GridPos ExecutePatroling(PlayerController player, float turnTime)
     {
         throw new System.NotImplementedException();
     }
@@ -628,7 +648,7 @@ public class Enemy : MonoBehaviour {
     AnimationCurve planarCurve;
 
     [SerializeField]
-    Vector3 jumpHeightAxis = Vector3.up;
+    Vector3 jumpHeightAxis = Vector3.forward;
 
     protected IEnumerator<WaitForSeconds> LookTowards(GridPos direction)
     {
@@ -686,8 +706,8 @@ public class Enemy : MonoBehaviour {
 
     protected virtual Coordinate GetPossibleTargetsInMyRegion(int preferredDistance, Coordinate pos)
     {
-        int targetRegion = lvl.enemyConnectivity8[pos.x, pos.y];
-        int[,] distanceToMe = lvl.enemyConnectivity8.HasValue(targetRegion).Distance(pos, LocalMinimum.Arrays.Neighbourhood.Eight);
+        int targetRegion = lvl.enemyConnectivityEight[pos.x, pos.y];
+        int[,] distanceToMe = lvl.enemyConnectivityEight.HasValue(targetRegion).Distance(pos, Neighbourhood.Eight);
         preferredDistance = Mathf.Min(distanceToMe.Max(), preferredDistance);
         return distanceToMe.Where(e => e >= preferredDistance).ToArray().Shuffle().First();
 
@@ -696,21 +716,21 @@ public class Enemy : MonoBehaviour {
     protected virtual void SetTargetDistances(int targetIndex)
     {
         GridPos target = targetCheckpoints[targetIndex];
-        int targetRegion = lvl.enemyConnectivity8[target.x, target.y];
-        targetDistanceMap = lvl.enemyConnectivity8.HasValue(targetRegion).Distance(target, LocalMinimum.Arrays.Neighbourhood.Eight);
+        int targetRegion = lvl.enemyConnectivityEight[target.x, target.y];
+        targetDistanceMap = lvl.enemyConnectivityEight.HasValue(targetRegion).Distance(target, Neighbourhood.Eight);
         activeTargetIndex = targetIndex;
     }
 
 #if UNITY_EDITOR
 
     [SerializeField]
-    Vector3 gizmoContextOffset;
+    Vector3 gizmoContextOffset = new Vector3(.3f, 2f, .3f);
 
     [SerializeField]
-    Vector3 gizmoModeOffset;
+    Vector3 gizmoModeOffset = new Vector3(-.3f, 2f, -.3f);
 
     [SerializeField]
-    Vector3 gizmosTargetOffset;
+    Vector3 gizmosTargetOffset = new Vector3(0f, 2f, 0f);
 
     [SerializeField]
     float gizmosTargetSize = 0.2f;

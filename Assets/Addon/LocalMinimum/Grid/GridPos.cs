@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using LocalMinimum.Arrays;
 
 namespace LocalMinimum.Grid
 {
-    public enum Neighbourhood {Cross, Eight };
 
     public enum Direction { None, North, South, West, East };
 
@@ -137,7 +137,12 @@ namespace LocalMinimum.Grid
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
         }
 
-        public int EightMagnitude
+        public static int ChessBoardDistance(GridPos a, GridPos b)
+        {
+            return Mathf.Max(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
+        }
+
+        public int ChessBoardMagnitude
         {
             get
             {
@@ -145,7 +150,15 @@ namespace LocalMinimum.Grid
             }
         }
 
-        public static int ShortestDimension(GridPos a, GridPos b)
+        public int TaxicabMagnitude
+        {
+            get
+            {
+                return Mathf.Abs(x) + Mathf.Abs(y);
+            }
+        }
+
+        public static int ShortestDimensionDistance(GridPos a, GridPos b)
         {
             return Mathf.Min(Mathf.Abs(a.x - b.x), Mathf.Abs(a.y - b.y));
         }

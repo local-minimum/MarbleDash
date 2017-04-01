@@ -29,7 +29,7 @@ public class FloatText : MonoBehaviour {
         AnimatorClipInfo info = anim.GetCurrentAnimatorClipInfo(0)[0];
 
         yield return new WaitForSeconds(info.clip.length);
-        anim.Stop();
+        anim.StopPlayback();
         gameObject.SetActive(false);
         FloatTextManager.AddToPool(this);  
     }
