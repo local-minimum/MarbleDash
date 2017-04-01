@@ -26,6 +26,7 @@ public class EnemyTypeMole : Enemy {
 
     bool underground = true;
     bool inHole = false;
+    bool hasAttacked = false;
 
     [SerializeField]
     int throwLength = 7;
@@ -39,7 +40,8 @@ public class EnemyTypeMole : Enemy {
     int minimumHolesInLevel = 3;
 
     static List<GridPos> claimedBurrows = new List<GridPos>();
-    
+
+    GridPos lastBurrow;
 
     protected override bool SpecialCriteriaForSelectionFullfilled(Level lvl)
     {        
@@ -48,7 +50,8 @@ public class EnemyTypeMole : Enemy {
 
     protected override bool ForceBehaviourSequence()
     {
-        
+        inHole = board.HasOccupancy(pos, Occupancy.Hole);
+
         if (inHole) {
             if (!underground)
             {
@@ -57,23 +60,74 @@ public class EnemyTypeMole : Enemy {
             } else if (previousBehaviour == EnemyMode.Hiding)
             {
                 behaviour = EnemyMode.Walking;
+                return true;
             }
-
+        } else
+        {
+            if (!underground)
+            {
+                if (hasAttacked)
+                {
+                    behaviour = EnemyMode.Hiding;
+                    return true;
+                } else if (previousBehaviour == EnemyMode.Attack1)
+                {
+                    behaviour = EnemyMode.Attack1;
+                    //Need to keep attacking
+                    return true;
+                }
+            }
         }
 
         return false;
     }
 
+    [SerializeField, Range(2, 5)]
+    int allowHunting = 2;
+
+    protected override GridPos ExecuteAttack1(PlayerController player, float turnTime)
+    {
+        int distToBurrow = GridPos.ChessBoardDistance(lastBurrow, pos);
+        int distToPlayer = GridPos.ChessBoardDistance(player.onTile, pos);
+        underground = false;
+        
+        if (distToPlayer <= 1)
+        {
+
+            //Do actual bite attack
+            hasAttacked = true;
+        } else
+        {
+            if (distToBurrow < allowHunting)
+            {
+                ExecuteHunt(player, turnTime);
+            } else
+            {
+                behaviour = EnemyMode.Hiding;
+                ExecuteHiding(player, turnTime);
+            }
+        }
+
+        return base.ExecuteAttack1(player, turnTime);
+    }
+
     protected override GridPos ExecuteHiding(PlayerController player, float turnTime)
     {
-        underground = true;
-        transform.localPosition = board.GetLocalPosition(pos) + hidingOffset;
+        if (inHole)
+        {
+            underground = true;
+            transform.localPosition = board.GetLocalPosition(pos) + hidingOffset;
+            lastBurrow = pos;
+        } else
+        {
+
+        }
         return pos;
     }
 
     protected override GridPos ExecuteWalking(PlayerController player, float turnTime)
     {
-        inHole = board.HasOccupancy(pos, Occupancy.Hole);
+
         //Debug.Log(string.Format("Mole in hole {0} and previously {1}", inHole, previousBehaviour));
         if (inHole && previousBehaviour == EnemyMode.Walking)
         {
@@ -82,7 +136,7 @@ public class EnemyTypeMole : Enemy {
         }
 
         if (previousBehaviour == EnemyMode.Hiding || targetCheckpoints.Count == 0)
-        {            
+        {
             GridPos playerPos = player.onTile;
             targetCheckpoints.Clear();
             GridPos target = new GridPos();
@@ -135,6 +189,12 @@ public class EnemyTypeMole : Enemy {
             {
                 claimedBurrows.Remove(pos);
             }
+
+            if (underground)
+            {
+                hasAttacked = false;
+            }
+
             Debug.Log(claimedBurrows.Count);
         }
 
