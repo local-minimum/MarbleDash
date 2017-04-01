@@ -951,5 +951,80 @@ namespace LocalMinimum.Arrays
 
             return coords;
         }
+
+        public static bool All(this int[,] input, int value)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (input[x, y] != value)
+                    {
+                        return false;
+                    } 
+                }
+            }
+
+            return true;
+        }
+
+        public static bool All(this bool[,] input)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (!input[x, y])
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+
+        }
+
+        public static bool Any(this int[,] input, int value)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (input[x, y] == value)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+
+        }
+
+        public static bool Any(this bool[,] input)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (input[x, y])
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+
+        }
     }
 }

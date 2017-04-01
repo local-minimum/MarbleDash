@@ -156,7 +156,7 @@ public class Enemy : MonoBehaviour {
     protected BoardGrid board;
 
     [SerializeField]
-    Vector3 localPlacementOffset = new Vector3(0, 0, 0.5f);
+    protected Vector3 localPlacementOffset = new Vector3(0, 0, 0.5f);
 
     [SerializeField]
     int attackRange = 2;
@@ -432,7 +432,10 @@ public class Enemy : MonoBehaviour {
     protected GridPos SelectContextDirectionAndMove(float turnTime)
     {
         //Debug.Log(context.ToCSV());
-
+        if (context.All(-1))
+        {
+            return pos;
+        }
         bool[,] bestMoves = context.HasMinValue();
 
         //Debug.Log(bestMoves.Map(e => e ? 1 : 0).ToCSV());
@@ -687,7 +690,6 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    protected Vector3 moveHeightBaseOffset;
 
     protected IEnumerator<WaitForSeconds> JumpToPos(float maxTime, Vector3 targetPos)
     {
@@ -698,11 +700,11 @@ public class Enemy : MonoBehaviour {
         while (progress < 1)
         {
             progress = (Time.timeSinceLevelLoad - startTime) / duration;
-            transform.localPosition = Vector3.Lerp(startPos, targetPos, planarCurve.Evaluate(progress)) + jumpHeightAxis * heightCurve.Evaluate(progress) + moveHeightBaseOffset;
+            transform.localPosition = Vector3.Lerp(startPos, targetPos, planarCurve.Evaluate(progress)) + jumpHeightAxis * heightCurve.Evaluate(progress) + localPlacementOffset;
             yield return new WaitForSeconds(0.016f);
         }
 
-        transform.localPosition = targetPos + moveHeightBaseOffset; 
+        transform.localPosition = targetPos + localPlacementOffset; 
 
     }
 

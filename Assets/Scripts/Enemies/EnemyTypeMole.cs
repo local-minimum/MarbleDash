@@ -39,6 +39,7 @@ public class EnemyTypeMole : Enemy {
     int minimumHolesInLevel = 3;
 
     static List<GridPos> claimedBurrows = new List<GridPos>();
+    
 
     protected override bool SpecialCriteriaForSelectionFullfilled(Level lvl)
     {        
@@ -66,6 +67,7 @@ public class EnemyTypeMole : Enemy {
     protected override GridPos ExecuteHiding(PlayerController player, float turnTime)
     {
         underground = true;
+        transform.localPosition = board.GetLocalPosition(pos) + hidingOffset;
         return pos;
     }
 
@@ -133,6 +135,7 @@ public class EnemyTypeMole : Enemy {
             {
                 claimedBurrows.Remove(pos);
             }
+            Debug.Log(claimedBurrows.Count);
         }
 
         SetContextFromDistanceMapAndPosition(targetDistanceMap);
@@ -166,7 +169,7 @@ public class EnemyTypeMole : Enemy {
     protected override void Move(GridPos offset, float maxTime)
     {
         jumpHeightAxis = new Vector3(Mathf.Abs(jumpHeightAxis.x), Mathf.Abs(jumpHeightAxis.y), Mathf.Abs(jumpHeightAxis.z)) * (underground ? -.5f : 1);
-        moveHeightBaseOffset = underground ? undergroundOffset : Vector3.zero;
+        localPlacementOffset = underground ? undergroundOffset : Vector3.zero;
         base.Move(offset, maxTime);
     }
 }

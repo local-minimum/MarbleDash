@@ -258,7 +258,7 @@ MonoBehaviour:
     damageReflection: 
   bodyProperties: {fileID: 114462557831289960}
   attackAnim: []
-  localPlacementOffset: {x: 0, y: 0, z: 0.5}
+  localPlacementOffset: {x: 0, y: 0, z: -2}
   attackRange: 2
   huntRange: 4
   preferredWalkTargetDistance: 7
