@@ -109,6 +109,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
 --- !u!23 &23960295194921228
 MeshRenderer:
@@ -140,6 +141,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
 --- !u!33 &33106190889904072
 MeshFilter:
@@ -243,7 +245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tiers:
   - difficulty: 1
-    firstLevel: 2
+    firstLevel: 1
     availableModes: 01000000020000000400000008000000
     startHealthMin: 4
     startHealthMax: 5

@@ -271,12 +271,15 @@ public class Level : MonoBehaviour {
         {
             case GizmoContent.EnemyCross:
                 connectivity = enemyConnectivityCross;
+                Debug.Log("Cross");
                 break;
             case GizmoContent.EnemyEight:
                 connectivity = enemyConnectivityEight;
+                Debug.Log("Eight");
                 break;
             default:
                 connectivity = playerConnectivity;
+                Debug.Log("Player");
                 break;
         }
 

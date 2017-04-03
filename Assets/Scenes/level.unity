@@ -14679,10 +14679,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 2025833198}
-  enemyDifficultyLoadPerLevel: 1
+  enemyDifficultyLoadPerLevel: 2
   enemyDifficultyLoadMinRelative: -3
   enemyDifficutlyLoadMaxRelative: 4
-  enemyDifficultyLoadMinAbs: 1
+  enemyDifficultyLoadMinAbs: 3
   minEnemyDifficutly: 0
   maxEnemyDifficutly: 2
   minEnemyDiffIncreaseEach: 2

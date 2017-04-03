@@ -94,13 +94,17 @@ public class PlayerController : MonoBehaviour {
         if (lvl == null)
         {
             lvl = Level.instance;
+            lvl.OnNewLevel += Lvl_OnNewLevel;
         }
-        lvl.OnNewLevel += Lvl_OnNewLevel;
+
     }
 
     void OnDisable()
     {
-        lvl.OnNewLevel -= Lvl_OnNewLevel;
+        if (lvl)
+        {
+            lvl.OnNewLevel -= Lvl_OnNewLevel;
+        }
     }
 
     private void Lvl_OnNewLevel()

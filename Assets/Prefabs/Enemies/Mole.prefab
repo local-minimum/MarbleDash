@@ -228,9 +228,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tiers:
-  - difficulty: 1
-    firstLevel: 1
-    availableModes: 020000000800000008000000
+  - difficulty: 3
+    firstLevel: 4
+    availableModes: 020000000800000009000000
     startHealthMin: 5
     startHealthMax: 5
     minAttack: 0400000001000000
