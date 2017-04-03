@@ -51,7 +51,6 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Start () {
-        lvl = Level.instance;
         rb = GetComponent<Rigidbody>();
         groundLayer = LayerMask.NameToLayer("ground");
         destructableLayer = LayerMask.NameToLayer("destructables");
@@ -83,13 +82,33 @@ public class PlayerController : MonoBehaviour {
     public void KillReset(string message)
     {
         onTile = offTile;
+        collidingGrounds.Clear();
         StoreSwapper.instance.HideAllStores();
         PlayerRunData.stats.Reset();
         lvl.Generate();
         lvl.Implement();
     }
 
-	void Update () {
+    void OnEnable()
+    {
+        if (lvl == null)
+        {
+            lvl = Level.instance;
+        }
+        lvl.OnNewLevel += Lvl_OnNewLevel;
+    }
+
+    void OnDisable()
+    {
+        lvl.OnNewLevel -= Lvl_OnNewLevel;
+    }
+
+    private void Lvl_OnNewLevel()
+    {
+        collidingGrounds.Clear();
+    }
+
+    void Update () {
         if (Input.GetKeyDown(KeyCode.H))
         {
             switch (PlayerRunData.stats.holeMode)
@@ -114,11 +133,12 @@ public class PlayerController : MonoBehaviour {
                 TrackGridPos();
             } else
             {
-                
+                Debug.Log("Player kinematic");
             }
         } else
         {
             onTile = offTile;
+            Debug.Log("Player not grounded");
         }
      
     }
@@ -146,11 +166,13 @@ public class PlayerController : MonoBehaviour {
             }
         }
 
-        if (closest < 0 || closestBoard == null)
+        if (closest == -1 || closestBoard == null)
         {
             onTile = offTile;
+            Debug.Log("Player off tile because closest " + closest + " or no closestBoard " + closestBoard);
         } else
         {
+            Debug.Log("Player on tile " + closestBoard + " with pos " + closestBoard.pos);
             onTile = closestBoard.pos;
         }
         
@@ -224,7 +246,7 @@ public class PlayerController : MonoBehaviour {
             if (_onTile != value)
             {
                 if (boardGrid.IsValidPosition(_onTile))
-                {
+                {                    
                     boardGrid.Free(_onTile, Occupancy.Player);
                 }
                 _onTile = value;

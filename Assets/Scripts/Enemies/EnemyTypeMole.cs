@@ -51,6 +51,7 @@ public class EnemyTypeMole : Enemy {
     protected override bool ForceBehaviourSequence()
     {
         inHole = board.HasOccupancy(pos, Occupancy.Hole);
+        UpdateBurrows();
 
         if (inHole) {
             if (hasAttacked)
@@ -116,6 +117,7 @@ public class EnemyTypeMole : Enemy {
         {
             Debug.Log("Popping out of burrow");
             underground = false;
+            targetCheckpoints.Clear();
             transform.localPosition = board.GetLocalPosition(pos) + attack2Offset;
             StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
             return pos;
@@ -137,7 +139,7 @@ public class EnemyTypeMole : Enemy {
                 return ExecuteHunt(player, turnTime);
             } else
             {
-                Debug.Log("give up hunting");
+                Debug.Log("give up hunting because " + distToBurrow + " >= " + allowHunting);
                 hasAttacked = true;
                 behaviour = EnemyMode.Hiding;
                 StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
@@ -150,6 +152,26 @@ public class EnemyTypeMole : Enemy {
 
     [SerializeField]
     Vector3 attack2Offset;
+
+    void UpdateBurrows()
+    {
+        if (inHole && lastBurrow != pos)
+        {
+            claimedBurrows.Add(pos);
+            if (claimedBurrows.Contains(lastBurrow))
+            {
+                claimedBurrows.Remove(lastBurrow);
+            }
+            else
+            {
+                if (lastBurrow.x >= 0 && lastBurrow.y >= 0)
+                {
+                    Debug.LogWarning("Failed to release burrows: " + lastBurrow);
+                }
+            }
+            lastBurrow = pos;
+        }
+    }
 
     protected override GridPos ExecuteAttack2(PlayerController player, float turnTime)
     {
@@ -175,11 +197,15 @@ public class EnemyTypeMole : Enemy {
         if (inHole)
         {
             underground = true;
-            transform.localPosition = board.GetLocalPosition(pos) + hidingOffset;
-            lastBurrow = pos;
+            transform.localPosition = board.GetLocalPosition(pos) + hidingOffset;            
         } else
         {
-
+            if (targetCheckpoints.Count == 0)
+            {
+                targetCheckpoints.Add(lastBurrow);
+            }
+            behaviour = EnemyMode.Walking;
+            return ExecuteWalking(player, turnTime);
         }
         return pos;
     }
@@ -241,19 +267,7 @@ public class EnemyTypeMole : Enemy {
             }
             //Debug.Log("Selected burrows" + target);
             targetCheckpoints.Add(target);
-            claimedBurrows.Add(target);
             SetTargetDistances(0);
-            if (claimedBurrows.Contains(lastBurrow))
-            {
-                claimedBurrows.Remove(lastBurrow);
-            } else
-            {
-                if (lastBurrow.x >= 0 && lastBurrow.y >= 0)
-                {
-                    Debug.LogWarning("Failed to release burrows: " + lastBurrow);
-                }
-            }
-            
             if (underground)
             {
                 hasAttacked = false;
@@ -295,7 +309,7 @@ public class EnemyTypeMole : Enemy {
     protected override void Move(GridPos offset, float maxTime)
     {
         jumpHeightAxis = new Vector3(Mathf.Abs(jumpHeightAxis.x), Mathf.Abs(jumpHeightAxis.y), Mathf.Abs(jumpHeightAxis.z)) * (underground ? -1f : 1);
-        localPlacementOffset = underground ? undergroundOffset : Vector3.zero;
+        localPlacementOffset = underground ? undergroundOffset : Vector3.forward;
         base.Move(offset, maxTime);
     }
 }

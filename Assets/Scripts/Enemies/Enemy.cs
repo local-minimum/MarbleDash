@@ -234,11 +234,17 @@ public class Enemy : MonoBehaviour {
             if (attacks.Count > 0)
             {
                 behaviour = SelectModeFromAvailable(attacks);
-            } else
+                Debug.Log("Non forced attack behaviour" + behaviour);
+            }
+            else
             {
                 behaviour = SelectModeFromAvailable(availableModes.Where(o => !IsAttack(o.mode)).ToList());
+                Debug.Log("Non forced non-behaviour " + behaviour);
             }
 
+        } else
+        {
+            Debug.Log("Forcing " + behaviour);
         }
 
         if (behaviour == previousBehaviour)
@@ -650,6 +656,8 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     protected Vector3 jumpHeightAxis = Vector3.forward;
 
+    Vector3 rotAxis = Vector3.forward;
+
     protected IEnumerator LookTowards(Direction dir)
     {
         Quaternion target = Quaternion.identity;
@@ -657,34 +665,35 @@ public class Enemy : MonoBehaviour {
         switch (dir)
         {
             case Direction.East:
-                target = Quaternion.AngleAxis(270, -Vector3.forward);
+                target = Quaternion.AngleAxis(270, rotAxis);
                 break;
             case Direction.West:
-                target = Quaternion.AngleAxis(90, -Vector3.forward);
+                target = Quaternion.AngleAxis(90, rotAxis);
                 break;
             case Direction.South:
-                target = Quaternion.AngleAxis(0, -Vector3.forward);
+                target = Quaternion.AngleAxis(0, rotAxis);
                 break;
             case Direction.North:
-                target = Quaternion.AngleAxis(180, -Vector3.forward);
+                target = Quaternion.AngleAxis(180, rotAxis);
                 break;
             case Direction.NorthEast:
-                target = Quaternion.AngleAxis(225, -Vector3.forward);
+                target = Quaternion.AngleAxis(225, rotAxis);
                 break;
             case Direction.SouthEast:
-                target = Quaternion.AngleAxis(315, -Vector3.forward);
+                target = Quaternion.AngleAxis(315, rotAxis);
                 break;
             case Direction.SouthWest:
-                target = Quaternion.AngleAxis(45, -Vector3.forward);
+                target = Quaternion.AngleAxis(45, rotAxis);
                 break;
             case Direction.NorthWest:
-                target = Quaternion.AngleAxis(135, -Vector3.forward);
+                target = Quaternion.AngleAxis(135, rotAxis);
                 break;
             default:
                 target = source;
                 break;
         }
-
+        Vector3 euler = target.eulerAngles;
+        target = Quaternion.Euler(0, 180, euler.z);
         if (source != target)
         {
             float p = 0;
