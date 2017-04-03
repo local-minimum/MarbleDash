@@ -5,7 +5,7 @@ using LocalMinimum.Arrays;
 namespace LocalMinimum.Grid
 {
 
-    public enum Direction { None, North, South, West, East };
+    public enum Direction { None, North, South, West, East, NorthWest, SouthWest, SouthEast, NorthEast };
 
     [System.Serializable]
     public struct GridPos
@@ -168,6 +168,48 @@ namespace LocalMinimum.Grid
             get
             {
                 return new GridPos(x > 0 ? 1 : (x < 0 ? -1 : 0), y > 0 ? 1 : (y < 0 ? -1 : 0));
+            }
+        }
+
+        public Direction NineDirection
+        {
+            get
+            {
+                GridPos normed = this.NineNormalized;
+                if (normed.x < 0)
+                {
+                    if (normed.y < 0)
+                    {
+                        return Direction.NorthWest;
+                    } else if (normed.y > 0)
+                    {
+                        return Direction.SouthWest;
+                    } else
+                    {
+                        return Direction.West;
+                    }
+                } else if (normed.x > 0)
+                {
+                    if (normed.y < 0)
+                    {
+                        return Direction.NorthEast;
+                    } else if (normed.y < 0)
+                    {
+                        return Direction.SouthEast;
+                    } else
+                    {
+                        return Direction.East;
+                    }
+                } else if (normed.y > 0)
+                {
+                    return Direction.North;
+                } else if (normed.y < 0)
+                {
+                    return Direction.South;
+                }
+
+
+                return Direction.None;
             }
         }
 

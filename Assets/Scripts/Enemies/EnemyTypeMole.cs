@@ -114,16 +114,16 @@ public class EnemyTypeMole : Enemy {
         int distToPlayer = GridPos.ChessBoardDistance(player.onTile, pos);
         if (underground)
         {
+            Debug.Log("Popping out of burrow");
             underground = false;
             transform.localPosition = board.GetLocalPosition(pos) + attack2Offset;
             StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
             return pos;
         } else if (distToPlayer <= 1)
         {
-
+            Debug.Log("player can be bitten " + distToPlayer);
             PlayerDestructable destruct = player.GetComponent<PlayerDestructable>();
             destruct.Hurt(Random.Range(activeTier.minAttack[0], activeTier.maxAttack[0]), 0);
-            LookTowards((player.onTile - pos).NineNormalized);
             anim.SetTrigger("Bite");
             hasAttacked = true;
             StartCoroutine(delayTransitionToNone(turnTime * 0.25f));
@@ -132,10 +132,12 @@ public class EnemyTypeMole : Enemy {
         {
             if (distToBurrow < allowHunting)
             {
+                Debug.Log("hunt, dist to burrows " + distToBurrow);
                 StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
                 return ExecuteHunt(player, turnTime);
             } else
             {
+                Debug.Log("give up hunting");
                 hasAttacked = true;
                 behaviour = EnemyMode.Hiding;
                 StartCoroutine(delayTransitionToNone(turnTime * 0.1f));

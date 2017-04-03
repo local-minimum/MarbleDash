@@ -422,7 +422,6 @@ public class Enemy : MonoBehaviour {
             targetCheckpoints.Clear();
             targetCheckpoints.Add(player.onTile);
         }
-        LookTowards((player.onTile - pos).NineNormalized);
         SetContextFromDistanceMapAndPosition(player.enemyDistancesEight);
 
         return SelectContextDirectionAndMove(turnTime);
@@ -555,9 +554,8 @@ public class Enemy : MonoBehaviour {
 
     protected virtual GridPos ExecuteAttack1(PlayerController player, float turnTime)
     {
-        GridPos playerDirection = (player.onTile - pos);
        
-        StartCoroutine(LookTowards(playerDirection));
+        StartCoroutine(LookTowards((player.onTile - pos).NineDirection));
 
         if (anim)
         {
@@ -588,7 +586,7 @@ public class Enemy : MonoBehaviour {
         if (!board.HasOccupancy(pos, Occupancy.Enemy))
         {
             board.Occupy(pos, Occupancy.Enemy);
-            StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos)));
+            StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos), offset.NineDirection));
         } else
         {
             pos -= offset;
@@ -652,9 +650,8 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     protected Vector3 jumpHeightAxis = Vector3.forward;
 
-    protected IEnumerator<WaitForSeconds> LookTowards(GridPos direction)
+    protected IEnumerator LookTowards(Direction dir)
     {
-        Direction dir = direction.AsMajorDirection();
         Quaternion target = Quaternion.identity;
         Quaternion source = transform.localRotation;
         switch (dir)
@@ -670,6 +667,18 @@ public class Enemy : MonoBehaviour {
                 break;
             case Direction.North:
                 target = Quaternion.AngleAxis(180, -Vector3.forward);
+                break;
+            case Direction.NorthEast:
+                target = Quaternion.AngleAxis(225, -Vector3.forward);
+                break;
+            case Direction.SouthEast:
+                target = Quaternion.AngleAxis(315, -Vector3.forward);
+                break;
+            case Direction.SouthWest:
+                target = Quaternion.AngleAxis(45, -Vector3.forward);
+                break;
+            case Direction.NorthWest:
+                target = Quaternion.AngleAxis(135, -Vector3.forward);
                 break;
             default:
                 target = source;
@@ -690,12 +699,15 @@ public class Enemy : MonoBehaviour {
     }
 
 
-    protected IEnumerator<WaitForSeconds> JumpToPos(float maxTime, Vector3 targetPos)
+    protected IEnumerator JumpToPos(float maxTime, Vector3 targetPos, Direction lookDirection)
     {
         float startTime = Time.timeSinceLevelLoad;
         float duration = maxTime * jumpFractionDuration;
         float progress = 0;
-        Vector3 startPos = transform.localPosition;
+        Vector3 startPos = board.GetLocalPosition(pos) + localPlacementOffset;
+
+        yield return StartCoroutine(LookTowards(lookDirection));
+
         targetPos += localPlacementOffset;
         while (progress < 1)
         {
