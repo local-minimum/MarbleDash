@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     EnemyTier[] tiers;
     
-    EnemyTier activeTier;
+    protected EnemyTier activeTier;
     protected int activeTierIndex;
 
     public void SetTier(int tier)
@@ -88,7 +88,7 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    bool IsAttack(EnemyMode behaviour)
+    public bool IsAttack(EnemyMode behaviour)
     {
         return behaviour == EnemyMode.Attack1 || behaviour == EnemyMode.Attack2 || behaviour == EnemyMode.Attack3 ||
             behaviour == EnemyMode.Attack4 || behaviour == EnemyMode.Attack5;
@@ -159,7 +159,7 @@ public class Enemy : MonoBehaviour {
     protected Vector3 localPlacementOffset = new Vector3(0, 0, 0.5f);
 
     [SerializeField]
-    int attackRange = 2;
+    protected int attackRange = 2;
 
     GridPos contextPosition;
     int[,] context;
@@ -188,7 +188,7 @@ public class Enemy : MonoBehaviour {
     }
 
    
-    Animator anim;
+    protected Animator anim;
 
     void Awake()
     {
@@ -366,7 +366,6 @@ public class Enemy : MonoBehaviour {
     {
         if (IsAttack(mode))
         {
-            //TODO: Support more ranges or is that just overwrite
             return playerOffset.ChessBoardMagnitude <= attackRange;
         } else if (mode == EnemyMode.Hunting)
         {
@@ -423,7 +422,7 @@ public class Enemy : MonoBehaviour {
             targetCheckpoints.Clear();
             targetCheckpoints.Add(player.onTile);
         }
-
+        LookTowards((player.onTile - pos).NineNormalized);
         SetContextFromDistanceMapAndPosition(player.enemyDistancesEight);
 
         return SelectContextDirectionAndMove(turnTime);
@@ -589,7 +588,7 @@ public class Enemy : MonoBehaviour {
         if (!board.HasOccupancy(pos, Occupancy.Enemy))
         {
             board.Occupy(pos, Occupancy.Enemy);
-            StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos) + localPlacementOffset));
+            StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos)));
         } else
         {
             pos -= offset;
@@ -697,14 +696,15 @@ public class Enemy : MonoBehaviour {
         float duration = maxTime * jumpFractionDuration;
         float progress = 0;
         Vector3 startPos = transform.localPosition;
+        targetPos += localPlacementOffset;
         while (progress < 1)
         {
             progress = (Time.timeSinceLevelLoad - startTime) / duration;
-            transform.localPosition = Vector3.Lerp(startPos, targetPos, planarCurve.Evaluate(progress)) + jumpHeightAxis * heightCurve.Evaluate(progress) + localPlacementOffset;
+            transform.localPosition = Vector3.Lerp(startPos, targetPos, planarCurve.Evaluate(progress)) + jumpHeightAxis * heightCurve.Evaluate(progress);
             yield return new WaitForSeconds(0.016f);
         }
 
-        transform.localPosition = targetPos + localPlacementOffset; 
+        transform.localPosition = targetPos; 
 
     }
 

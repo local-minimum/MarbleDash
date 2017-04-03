@@ -41,7 +41,7 @@ public class EnemyTypeMole : Enemy {
 
     static List<GridPos> claimedBurrows = new List<GridPos>();
 
-    GridPos lastBurrow;
+    GridPos lastBurrow = new GridPos(-1, -1);
 
     protected override bool SpecialCriteriaForSelectionFullfilled(Level lvl)
     {        
@@ -53,15 +53,19 @@ public class EnemyTypeMole : Enemy {
         inHole = board.HasOccupancy(pos, Occupancy.Hole);
 
         if (inHole) {
-            if (!underground)
+            if (hasAttacked)
             {
-                behaviour = EnemyMode.Hiding;
-                return true;
-            } else if (previousBehaviour == EnemyMode.Hiding)
-            {
-                behaviour = EnemyMode.Walking;
-                return true;
-            }
+                if (!underground)
+                {
+                    behaviour = EnemyMode.Hiding;
+                    return true;
+                }
+                else if (previousBehaviour == EnemyMode.Hiding)
+                {
+                    behaviour = EnemyMode.Walking;
+                    return true;
+                }
+            } 
         } else
         {
             if (!underground)
@@ -82,6 +86,25 @@ public class EnemyTypeMole : Enemy {
         return false;
     }
 
+    protected override bool PlayerInRange(GridPos playerOffset, EnemyMode mode)
+    {
+        if (IsAttack(mode))
+        {
+            int dist = playerOffset.ChessBoardMagnitude;
+            if (mode == EnemyMode.Attack1)
+            {
+                return (inHole || !underground) && dist <= attackRange;
+            } else if (mode == EnemyMode.Attack2)
+            {
+                return inHole && LineOfSight(pos, playerOffset + pos);
+            }
+            return false;
+        } else
+        {
+            return true;
+        }
+    }
+
     [SerializeField, Range(2, 5)]
     int allowHunting = 2;
 
@@ -89,26 +112,60 @@ public class EnemyTypeMole : Enemy {
     {
         int distToBurrow = GridPos.ChessBoardDistance(lastBurrow, pos);
         int distToPlayer = GridPos.ChessBoardDistance(player.onTile, pos);
-        underground = false;
-        
-        if (distToPlayer <= 1)
+        if (underground)
+        {
+            underground = false;
+            transform.localPosition = board.GetLocalPosition(pos) + attack2Offset;
+            StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
+            return pos;
+        } else if (distToPlayer <= 1)
         {
 
-            //Do actual bite attack
+            PlayerDestructable destruct = player.GetComponent<PlayerDestructable>();
+            destruct.Hurt(Random.Range(activeTier.minAttack[0], activeTier.maxAttack[0]), 0);
+            LookTowards((player.onTile - pos).NineNormalized);
+            anim.SetTrigger("Bite");
             hasAttacked = true;
+            StartCoroutine(delayTransitionToNone(turnTime * 0.25f));
+            return pos;
         } else
         {
             if (distToBurrow < allowHunting)
             {
-                ExecuteHunt(player, turnTime);
+                StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
+                return ExecuteHunt(player, turnTime);
             } else
             {
+                hasAttacked = true;
                 behaviour = EnemyMode.Hiding;
-                ExecuteHiding(player, turnTime);
+                StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
+                return ExecuteHiding(player, turnTime);
             }
         }
 
-        return base.ExecuteAttack1(player, turnTime);
+        
+    }
+
+    [SerializeField]
+    Vector3 attack2Offset;
+
+    protected override GridPos ExecuteAttack2(PlayerController player, float turnTime)
+    {
+        transform.localPosition = board.GetLocalPosition(pos) + attack2Offset;
+        underground = false;
+        if (previousBehaviour == EnemyMode.Attack2)
+        {
+            hasAttacked = true;
+            DirtBallsManager.instance.Throw(pos, player.onTile, Random.Range(activeTier.minAttack[1], activeTier.maxAttack[1]));
+        }
+        StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
+        return pos;
+    }
+
+    public IEnumerator<WaitForSeconds> delayTransitionToNone(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        behaviour = EnemyMode.None;
     }
 
     protected override GridPos ExecuteHiding(PlayerController player, float turnTime)
@@ -174,7 +231,6 @@ public class EnemyTypeMole : Enemy {
                 {
                     //Redoing hole filtering is indeed neccesary incase attempted nearby hole without finding one
                     preferred = lvl.boardHoles.Where(e => e != pos && !claimedBurrows.Contains(e)).ToArray();    
-                                    
                     target = preferred.Shuffle().First();
                     underground = true;
                     //Debug.Log("Random hole");
@@ -185,17 +241,23 @@ public class EnemyTypeMole : Enemy {
             targetCheckpoints.Add(target);
             claimedBurrows.Add(target);
             SetTargetDistances(0);
-            if (claimedBurrows.Contains(pos))
+            if (claimedBurrows.Contains(lastBurrow))
             {
-                claimedBurrows.Remove(pos);
+                claimedBurrows.Remove(lastBurrow);
+            } else
+            {
+                if (lastBurrow.x >= 0 && lastBurrow.y >= 0)
+                {
+                    Debug.LogWarning("Failed to release burrows: " + lastBurrow);
+                }
             }
-
+            
             if (underground)
             {
                 hasAttacked = false;
             }
 
-            Debug.Log(claimedBurrows.Count);
+            Debug.Log("Claimed burrows " + claimedBurrows.Count);
         }
 
         SetContextFromDistanceMapAndPosition(targetDistanceMap);
@@ -217,9 +279,11 @@ public class EnemyTypeMole : Enemy {
 
     bool LineOfSight(GridPos a, GridPos b)
     {
-        int taxiDistance = GridPos.TaxiCabDistance(a, b);
-        return taxiDistance < throwLength && GridPos.ChessBoardDistance(a, b) == taxiDistance && lvl.nonBlocking.LineInOneRegion(a, b);
+        int taxiDistance = GridPos.ChessBoardDistance(a, b);
+        GridPos offset = b - a;
+        return taxiDistance <= throwLength && (offset.x == 0 || offset.y == 0 || Mathf.Abs(offset.x) == Mathf.Abs(offset.y)) && lvl.nonBlocking.LineInOneRegion(a, b);
     }
+
     [SerializeField]
     Vector3 undergroundOffset;
 
@@ -228,7 +292,7 @@ public class EnemyTypeMole : Enemy {
 
     protected override void Move(GridPos offset, float maxTime)
     {
-        jumpHeightAxis = new Vector3(Mathf.Abs(jumpHeightAxis.x), Mathf.Abs(jumpHeightAxis.y), Mathf.Abs(jumpHeightAxis.z)) * (underground ? -.5f : 1);
+        jumpHeightAxis = new Vector3(Mathf.Abs(jumpHeightAxis.x), Mathf.Abs(jumpHeightAxis.y), Mathf.Abs(jumpHeightAxis.z)) * (underground ? -1f : 1);
         localPlacementOffset = underground ? undergroundOffset : Vector3.zero;
         base.Move(offset, maxTime);
     }

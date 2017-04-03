@@ -24,6 +24,15 @@ public class Level : MonoBehaviour {
         }
     }
 
+    static int _playerLevel;
+    public static int playerLevel
+    {
+        get
+        {
+            return _playerLevel;
+        }
+    }
+
     public event TurnTick OnTurnTick;
     public event NewLevel OnNewLevel;
 
@@ -109,6 +118,7 @@ public class Level : MonoBehaviour {
     }
 
     void Start () {
+        _playerLevel = LayerMask.NameToLayer("player");
         StartCoroutine(TurnTicker());
         Generate();
         Implement();
