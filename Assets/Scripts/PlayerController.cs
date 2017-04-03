@@ -94,7 +94,10 @@ public class PlayerController : MonoBehaviour {
         if (lvl == null)
         {
             lvl = Level.instance;
-            lvl.OnNewLevel += Lvl_OnNewLevel;
+            if (lvl != null)
+            {
+                lvl.OnNewLevel += Lvl_OnNewLevel;
+            }
         }
 
     }
