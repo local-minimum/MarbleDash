@@ -176,10 +176,10 @@ public class PlayerController : MonoBehaviour {
         if (closest == -1 || closestBoard == null)
         {
             onTile = offTile;
-            Debug.Log("Player off tile because closest " + closest + " or no closestBoard " + closestBoard);
+            //Debug.Log("Player off tile because closest " + closest + " or no closestBoard " + closestBoard);
         } else
         {
-            Debug.Log("Player on tile " + closestBoard + " with pos " + closestBoard.pos);
+            //Debug.Log("Player on tile " + closestBoard + " with pos " + closestBoard.pos);
             onTile = closestBoard.pos;
         }
         

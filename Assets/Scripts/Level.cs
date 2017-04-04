@@ -269,7 +269,7 @@ public class Level : MonoBehaviour {
     [SerializeField]
     Vector3 gizmoOffset;
 
-    public enum GizmoContent { Player, EnemyCross, EnemyEight};
+    public enum GizmoContent { Player, EnemyCross, EnemyEight, Underground};
 
     [SerializeField]
     GizmoContent gizmoContent;
@@ -290,6 +290,10 @@ public class Level : MonoBehaviour {
             case GizmoContent.EnemyEight:
                 connectivity = enemyConnectivityEight;
                 Debug.Log("Eight");
+                break;
+            case GizmoContent.Underground:
+                connectivity = enemyHolesConnectivity.Map(e => e ? 1 : 0);
+                Debug.Log("Holes/underground");
                 break;
             default:
                 connectivity = playerConnectivity;

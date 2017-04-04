@@ -221,7 +221,7 @@ namespace LocalMinimum.Arrays
             int index = 0;
             int length = sources.Count;
             //Debug.Log(length);
-            int initialLength = length;
+            int seedsLength = length;
 
             bool testDiagonals = neighbourhood == Neighbourhood.Eight;
 
@@ -232,55 +232,7 @@ namespace LocalMinimum.Arrays
                 int y = coord.y;
                 int lowest = -1;
 
-                if (x != 0 && filter[x - 1, y])
-                {
-                    if (distances[x - 1, y] < 0)
-                    {
-                        if (!seed[x - 1, y])
-                        {
-                            sources.Add(new Coordinate(x - 1, y));
-                            seed[x - 1, y] = true;
-                            length++;
-                        }
-                    }
-                    else if (index >= initialLength)
-                    {
-                        if (lowest < 0)
-                        {
-                            lowest = distances[x - 1, y];
-                        }
-                        else
-                        {
-                            lowest = Mathf.Min(lowest, distances[x - 1, y]);
-                        }
-                    }
-                }
-
-                if (x != lastX && filter[x + 1, y])
-                {
-                    if (distances[x + 1, y] < 0)
-                    {
-                        if (!seed[x + 1, y])
-                        {
-                            sources.Add(new Coordinate(x + 1, y));
-                            length++;
-                            seed[x + 1, y] = true;
-                        }
-                    }
-                    else if (index >= initialLength)
-                    {
-                        if (lowest < 0)
-                        {
-                            lowest = distances[x + 1, y];
-                        }
-                        else
-                        {
-                            lowest = Mathf.Min(lowest, distances[x + 1, y]);
-                        }
-                    }
-                }
-
-                if (y != 0 && filter[x, y - 1])
+                if (y != 0 && (filter[x, y - 1] || seed[x, y - 1]))
                 {
                     if (distances[x, y - 1] < 0)
                     {
@@ -291,7 +243,7 @@ namespace LocalMinimum.Arrays
                             seed[x, y - 1] = true;
                         }
                     }
-                    else if (index >= initialLength)
+                    else if (index >= seedsLength)
                     {
                         if (lowest < 0)
                         {
@@ -302,10 +254,11 @@ namespace LocalMinimum.Arrays
                             lowest = Mathf.Min(lowest, distances[x, y - 1]);
                         }
                     }
-                    
+
                 }
 
-                if (y != lastY && filter[x, y + 1]) {
+                if (y != lastY && (filter[x, y + 1] || seed[x, y + 1]))
+                {
                     if (distances[x, y + 1] < 0)
                     {
                         if (!seed[x, y + 1])
@@ -315,7 +268,7 @@ namespace LocalMinimum.Arrays
                             seed[x, y + 1] = true;
                         }
                     }
-                    else if (index >= initialLength)
+                    else if (index >= seedsLength)
                     {
                         if (lowest < 0)
                         {
@@ -328,10 +281,59 @@ namespace LocalMinimum.Arrays
                     }
                 }
 
+
+                if (x != 0 && (filter[x - 1, y] || seed[x - 1, y]))
+                {
+                    if (distances[x - 1, y] < 0)
+                    {
+                        if (!seed[x - 1, y])
+                        {
+                            sources.Add(new Coordinate(x - 1, y));
+                            seed[x - 1, y] = true;
+                            length++;
+                        }
+                    }
+                    else if (index >= seedsLength)
+                    {
+                        if (lowest < 0)
+                        {
+                            lowest = distances[x - 1, y];
+                        }
+                        else
+                        {
+                            lowest = Mathf.Min(lowest, distances[x - 1, y]);
+                        }
+                    }
+                }
+
+                if (x != lastX && (filter[x + 1, y] || seed[x + 1, y]))
+                {
+                    if (distances[x + 1, y] < 0)
+                    {
+                        if (!seed[x + 1, y])
+                        {
+                            sources.Add(new Coordinate(x + 1, y));
+                            length++;
+                            seed[x + 1, y] = true;
+                        }
+                    }
+                    else if (index >= seedsLength)
+                    {
+                        if (lowest < 0)
+                        {
+                            lowest = distances[x + 1, y];
+                        }
+                        else
+                        {
+                            lowest = Mathf.Min(lowest, distances[x + 1, y]);
+                        }
+                    }
+                }
+
                 if (testDiagonals)
                 {
 
-                    if (x != 0 && y != lastY && filter[x - 1, y + 1])
+                    if (x != 0 && y != lastY && (filter[x - 1, y + 1] || seed[x - 1, y + 1]))
                     {
                         if (distances[x - 1, y + 1] < 0)
                         {
@@ -342,7 +344,7 @@ namespace LocalMinimum.Arrays
                                 seed[x - 1, y + 1] = true;
                             }
                         }
-                        else if (index >= initialLength)
+                        else if (index >= seedsLength)
                         {
                             if (lowest < 0)
                             {
@@ -356,7 +358,7 @@ namespace LocalMinimum.Arrays
                     }
 
 
-                    if (x != lastX && y != lastY && filter[x + 1, y + 1])
+                    if (x != lastX && y != lastY && (filter[x + 1, y + 1] || seed[x + 1, y + 1]))
                     {
                         if (distances[x + 1, y + 1] < 0)
                         {
@@ -367,7 +369,7 @@ namespace LocalMinimum.Arrays
                                 seed[x + 1, y + 1] = true;
                             }
                         }
-                        else if (index >= initialLength)
+                        else if (index >= seedsLength)
                         {
                             if (lowest < 0)
                             {
@@ -380,7 +382,7 @@ namespace LocalMinimum.Arrays
                         }
                     }
 
-                    if (x != lastX && y != 0 && filter[x + 1, y - 1])
+                    if (x != lastX && y != 0 && (filter[x + 1, y - 1] || seed[x + 1, y - 1]))
                     {
                         if (distances[x + 1, y - 1] < 0)
                         {
@@ -391,7 +393,7 @@ namespace LocalMinimum.Arrays
                                 seed[x + 1, y - 1] = true;
                             }
                         }
-                        else if (index >= initialLength)
+                        else if (index >= seedsLength)
                         {
                             if (lowest < 0)
                             {
@@ -404,7 +406,7 @@ namespace LocalMinimum.Arrays
                         }
                     }
 
-                    if (x != 0 && y != 0 && filter[x - 1, y - 1])
+                    if (x != 0 && y != 0 && (filter[x - 1, y - 1] || seed[x - 1, y - 1]))
                     {
                         if (distances[x - 1, y - 1] < 0)
                         {
@@ -415,7 +417,7 @@ namespace LocalMinimum.Arrays
                                 seed[x - 1, y - 1] = true;
                             }
                         }
-                        else if (index >= initialLength)
+                        else if (index >= seedsLength)
                         {
                             if (lowest < 0)
                             {

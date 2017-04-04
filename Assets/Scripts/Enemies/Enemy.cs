@@ -161,8 +161,8 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     protected int attackRange = 2;
 
-    GridPos contextPosition;
-    int[,] context;
+    protected GridPos contextPosition;
+    protected int[,] context;
 
     protected List<GridPos> targetCheckpoints = new List<GridPos>();
     protected int activeTargetIndex;
@@ -764,6 +764,9 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     Color gizmosEnemyToTargetColor = Color.cyan;
 
+    [SerializeField]
+    bool gizmosEntireDistanceMap = false;
+
     protected virtual void OnDrawGizmosSelected()
     {
 
@@ -798,29 +801,56 @@ public class Enemy : MonoBehaviour {
         }
 
 
-        // CONTEXT
-
-        if (context == null)
+        if (gizmosEntireDistanceMap)
         {
-            return;
-        }
 
-        int w = context.GetLength(0);
-        int h = context.GetLength(1);
-        int minX = contextPosition.x - (w - 1) / 2;
-        int minY = contextPosition.y - (h - 1) / 2;
-        int maxX = minX + w;
-        int maxY = minY + h;
-
-        for (int offX = minX, x = 0; offX < maxX; offX++, x++)
-        {
-            for (int offY = minY, y = 0; offY < maxY; offY++, y++)
+            if (targetDistanceMap == null)
             {
-
-                Gizmos.DrawIcon(
-                    board.transform.TransformPoint(board.GetLocalPosition(offX, offY)) + gizmoContextOffset,
-                    "numberIcon_" + (context[x, y] < 21 ? context[x, y].ToString() : "plus") + ".png", true);
+                return;
             }
+
+            int w = targetDistanceMap.GetLength(0);
+            int h = targetDistanceMap.GetLength(1);
+
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+
+                    Gizmos.DrawIcon(
+                        board.transform.TransformPoint(board.GetLocalPosition(x, y)) + gizmoContextOffset,
+                        "numberIcon_" + (targetDistanceMap[x, y] < 21 ? targetDistanceMap[x, y].ToString() : "plus") + ".png", true);
+                }
+            }
+
+        }
+        else {
+            // CONTEXT
+
+            if (context == null)
+            {
+                return;
+            }
+
+            int w = context.GetLength(0);
+            int h = context.GetLength(1);
+            int minX = contextPosition.x - (w - 1) / 2;
+            int minY = contextPosition.y - (h - 1) / 2;
+            int maxX = minX + w;
+            int maxY = minY + h;
+
+            for (int offX = minX, x = 0; offX < maxX; offX++, x++)
+            {
+                for (int offY = minY, y = 0; offY < maxY; offY++, y++)
+                {
+
+                    Gizmos.DrawIcon(
+                        board.transform.TransformPoint(board.GetLocalPosition(offX, offY)) + gizmoContextOffset,
+                        "numberIcon_" + (context[x, y] < 21 ? context[x, y].ToString() : "plus") + ".png", true);
+                }
+            }
+
         }
     }
 

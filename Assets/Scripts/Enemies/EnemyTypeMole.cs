@@ -276,8 +276,32 @@ public class EnemyTypeMole : Enemy {
             Debug.Log("Claimed burrows " + claimedBurrows.Count);
         }
 
-        SetContextFromDistanceMapAndPosition(targetDistanceMap);
+        if (underground)
+        {
+            SetUndergroundContextFromDistansMapAndPosition(targetDistanceMap);
+        }
+        else {
+
+            SetContextFromDistanceMapAndPosition(targetDistanceMap);
+        }
         return SelectContextDirectionAndMove(turnTime);
+    }
+
+    void SetUndergroundContextFromDistansMapAndPosition(int[,] distances)
+    {
+        context = distances.GetContext(3, pos);
+        contextPosition = pos;
+
+        GridPos contextTarget = lastBurrow - pos + new GridPos(1, 1);
+
+        //Set all holes and such as impassable
+        //context = context.Map(e => e == 0 ? -1 : e);
+
+        //If target is in context give that distance zero
+        if (contextTarget.x >= 0 && contextTarget.x < 2 && contextTarget.y >= 0 && contextTarget.y < 2)
+        {
+            //context[contextTarget.x, contextTarget.y] = 0;
+        }
     }
 
     protected override void SetTargetDistances(int targetIndex)
