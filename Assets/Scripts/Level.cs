@@ -198,15 +198,22 @@ public class Level : MonoBehaviour {
 
     public void Generate()
     {
+        Debug.Log("Level: Generate path");
         ballPath.GeneratePath(previousLevel);
+        Debug.Log("Level: Generate rooms");
         roomMaker.GenerateRooms();
+        Debug.Log("Level: Generate holes");
         ballPath.GeneratePathHoles();
+        Debug.Log("Level: Generate boxes");
         boxPlacer.Generate();
+        Debug.Log("Level: Generate bumpers");
         bumperPlacer.AllocateBumpPlacements();
 
+        Debug.Log("Level: Calculate connectivity");
         ReconstructConnectivities(ConnectivityTypes.All);
 
         //This is required to be last
+        Debug.Log("Level: Generate path");
         enemySpawner.AllocatePlacesAndDecideEnemies();
 
         previousLevel = true;
@@ -243,14 +250,24 @@ public class Level : MonoBehaviour {
     public void Implement()
     {
         makeTurns = false;
+
+        Debug.Log("Level: Viscera cleanup");
         Splatterer.instance.CleanupSplatter();
+        Debug.Log("Level: Construct floor");
         boardGrid.ConstructFloor();
+        Debug.Log("Level: Construct path");
         ballPath.ConstructPath();
+        Debug.Log("Level: Construct walls");
         roomMaker.ConstructWalls();
+        Debug.Log("Level: Construct bumpers");
         bumperPlacer.SpawnBumpers();
+        Debug.Log("Level: Construct boxes");
         boxPlacer.Place();
+        Debug.Log("Level: Construct enemies");
         enemySpawner.SpawnEnemies();
+        Debug.Log("Level: drop ball");
         DropBall();
+        Debug.Log("Level: balance playing field");
         boardController.Balance();
 
         if (OnNewLevel != null)

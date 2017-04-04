@@ -30,6 +30,7 @@ public class RoomMaker : MonoBehaviour {
 
     public void GenerateRooms()
     {
+        Debug.Log("Rooms: Generating");
         if (clearPreviousBoard)
         {
             boardGrid.FreeAll();
@@ -37,10 +38,15 @@ public class RoomMaker : MonoBehaviour {
 
         size = boardGrid.Size;
         roomLayout = new int[size, size];
+        Debug.Log("Rooms: Seeding rooms");
         SeedRooms();
+        Debug.Log("Rooms: Checking privates");
         CountPrivates();
+        Debug.Log("Rooms: Remove internal rooms");
         RemoveRoomInRoom();
+        Debug.Log("Rooms: Solidify");
         SolidifyUncertain();
+        Debug.Log("Rooms: Allocate walls");
         SnakeWalls();
     }
 

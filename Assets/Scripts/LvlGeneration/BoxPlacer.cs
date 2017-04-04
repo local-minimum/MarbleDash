@@ -23,15 +23,34 @@ public class BoxPlacer : MonoBehaviour {
     BoardGrid board;
 
     List<GridPos> positions = new List<GridPos>();
+    
+    IEnumerable<GridPos> MyOwnTake(GridPos[] item, int amount)
+    {
+        for (int i=0; i<amount; i++)
+        {
+            yield return item[i];
+        }
+    }
 
     public void Generate()
     {
+        Debug.Log("Boxes: Clearing");
         positions.Clear();
+        Debug.Log("Boxes: Finding free positions and shuffle");
         GridPos[] freePositions = board.Find(Occupancy.Free).ToArray().Shuffle();
-        positions.AddRange(freePositions.Take(PlayerRunData.stats.lvlRnd.Range(minBoxes, maxBoxes)));
-        for (int i = 0, l = positions.Count; i < l; i++)
+        int boxes = Mathf.Min(PlayerRunData.stats.lvlRnd.Range(minBoxes, maxBoxes), freePositions.Length);
+        if (boxes > 0) {
+            Debug.Log(string.Format("Boxes: Taking {0} boxes from {1} available positions", boxes, freePositions.Length));
+            //positions.AddRange(freePositions.Take(boxes)); //Crashes in webplayer
+            positions.AddRange(MyOwnTake(freePositions, boxes)); //Doesn't crash
+            for (int i = 0, l = positions.Count; i < l; i++)
+            {
+                Debug.Log("Boxes: Occupying position " + positions[i] + " for box " + i);
+                board.Occupy(positions[i], Occupancy.Obstacle);
+            }
+        } else
         {
-            board.Occupy(positions[i], Occupancy.Obstacle);
+            Debug.LogWarning("Boxes: No empty places for boxes!");
         }
     }
 
