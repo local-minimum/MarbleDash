@@ -234,17 +234,17 @@ public class Enemy : MonoBehaviour {
             if (attacks.Count > 0)
             {
                 behaviour = SelectModeFromAvailable(attacks);
-                Debug.Log("Non forced attack behaviour" + behaviour);
+                //Debug.Log("Non forced attack behaviour" + behaviour);
             }
             else
             {
                 behaviour = SelectModeFromAvailable(availableModes.Where(o => !IsAttack(o.mode)).ToList());
-                Debug.Log("Non forced non-behaviour " + behaviour);
+                //Debug.Log("Non forced non-behaviour " + behaviour);
             }
 
         } else
         {
-            Debug.Log("Forcing " + behaviour);
+            //Debug.Log("Forcing " + behaviour);
         }
 
         if (behaviour == previousBehaviour)

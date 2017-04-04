@@ -124,11 +124,7 @@ public class EnemyTypeMole : Enemy {
         } else if (distToPlayer <= 1)
         {
             Debug.Log("player can be bitten " + distToPlayer);
-            PlayerDestructable destruct = player.GetComponent<PlayerDestructable>();
-            destruct.Hurt(Random.Range(activeTier.minAttack[0], activeTier.maxAttack[0]), 0);
-            anim.SetTrigger("Bite");
-            hasAttacked = true;
-            StartCoroutine(delayTransitionToNone(turnTime * 0.25f));
+            StartCoroutine(AnimateAttack1(player, turnTime * 0.25f));
             return pos;
         } else
         {
@@ -148,6 +144,17 @@ public class EnemyTypeMole : Enemy {
         }
 
         
+    }
+
+    IEnumerator AnimateAttack1(PlayerController player, float afterBiteStart)
+    {
+        PlayerDestructable destruct = player.GetComponent<PlayerDestructable>();
+        yield return StartCoroutine(LookTowards((player.onTile - pos).NineDirection));
+        anim.SetTrigger("Bite");
+        hasAttacked = true;
+        yield return new WaitForSeconds(afterBiteStart);
+        destruct.Hurt(Random.Range(activeTier.minAttack[0], activeTier.maxAttack[0]), 0);
+        behaviour = EnemyMode.None;
     }
 
     [SerializeField]
