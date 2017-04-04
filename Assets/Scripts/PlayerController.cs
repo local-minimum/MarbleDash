@@ -325,8 +325,6 @@ public class PlayerController : MonoBehaviour {
         KillReset("");
     }
 
-#if UNITY_EDITOR
-
     [SerializeField]
     Vector3 gizmoOffset;
 
@@ -367,7 +365,5 @@ public class PlayerController : MonoBehaviour {
             }
         }
     }
-
-#endif
 
 }

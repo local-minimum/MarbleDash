@@ -746,8 +746,6 @@ public class Enemy : MonoBehaviour {
         activeTargetIndex = targetIndex;
     }
 
-#if UNITY_EDITOR
-
     [SerializeField]
     Vector3 gizmoContextOffset = new Vector3(.3f, 2f, .3f);
 
@@ -825,7 +823,5 @@ public class Enemy : MonoBehaviour {
             }
         }
     }
-
-#endif
 
 }

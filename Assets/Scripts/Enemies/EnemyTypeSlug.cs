@@ -78,7 +78,6 @@ public class EnemyTypeSlug : Enemy {
         }
     }
 
-#if UNITY_EDITOR
 
     protected override void OnDrawGizmosSelected()
     {
@@ -99,7 +98,5 @@ public class EnemyTypeSlug : Enemy {
             prev = cur;
         }
     }
-
-#endif   
-
+ 
 }

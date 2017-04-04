@@ -250,8 +250,6 @@ public class Level : MonoBehaviour {
         ball.EmoteStatus();
     }
 
-#if UNITY_EDITOR
-
     [SerializeField]
     Vector3 gizmoOffset;
 
@@ -294,5 +292,4 @@ public class Level : MonoBehaviour {
         }
     }
 
-#endif
 }
