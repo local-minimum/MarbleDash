@@ -96,6 +96,7 @@ public class CoinBox : MonoBehaviour {
         mr.material.color = deadColor;
 
         BoardGrid.instance.Free(pos, Occupancy.Obstacle);
+        Level.instance.ReconstructConnectivities(Level.ConnectivityTypes.AboveGround);
 
         transform.localScale = new Vector3(
             transform.localScale.x * 1.1f,

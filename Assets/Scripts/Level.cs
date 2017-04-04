@@ -201,24 +201,40 @@ public class Level : MonoBehaviour {
         boxPlacer.Generate();
         bumperPlacer.AllocateBumpPlacements();
 
-        bool[,] filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.Hole);
-        playerConnectivity = filter.Label(out playerConnectivityLabels);
-
-        filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
-        enemyConnectivityCross = filter.Label(out enemyConnectivityLabelsCross);
-
-        filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
-        enemyConnectivityEight = filter.Label(out enemyConnectivityLabelsEight, Neighbourhood.Eight);
-
-        boardHoles = boardGrid.Find(Occupancy.Hole).Select(e => (Coordinate) e).ToArray();
-        enemyHolesConnectivity = boardGrid.GetFilterNotAny(Occupancy.Hole);
-
-        nonBlocking = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.Obstacle, Occupancy.WallBreakable);
+        ReconstructConnectivities(ConnectivityTypes.All);
 
         //This is required to be last
         enemySpawner.AllocatePlacesAndDecideEnemies();
 
         previousLevel = true;
+    }
+
+    public enum ConnectivityTypes { All, AboveGround, SolidGround};
+
+    public void ReconstructConnectivities(ConnectivityTypes connectivityTypes)
+    {
+
+        if (connectivityTypes == ConnectivityTypes.All || connectivityTypes == ConnectivityTypes.AboveGround)
+        {
+            bool[,] filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.Hole);
+            playerConnectivity = filter.Label(out playerConnectivityLabels);
+
+            filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
+            enemyConnectivityCross = filter.Label(out enemyConnectivityLabelsCross);
+
+            filter = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory, Occupancy.Hole, Occupancy.Obstacle);
+            enemyConnectivityEight = filter.Label(out enemyConnectivityLabelsEight, Neighbourhood.Eight);
+
+            nonBlocking = boardGrid.GetFilterNotAny(Occupancy.Wall, Occupancy.Obstacle, Occupancy.WallBreakable);
+
+        }
+
+        if (connectivityTypes == ConnectivityTypes.All || connectivityTypes == ConnectivityTypes.SolidGround)
+        {
+            boardHoles = boardGrid.Find(Occupancy.Hole).Select(e => (Coordinate)e).ToArray();
+            enemyHolesConnectivity = boardGrid.GetFilterNotAny(Occupancy.Hole);
+
+        }
     }
 
     public void Implement()
