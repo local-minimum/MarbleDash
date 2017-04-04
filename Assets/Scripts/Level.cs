@@ -132,9 +132,11 @@ public class Level : MonoBehaviour {
         }
     }
 
+    bool ticking;
+
     IEnumerator<WaitForSeconds> TurnTicker()
     {
-        bool ticking = makeTurns;
+        ticking = makeTurns;
         int turnIndex = 0;
         while (true)
         {
@@ -165,6 +167,7 @@ public class Level : MonoBehaviour {
     public void StopTheMotion() 
     {
         makeTurns = false;
+        ticking = false;
         PlayerController.instance.Freeze();
     }
 

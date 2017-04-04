@@ -81,12 +81,14 @@ public class PlayerController : MonoBehaviour {
 
     public void KillReset(string message)
     {
+        lvl.StopTheMotion();
         onTile = offTile;
         collidingGrounds.Clear();
         StoreSwapper.instance.HideAllStores();
         PlayerRunData.stats.Reset();
         lvl.Generate();
         lvl.Implement();
+        lvl.StartTheMotion();
     }
 
     void OnEnable()

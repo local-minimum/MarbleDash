@@ -229,7 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tiers:
   - difficulty: 1
-    firstLevel: 1
+    firstLevel: 5
     availableModes: 020000000800000009000000
     startHealthMin: 5
     startHealthMax: 5
@@ -312,6 +312,7 @@ MonoBehaviour:
   gizmosTargetSize: 0.2
   gizmosTargetColor: {r: 1, g: 0, b: 1, a: 1}
   gizmosEnemyToTargetColor: {r: 0, g: 1, b: 1, a: 1}
+  gizmosEntireDistanceMap: 0
   throwLength: 7
   prefNearbyHole: 0.2
   minimumHolesInLevel: 3

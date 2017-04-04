@@ -51,9 +51,9 @@ public class EnemyTypeMole : Enemy {
     protected override bool ForceBehaviourSequence()
     {
         inHole = board.HasOccupancy(pos, Occupancy.Hole);
-        UpdateBurrows();
 
         if (inHole) {
+            UpdateBurrows(pos);
             if (hasAttacked)
             {
                 if (!underground)
@@ -153,11 +153,14 @@ public class EnemyTypeMole : Enemy {
     [SerializeField]
     Vector3 attack2Offset;
 
-    void UpdateBurrows()
+    void UpdateBurrows(GridPos burrow)
     {
-        if (inHole && lastBurrow != pos)
+        if (lastBurrow != burrow)
         {
-            claimedBurrows.Add(pos);
+            if (board.IsValidPosition(burrow))
+            {
+                claimedBurrows.Add(burrow);
+            }
             if (claimedBurrows.Contains(lastBurrow))
             {
                 claimedBurrows.Remove(lastBurrow);
@@ -169,7 +172,7 @@ public class EnemyTypeMole : Enemy {
                     Debug.LogWarning("Failed to release burrows: " + lastBurrow);
                 }
             }
-            lastBurrow = pos;
+            lastBurrow = burrow;
         }
     }
 
@@ -272,7 +275,7 @@ public class EnemyTypeMole : Enemy {
             {
                 hasAttacked = false;
             }
-
+            UpdateBurrows(target);
             Debug.Log("Claimed burrows " + claimedBurrows.Count);
         }
 
@@ -335,5 +338,14 @@ public class EnemyTypeMole : Enemy {
         jumpHeightAxis = new Vector3(Mathf.Abs(jumpHeightAxis.x), Mathf.Abs(jumpHeightAxis.y), Mathf.Abs(jumpHeightAxis.z)) * (underground ? -1f : 1);
         localPlacementOffset = underground ? undergroundOffset : Vector3.forward;
         base.Move(offset, maxTime);
+    }
+
+    void OnDestroy()
+    {
+        pos = new GridPos(-1, -1);
+        if (claimedBurrows.Contains(lastBurrow))
+        {
+            claimedBurrows.Remove(lastBurrow);
+        }
     }
 }

@@ -245,13 +245,14 @@ namespace LocalMinimum.Arrays
                     }
                     else if (index >= seedsLength)
                     {
+                        int cur = distances[x, y - 1];                        
                         if (lowest < 0)
                         {
-                            lowest = distances[x, y - 1];
+                            lowest = cur;
                         }
-                        else
+                        else if (cur >= 0)
                         {
-                            lowest = Mathf.Min(lowest, distances[x, y - 1]);
+                            lowest = Mathf.Min(lowest, cur);
                         }
                     }
 
@@ -270,13 +271,14 @@ namespace LocalMinimum.Arrays
                     }
                     else if (index >= seedsLength)
                     {
+                        int cur = distances[x, y + 1];
                         if (lowest < 0)
                         {
-                            lowest = distances[x, y + 1];
+                            lowest = cur;
                         }
-                        else
+                        else if (cur >= 0)
                         {
-                            lowest = Mathf.Min(lowest, distances[x, y + 1]);
+                            lowest = Mathf.Min(lowest, cur);
                         }
                     }
                 }
@@ -295,13 +297,14 @@ namespace LocalMinimum.Arrays
                     }
                     else if (index >= seedsLength)
                     {
+                        int cur = distances[x - 1, y];
                         if (lowest < 0)
                         {
-                            lowest = distances[x - 1, y];
+                            lowest = cur;
                         }
-                        else
+                        else if (cur >= 0)
                         {
-                            lowest = Mathf.Min(lowest, distances[x - 1, y]);
+                            lowest = Mathf.Min(lowest, cur);
                         }
                     }
                 }
@@ -319,13 +322,14 @@ namespace LocalMinimum.Arrays
                     }
                     else if (index >= seedsLength)
                     {
+                        int cur = distances[x + 1, y];
                         if (lowest < 0)
                         {
-                            lowest = distances[x + 1, y];
+                            lowest = cur;
                         }
                         else
                         {
-                            lowest = Mathf.Min(lowest, distances[x + 1, y]);
+                            lowest = Mathf.Min(lowest, cur);
                         }
                     }
                 }
@@ -346,13 +350,14 @@ namespace LocalMinimum.Arrays
                         }
                         else if (index >= seedsLength)
                         {
+                            int cur = distances[x - 1, y + 1];
                             if (lowest < 0)
                             {
-                                lowest = distances[x - 1, y + 1];
+                                lowest = cur;
                             }
-                            else
+                            else if (cur >= 0)
                             {
-                                lowest = Mathf.Min(lowest, distances[x - 1, y + 1]);
+                                lowest = Mathf.Min(lowest, cur);
                             }
                         }
                     }
@@ -371,13 +376,14 @@ namespace LocalMinimum.Arrays
                         }
                         else if (index >= seedsLength)
                         {
+                            int cur = distances[x + 1, y + 1];
                             if (lowest < 0)
                             {
-                                lowest = distances[x + 1, y + 1];
+                                lowest = cur;
                             }
-                            else
+                            else if (cur >= 0)
                             {
-                                lowest = Mathf.Min(lowest, distances[x + 1, y + 1]);
+                                lowest = Mathf.Min(lowest, cur);
                             }
                         }
                     }
@@ -395,13 +401,14 @@ namespace LocalMinimum.Arrays
                         }
                         else if (index >= seedsLength)
                         {
+                            int cur = distances[x + 1, y - 1];
                             if (lowest < 0)
                             {
-                                lowest = distances[x + 1, y - 1];
+                                lowest = cur;
                             }
-                            else
+                            else if (cur >= 0)
                             {
-                                lowest = Mathf.Min(lowest, distances[x + 1, y - 1]);
+                                lowest = Mathf.Min(lowest, cur);
                             }
                         }
                     }
@@ -419,13 +426,14 @@ namespace LocalMinimum.Arrays
                         }
                         else if (index >= seedsLength)
                         {
+                            int cur = distances[x - 1, y - 1];
                             if (lowest < 0)
                             {
-                                lowest = distances[x - 1, y - 1];
+                                lowest = cur;
                             }
-                            else
+                            else if (cur >= 0)
                             {
-                                lowest = Mathf.Min(lowest, distances[x - 1, y - 1]);
+                                lowest = Mathf.Min(lowest, cur);
                             }
                         }
                     }
