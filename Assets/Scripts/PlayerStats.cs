@@ -28,7 +28,7 @@ public class PlayerStats : ScriptableObject {
 
     public PlayModeHoles holeMode = PlayModeHoles.Damage;
 
-    public int holeDamage = 10;
+    public int holeDamage = 4;
 
     [SerializeField]
     int gameRandomSeed;
