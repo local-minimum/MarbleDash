@@ -411,10 +411,14 @@ public class BoardGrid : MonoBehaviour {
     public void ConstructFloor()
     {
         InactivatePreviousTiles();
-        Vector3 localScale = TileShape;
-        localScale.x /= 2f;
-        localScale.y /= 2f;
-        localScale.z = 1;
+        Vector3 localScaleHoles = TileShape;
+        Vector3 localScaleNonHoles = TileShape;
+        localScaleHoles.x /= 2f;
+        localScaleHoles.y /= 2f;
+        localScaleHoles.z = .1f;
+        localScaleNonHoles.x /= 2f;
+        localScaleNonHoles.y /= 2f;
+        localScaleNonHoles.z = 1f;
         int holeFilt = 1 << (int) Occupancy.Hole;
         for (int x=0; x<size; x++)
         {
@@ -434,7 +438,7 @@ public class BoardGrid : MonoBehaviour {
                 GridPos tilePos = new GridPos(x, y);
                 tileLookUp[tilePos] = t;
                 t.GetComponent<BoardTile>().SetPosition(this, tilePos, heightOffset, tType);
-                t.localScale = localScale;
+                t.localScale = tType == TileType.Hole ? localScaleHoles : localScaleNonHoles;
             }
         }
     }

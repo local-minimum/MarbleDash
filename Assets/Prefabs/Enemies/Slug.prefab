@@ -243,7 +243,7 @@ MonoBehaviour:
   gizmosTargetColor: {r: 1, g: 0, b: 1, a: 1}
   gizmosEnemyToTargetColor: {r: 0, g: 1, b: 1, a: 1}
   gizmosEntireDistanceMap: 0
-  trailLengthBase: 1
+  trailLengthBase: 4
   trailLengthPerTier: 2
   turnTimeMultiplier: 1.75
   slimedColor: {r: 0.60784805, g: 0.6985294, b: 0.041089963, a: 1}

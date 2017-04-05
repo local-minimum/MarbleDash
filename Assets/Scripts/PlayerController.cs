@@ -138,6 +138,9 @@ public class PlayerController : MonoBehaviour {
                 if (HasTracktion())
                 {
                     rb.AddForce(board.Slope * forceMultiplier);
+                } else
+                {
+                    rb.AddForce(rb.velocity * forceMultiplier * 2);
                 }
                 TrackGridPos();
             } else

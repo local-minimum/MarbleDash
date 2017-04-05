@@ -8,15 +8,25 @@ ModelImporter:
     100000: //RootNode
     100002: Cube
     100004: SurfCircle
+    100006: Circle
+    100008: HoleTile
     400000: //RootNode
     400002: Cube
     400004: SurfCircle
+    400006: Circle
+    400008: HoleTile
     2300000: Cube
     2300002: SurfCircle
+    2300004: Circle
+    2300006: HoleTile
     3300000: Cube
     3300002: SurfCircle
+    3300004: Circle
+    3300006: HoleTile
     4300000: SurfCircle
     4300002: Cube
+    4300004: Circle
+    4300006: HoleTile
     7400000: Default Take
     9500000: //RootNode
   materials:
@@ -29,6 +39,8 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
