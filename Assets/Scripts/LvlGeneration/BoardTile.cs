@@ -46,6 +46,11 @@ public class BoardTile : MonoBehaviour {
     {
         rend = GetComponentInChildren<Renderer>();
         baseColor = rend.material.color;
+        MeshCollider mc = GetComponent<MeshCollider>();
+        if (mc && mc.sharedMesh == null)
+        {
+            mc.sharedMesh = GetComponentInChildren<MeshFilter>().mesh;
+        }
     }
 
     void OnEnable()
