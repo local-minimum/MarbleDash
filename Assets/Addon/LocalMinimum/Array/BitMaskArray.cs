@@ -194,6 +194,80 @@ namespace LocalMinimum.Arrays
                 }
             }
         }
+
+        public IEnumerable<Coordinate> FindOnlyAny(params T[] flags)
+        {
+            int antiMask = ~GetOptionalMask(flags);
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if ((data[x, y] & antiMask) == 0 && data[x, y] != 0)
+                    {
+                        yield return new Coordinate(x, y);
+                    }
+                }
+            }
+        }
+
+
+        public bool[,] GetFilterNotAny(params T[] occupancy)
+        {
+            bool[,] filter = new bool[width, height];
+            int mask = GetOptionalMask(occupancy);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if ((data[x, y] & mask) == 0)
+                    {
+                        filter[x, y] = true;
+                    }
+                }
+            }
+
+            return filter;
+        }
+
+        public bool[,] GetFilterAny(params T[] occupancy)
+        {
+            bool[,] filter = new bool[width, height];
+            int mask = GetOptionalMask(occupancy);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if ((data[x, y] & mask) != 0)
+                    {
+                        filter[x, y] = true;
+                    }
+                }
+            }
+
+            return filter;
+        }
+
+        public bool[,] GetFilter(T occupancy)
+        {
+            bool[,] filter = new bool[width, height];
+            int mask = IndexToMask(EnumToInt(occupancy));
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if ((data[x, y] & mask) != 0)
+                    {
+                        filter[x, y] = true;
+                    }
+                }
+            }
+
+            return filter;
+        }
+
         public IEnumerable<T> Flags(Coordinate pos)
         {
             int posVal = data[pos.x, pos.y];
@@ -250,6 +324,11 @@ namespace LocalMinimum.Arrays
         public bool IsValidY(int y)
         {
             return y >= 0 && y < width;
+        }
+
+        public bool IsSize(int size)
+        {
+            return size == width && size == height;
         }
 
         public int GetInt(int x, int y)

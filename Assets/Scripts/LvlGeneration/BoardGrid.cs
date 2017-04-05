@@ -36,7 +36,7 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
-    int[,] gridOccupancy;
+    BitMaskArray<Occupancy> gridOccupancy;
 
     [SerializeField]
     Vector3 targetSize;
@@ -69,7 +69,7 @@ public class BoardGrid : MonoBehaviour {
     }
 
     void Start() {
-        gridOccupancy = new int[size, size];
+        gridOccupancy = new BitMaskArray<Occupancy>(size);
         /*
         targetSize = target.InverseTransformVector(target.GetComponent<Collider>().bounds.size);
         targetLocalOffset = Vector3.forward * targetSize.z;
@@ -137,17 +137,17 @@ public class BoardGrid : MonoBehaviour {
     {
         if (occupancy == Occupancy.Free)
         {
-            Free(x, y);
+            gridOccupancy.Set(x, y, occupancy);
         }
         else
         {
-            if (gridOccupancy[x, y] == (1 << (int)Occupancy.Free))
+            if (gridOccupancy.HasOnly(x, y, Occupancy.Free))
             {
-                gridOccupancy[x, y] = 1 << (int)occupancy;
+                gridOccupancy.Set(x, y, occupancy);
             }
             else
             {
-                gridOccupancy[x, y] |= 1 << (int)occupancy;
+                gridOccupancy.Occupy(x, y, occupancy);
             }
         }
     
@@ -160,12 +160,12 @@ public class BoardGrid : MonoBehaviour {
 
     public void Free(int x, int y)
     {
-        gridOccupancy[x, y] = 1 << (int) Occupancy.Free;
+        gridOccupancy.Set(x, y, Occupancy.Free);
     }
 
     public void Free(GridPos pos)
     {
-        gridOccupancy[pos.x, pos.y] = 1 << (int) Occupancy.Free;
+        gridOccupancy.Set(pos, Occupancy.Free);
     }
 
     public void Free(GridPos pos, Occupancy filt)
@@ -175,94 +175,52 @@ public class BoardGrid : MonoBehaviour {
             throw new System.ArgumentException("Can't free free on " + pos);
         }
 
-        int val = gridOccupancy[pos.x, pos.y];
-        int filtVal = 1 << (int)filt;
-        if ((val & filtVal) == 0)
-        {
-            Debug.LogWarning(string.Format("Pos {0} doesn't have filter {1} set. Nothing to free.", pos, filt));
-        } else
-        {
-            gridOccupancy[pos.x, pos.y] = val & (~filtVal);
-        }
+        gridOccupancy.DeOccupy(pos, filt);
     }
 
     public void FreeAll()
     {
-        if (gridOccupancy == null || gridOccupancy.GetLength(0) != size)
+        if (gridOccupancy == null || !gridOccupancy.IsSize(size))
         {
-            gridOccupancy = new int[size, size];
+            gridOccupancy = new BitMaskArray<Occupancy>(size);
         }
 
-        int val = 1 << (int)Occupancy.Free;
-        for (int x=0; x<size; x++)
-        {
-            for (int y=0; y<size; y++)
-            {
-                gridOccupancy[x, y] = val;
-            }
-        }
+        gridOccupancy.SetAll(Occupancy.Free);
     }
 
     public bool IsFree(GridPos pos)
     {
-        //Debug.Log((int) gridOccupancy[pos.x, pos.y]);
-        return gridOccupancy[pos.x, pos.y] == (1 << (int) Occupancy.Free);
+        return gridOccupancy.HasOnly(pos, Occupancy.Free);
     }
 
     public bool IsFree(int x, int y)
     {
-        return gridOccupancy[x, y] == (1 << (int) Occupancy.Free);
+        return gridOccupancy.HasOnly(x, y, Occupancy.Free);
     }
 
     public List<Occupancy> GetOccupancy(GridPos pos)
     {
-
-        List<Occupancy> ret = new List<Occupancy>();
-        int posVal = gridOccupancy[pos.x, pos.y];
-        foreach (int val in System.Enum.GetValues(typeof(Occupancy)))
-        {
-            if ((posVal & (1 << val)) != 0)
-            {
-
-                ret.Add((Occupancy)val);
-            }
-        }
-        return ret;
+        return gridOccupancy.Flags(pos).ToList();
     }
 
     public bool HasOccupancy(GridPos pos, Occupancy filt)
     {
-        return ((gridOccupancy[pos.x, pos.y] & (1 << (int)filt))) != 0;
+        return gridOccupancy.Has(pos, filt);
     }
 
     public IEnumerable<GridPos> Find(Occupancy occupancy)
     {
-        int filt = 1 << (int)occupancy;
-        for (int x = 0; x < size; x++)
+        foreach(Coordinate c in gridOccupancy.Find(occupancy))
         {
-            for (int y = 0; y < size; y++)
-            {
-                if ((gridOccupancy[x, y] & filt) != 0)
-                {
-                    yield return new GridPos(x, y);
-                }
-            }
+            yield return c;
         }
     }
 
     public IEnumerable<GridPos> FindIsOnlyAny(params Occupancy[] occupancy)
     {
-        int notFilt = ~GetOccupancyFilter(occupancy);
-
-        for (int x = 0; x < size; x++)
+        foreach (Coordinate c in gridOccupancy.FindOnlyAny(occupancy))
         {
-            for (int y = 0; y < size; y++)
-            {
-                if ((gridOccupancy[x, y] & notFilt) == 0)
-                {
-                    yield return new GridPos(x, y);
-                }
-            }
+            yield return c;
         }
     }
 
@@ -297,88 +255,22 @@ public class BoardGrid : MonoBehaviour {
 
     public bool[,] GetFilterNotAny(params Occupancy[] occupancy)
     {
-        bool[,] filter = new bool[size, size];
-        int occupancyFilter = GetOccupancyFilter(occupancy);
-
-        for (int x=0; x<size; x++)
-        {
-            for (int y=0; y<size; y++)
-            {
-                if ((gridOccupancy[x, y] & occupancyFilter) == 0)
-                {
-                    filter[x, y] = true;
-                }
-            }
-        }
-
-        return filter;
+        return gridOccupancy.GetFilterNotAny(occupancy);
     }
 
     public int[,] GetOccupancyContextNonFree(GridPos pos)
     {
-        int mask = 1 <<  (int) Occupancy.Free;    
-        int[,] ret = new int[3, 3];
-        for (int yOff = -1; yOff < 2; yOff++)
-        {
-            for (int xOff = -1; xOff < 2; xOff++)
-            {
-                GridPos cur = pos + new GridPos(xOff, yOff);
-                if (IsValidPosition(cur))
-                {
-                    ret[xOff + 1, yOff + 1] = (gridOccupancy[cur.x, cur.y] & mask) == 0 ? 1 : 0;
-                }
-                else
-                {
-                    ret[xOff + 1, yOff + 1] = -1;
-                }
-            }
-        }
-        return ret;
+        return gridOccupancy.GetContextHasNot(pos, 3, Occupancy.Free);
     }
 
     public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] filter)
     {
-        int mask = GetOccupancyFilter(filter);
-        int[,] ret = new int[3, 3];
-        for (int yOff = -1; yOff < 2; yOff++)
-        {
-            for (int xOff = -1; xOff < 2; xOff++)
-            {
-                GridPos cur = pos + new GridPos(xOff, yOff);
-                if (IsValidPosition(cur))
-                {
-                    ret[xOff + 1, yOff + 1] = (gridOccupancy[cur.x, cur.y] & mask) != 0 ? 1 : 0;
-                }
-                else
-                {
-                    ret[xOff + 1, yOff + 1] = -1;
-                }
-            }
-        }
-        return ret;
+        return gridOccupancy.GetContextHasAny(pos, 3, -1, filter);
     }
 
     public int[,] GetNotOccupancyContext(GridPos pos, params Occupancy[] filter)
     {
-        int mask = GetOccupancyFilter(filter); 
-                    
-        int[,] ret = new int[3, 3];
-        for (int yOff = -1; yOff < 2; yOff++)
-        {
-            for (int xOff = -1; xOff < 2; xOff++)
-            {
-                GridPos cur = pos + new GridPos(xOff, yOff);
-                if (IsValidPosition(cur))
-                {
-                    ret[xOff + 1, yOff + 1] = (gridOccupancy[cur.x, cur.y] & mask) != 0 ? 0 : 1;
-                }
-                else
-                {
-                    ret[xOff + 1, yOff + 1] = -1;
-                }
-            }
-        }
-        return ret;
+        return gridOccupancy.GetContextHasNotAny(pos, 3, -1, filter);
     }
 
     public static int CountContextOccupied(int[,] context, bool includeCenter, bool countExtierior)
@@ -423,7 +315,7 @@ public class BoardGrid : MonoBehaviour {
             {
                 Transform t;
                 TileType tType;
-                if ((gridOccupancy[x, y] &  holeFilt) != 0)
+                if ((gridOccupancy.GetInt(x, y) &  holeFilt) != 0)
                 {
                     t = GetNextHole();
                     tType = TileType.Hole;
@@ -577,7 +469,7 @@ public class BoardGrid : MonoBehaviour {
             {
                 GridPos tmp = new GridPos(pos.x + xOff, pos.y + yOff);
 
-                msg += IsValidPosition(tmp) ? gridOccupancy[pos.x, pos.y].ToString() : "-" ;
+                msg += IsValidPosition(tmp) ? gridOccupancy.GetInt(pos).ToString() : "-" ;
 
                 if (xOff == 1)
                 {
