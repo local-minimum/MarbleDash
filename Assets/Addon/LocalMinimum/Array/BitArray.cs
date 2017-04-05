@@ -19,7 +19,10 @@ namespace LocalMinimum.Arrays
         {
 
             values = Enum.GetValues(typeof(T));
-
+            if (values.Length > 31)
+            {
+                throw new ArgumentException("The enum type may only contain 31 values");
+            }
             this.width = width;
             this.height = height;
             data = new int[width, height];
@@ -29,7 +32,10 @@ namespace LocalMinimum.Arrays
         public BitMaskArray(int size)
         {
             values = Enum.GetValues(typeof(T));
-
+            if (values.Length > 31)
+            {
+                throw new ArgumentException("The enum type may only contain 31 values");
+            }
             width = size;
             height = size;
             data = new int[size, size];
