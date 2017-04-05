@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Linq;
 using LocalMinimum.Grid;
 using LocalMinimum.Arrays;
 
@@ -216,6 +216,7 @@ public class BoardGrid : MonoBehaviour {
 
     public List<Occupancy> GetOccupancy(GridPos pos)
     {
+
         List<Occupancy> ret = new List<Occupancy>();
         int posVal = gridOccupancy[pos.x, pos.y];
         foreach (int val in System.Enum.GetValues(typeof(Occupancy)))
@@ -337,11 +338,7 @@ public class BoardGrid : MonoBehaviour {
 
     public int[,] GetOccupancyContext(GridPos pos, params Occupancy[] filter)
     {
-        int mask = 1 << (int)filter[0];
-        for (int i = 1; i < filter.Length; i++)
-        {
-            mask |= 1 << (int)filter[i];
-        }
+        int mask = GetOccupancyFilter(filter);
         int[,] ret = new int[3, 3];
         for (int yOff = -1; yOff < 2; yOff++)
         {
@@ -448,7 +445,7 @@ public class BoardGrid : MonoBehaviour {
         Vector3 localScale = TileShape;
         localScale.x /= 2f;
         localScale.y /= 2f;
-        localScale.z = 1;
+        localScale.z = tileType == TileType.Solid ? 1f : 0.1f;
         Transform t;
         if (tileType == TileType.Solid)
         {

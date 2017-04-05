@@ -243,7 +243,7 @@ public class PlayerStats : ScriptableObject {
     public void Reset()
     {
         _gameRandomSouce = null;
-        holeDamage = 10;
+        holeDamage = 4;
 
         coin = 0;
         totalCoin = 0;
