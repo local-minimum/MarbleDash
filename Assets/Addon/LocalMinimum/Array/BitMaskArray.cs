@@ -210,6 +210,22 @@ namespace LocalMinimum.Arrays
             }
         }
 
+        public int Count(T flag)
+        {
+            int mask = IndexToMask(EnumToInt(flag));
+            int count = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if ((data[x, y] & mask) != 0)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
 
         public bool[,] GetFilterNotAny(params T[] occupancy)
         {
@@ -298,13 +314,13 @@ namespace LocalMinimum.Arrays
         {
             if (filter.Length == 0)
             {
-                return 0;
+                throw new ArgumentException("At least one filter required");
             }
 
             int mask = IndexToMask(EnumToInt(filter[0]));
             for (int i = 1; i < filter.Length; i++)
             {
-                mask |= 1 << IndexToMask(EnumToInt(filter[1]));
+                mask |= IndexToMask(EnumToInt(filter[1]));
             }
 
             return mask;

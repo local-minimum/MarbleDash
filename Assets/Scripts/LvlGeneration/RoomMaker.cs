@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using LocalMinimum.Grid;
+using LocalMinimum.Arrays;
 
 public class RoomMaker : MonoBehaviour {
 
@@ -181,6 +182,8 @@ public class RoomMaker : MonoBehaviour {
             wall.SetPosition(boardGrid, pos);
             n++;
         }
+
+        Debug.Log(string.Format("Placed {0}, counted {1}, though I made {2} walls", n, boardGrid.Count(Occupancy.Wall), wallCount));
     }
 
     Wall GetWall(int n)
@@ -195,6 +198,8 @@ public class RoomMaker : MonoBehaviour {
             return wall;
         }
     }
+
+    int wallCount;
 
     void SnakeWalls()
     {
@@ -257,6 +262,8 @@ public class RoomMaker : MonoBehaviour {
                 }
             }
         }
+
+        wallCount = walls.Count();
     }
 
     static int BitCount(int val)

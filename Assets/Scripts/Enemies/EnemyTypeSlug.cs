@@ -58,10 +58,10 @@ public class EnemyTypeSlug : Enemy {
 
         yield return new WaitForSeconds((timeBeforeSlime - timeBeforeUnslime) * turnTime);
 
-        Material m = board.GetTile(target).GetComponent<Renderer>().material;
+        Material m = board.GetTile(target).GetComponentInChildren<Renderer>().material;
 
         //Should only modify slimy if is new on trail
-        BoardTile addTile = board.GetTile(target).GetComponent<BoardTile>();
+        BoardTile addTile = board.GetTile(target).GetComponentInChildren<BoardTile>();
         slimedTiles.Add(addTile);
         addTile.Slime(slimedColor, slimeColorIntensity);
         

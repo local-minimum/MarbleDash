@@ -224,6 +224,11 @@ public class BoardGrid : MonoBehaviour {
         }
     }
 
+    public int Count(Occupancy occupancy)
+    {
+        return gridOccupancy.Count(occupancy);
+    }
+
     int GetOccupancyFilter(params Occupancy[] occupancy)
     {
         int filt = 1 << (int)occupancy[0];
