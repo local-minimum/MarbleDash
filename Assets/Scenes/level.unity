@@ -14577,6 +14577,8 @@ MonoBehaviour:
   targetLocalOffset: {x: -10, y: -10, z: 0}
   heightOffset: -0.15
   drawGizmos: 1
+  gizmoOffset: {x: 0, y: 2, z: 0}
+  gizmoShowing: 0
 --- !u!114 &2025833199
 MonoBehaviour:
   m_ObjectHideFlags: 0
