@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using LocalMinimum.Grid;
 using LocalMinimum.Arrays;
+using LocalMinimum.Collections;
 
 public class RoomMaker : MonoBehaviour {
 
@@ -293,7 +294,7 @@ public class RoomMaker : MonoBehaviour {
             return false;
         } else
         {
-            bool[,] center = context.GetCenteredContext(3, 2, 2);
+            bool[,] center = context.GetCenteredContext(3, 2, 2, EdgeCondition.Constant, false);
             int n = center.Count();
             if (n < 4)
             {
@@ -362,6 +363,27 @@ public class RoomMaker : MonoBehaviour {
                     }
                 }
             }
+        }
+    }
+
+    public void BridgeIsolatedRooms(int[,] playerConnectivity, int count)
+    {
+        //TODO: Validate that there's connection between all rooms not just loop
+
+        for (int label=1; label < count + 1; label++)
+        {
+            bool[,] room = playerConnectivity.HasValue(label);
+            bool[,] otherRooms = playerConnectivity.Zip(room, (a, b) => !b && a > 0);
+            
+            bool[,] dilatedRoom = room.Zip(room.Dilate(Neighbourhood.Cross, EdgeCondition.Valid), walls, (r, d, w) => r || d && w);
+            
+            while (!dilatedRoom.Zip(otherRooms, (a, b) => a && b).Any())
+            {
+                dilatedRoom = room.Zip(dilatedRoom.Dilate(Neighbourhood.Cross, EdgeCondition.Valid), walls, (r, d, w) => r || d && w);
+            }
+            Coordinate crawlSource = dilatedRoom.Zip(otherRooms, (a, b) => a && b).ToCoordinates().Shuffle().First();
+            int[,] crawlMap = dilatedRoom.Distance(dilatedRoom.Edge().ToCoordinates().ToArray(), Neighbourhood.Cross);
+
         }
     }
 

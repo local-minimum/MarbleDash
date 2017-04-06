@@ -51,7 +51,7 @@ namespace LocalMinimum.Arrays
             return context;
         }
 
-        public static bool[,] GetCenteredContext(this bool[,] input, int size, Coordinate coordinate, EdgeCondition edgeCondition = EdgeCondition.Constant, bool fillValue = false)
+        public static T[,] GetCenteredContext<T>(this T[,] input, int size, Coordinate coordinate, EdgeCondition edgeCondition, T fillValue)
         {
             if (size % 2 == 0)
             {
@@ -60,7 +60,7 @@ namespace LocalMinimum.Arrays
 
             int offset = (size - 1) / 2;
 
-            bool[,] context = new bool[size, size];
+            T[,] context = new T[size, size];
 
             int xMin = coordinate.x - offset;
             int xMax = xMin + size;
@@ -94,7 +94,7 @@ namespace LocalMinimum.Arrays
             return context;
         }
 
-        public static bool[,] GetCenteredContext(this bool[,] input, int size, int sourceX, int sourceY, EdgeCondition edgeCondition = EdgeCondition.Constant, bool fillValue = false)
+        public static T[,] GetCenteredContext<T>(this T[,] input, int size, int sourceX, int sourceY, EdgeCondition edgeCondition, T fillValue)
         {
             if (size % 2 == 0)
             {
@@ -103,7 +103,7 @@ namespace LocalMinimum.Arrays
 
             int offset = (size - 1) / 2;
 
-            bool[,] context = new bool[size, size];
+            T[,] context = new T[size, size];
 
             int xMin = sourceX - offset;
             int xMax = xMin + size;
@@ -137,10 +137,10 @@ namespace LocalMinimum.Arrays
             return context;
         }
 
-        public static bool[,] GetNonCenteredContext(this bool[,] input, int size, int sourceX, int sourceY, EdgeCondition edgeCondition = EdgeCondition.Valid)
+        public static T[,] GetNonCenteredContext<T>(this T[,] input, int size, int sourceX, int sourceY, EdgeCondition edgeCondition = EdgeCondition.Valid)
         {
 
-            bool[,] context = new bool[size, size];
+            T[,] context = new T[size, size];
 
             int xMax = sourceX + size;
             int yMax = sourceY + size;
@@ -156,6 +156,28 @@ namespace LocalMinimum.Arrays
                 }
             }
             return context;
+        }
+
+        public static bool[,] Dilate(this bool[,] input, Neighbourhood neighbourhood, EdgeCondition edgeCondition)
+        {
+            switch (neighbourhood) {
+                case Neighbourhood.Cross:
+                    return input.GenericFilter(3, CrossDilate, edgeCondition, false);
+                case Neighbourhood.Eight:
+                    return input.GenericFilter(3, EightDilate, edgeCondition, false);
+                default:
+                    throw new NotImplementedException("Neighbourhood " + neighbourhood + " not implemented as dilation");
+            }
+        }
+
+        static bool CrossDilate(bool[,] data)
+        {
+            return data[1, 1] || data[0, 1] || data[1, 0] || data[2, 0] || data[0, 2];
+        }
+
+        static bool EightDilate(bool[,] data)
+        {
+            return data.Any();
         }
 
         public static T[,] GenericFilter<T>(this bool[,] input, int size, Func<bool[,], T> function, EdgeCondition edgeCondition = EdgeCondition.Valid, bool fillValue = false)
@@ -232,6 +254,7 @@ namespace LocalMinimum.Arrays
 
             return result;
         }
+
         public static Coordinate[] ContextFilterToOffsets(bool[,] context)
         {
             int count = context.Count();

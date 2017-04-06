@@ -915,6 +915,7 @@ namespace LocalMinimum.Arrays
             return input;
         }
 
+
         /// <summary>
         /// Apply function to corresponding elements and get result
         /// </summary>
@@ -1009,6 +1010,21 @@ namespace LocalMinimum.Arrays
             return input;
         }
 
+        public static bool[,] Zip(this bool[,] input, bool[,] other, bool[,] secondOther, System.Func<bool, bool, bool, bool> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    input[x, y] = func(input[x, y], other[x, y], secondOther[x, y]);
+
+                }
+            }
+            return input;
+        }
         public static List<Coordinate> Where<T>(this T[,] input, System.Func<T, bool> func)
         {
             List<Coordinate> coords = new List<Coordinate>();
