@@ -268,6 +268,11 @@ public class BoardGrid : MonoBehaviour {
         return gridOccupancy.GetFilterNotAny(occupancy);
     }
 
+    public bool[,] GetFilterHas(Occupancy occupancy)
+    {
+        return gridOccupancy.GetFilter(occupancy);
+    }
+
     public int[,] GetOccupancyContextNonFree(GridPos pos)
     {
         return gridOccupancy.GetContextHasNot(pos, 3, Occupancy.Free);

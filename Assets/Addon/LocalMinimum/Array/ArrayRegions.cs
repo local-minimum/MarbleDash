@@ -752,6 +752,75 @@ namespace LocalMinimum.Arrays
             return count;
         }
 
+        public static int CountValue(this int[,] input, int value)
+        {
+            int count = 0;
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (input[x, y] == value)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        public static bool Locate(this int[,] input, int value, int nth, ref Coordinate c)
+        {
+            int count = 0;
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (input[x, y] == value)
+                    {
+                        count++;
+                        if (count == nth)
+                        {
+                            c.x = x;
+                            c.y = y;
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool Locate(this bool[,] input, int nth, ref Coordinate c)
+        {
+            int count = 0;
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    if (input[x, y])
+                    {
+                        count++;
+                        if (count == nth)
+                        {
+                            c.x = x;
+                            c.y = y;
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Elementwise application of a function
         /// </summary>

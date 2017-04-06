@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using System;
 
 namespace LocalMinimum.Arrays
 {
-    public enum EdgeCondition {Constant};
+    public enum EdgeCondition {Constant, Valid};
 
     public static class Convolution
     {
 
-        public static int[,] GetContext(this int[,] input, int size, Coordinate coordinate, EdgeCondition edgeCondition=EdgeCondition.Constant, int fillValue=-1)
+        public static int[,] GetCenteredContext(this int[,] input, int size, Coordinate coordinate, EdgeCondition edgeCondition=EdgeCondition.Constant, int fillValue=-1)
         {
             if (size % 2 == 0)
             {
@@ -50,6 +51,187 @@ namespace LocalMinimum.Arrays
             return context;
         }
 
+        public static bool[,] GetCenteredContext(this bool[,] input, int size, Coordinate coordinate, EdgeCondition edgeCondition = EdgeCondition.Constant, bool fillValue = false)
+        {
+            if (size % 2 == 0)
+            {
+                throw new System.ArgumentException("Size must be odd");
+            }
+
+            int offset = (size - 1) / 2;
+
+            bool[,] context = new bool[size, size];
+
+            int xMin = coordinate.x - offset;
+            int xMax = xMin + size;
+            int yMin = coordinate.y - offset;
+            int yMax = yMin + size;
+
+            int width = input.GetLength(0);
+            int height = input.GetLength(1);
+
+            for (int x = xMin, x2 = 0; x < xMax; x++, x2++)
+            {
+                for (int y = yMin, y2 = 0; y < yMax; y++, y2++)
+                {
+                    if (x < 0 || y < 0 || x >= width || y >= height)
+                    {
+                        switch (edgeCondition)
+                        {
+                            case EdgeCondition.Constant:
+                                context[x2, y2] = fillValue;
+                                break;
+                            default:
+                                throw new System.NotImplementedException("Condition " + edgeCondition + " not supported yet");
+                        }
+                    }
+                    else
+                    {
+                        context[x2, y2] = input[x, y];
+                    }
+                }
+            }
+            return context;
+        }
+
+        public static bool[,] GetCenteredContext(this bool[,] input, int size, int sourceX, int sourceY, EdgeCondition edgeCondition = EdgeCondition.Constant, bool fillValue = false)
+        {
+            if (size % 2 == 0)
+            {
+                throw new System.ArgumentException("Size must be odd");
+            }
+
+            int offset = (size - 1) / 2;
+
+            bool[,] context = new bool[size, size];
+
+            int xMin = sourceX - offset;
+            int xMax = xMin + size;
+            int yMin = sourceY - offset;
+            int yMax = yMin + size;
+
+            int width = input.GetLength(0);
+            int height = input.GetLength(1);
+
+            for (int x = xMin, x2 = 0; x < xMax; x++, x2++)
+            {
+                for (int y = yMin, y2 = 0; y < yMax; y++, y2++)
+                {
+                    if (x < 0 || y < 0 || x >= width || y >= height)
+                    {
+                        switch (edgeCondition)
+                        {
+                            case EdgeCondition.Constant:
+                                context[x2, y2] = fillValue;
+                                break;
+                            default:
+                                throw new NotImplementedException("Condition " + edgeCondition + " not supported yet");
+                        }
+                    }
+                    else
+                    {
+                        context[x2, y2] = input[x, y];
+                    }
+                }
+            }
+            return context;
+        }
+
+        public static bool[,] GetNonCenteredContext(this bool[,] input, int size, int sourceX, int sourceY, EdgeCondition edgeCondition = EdgeCondition.Valid)
+        {
+
+            bool[,] context = new bool[size, size];
+
+            int xMax = sourceX + size;
+            int yMax = sourceY + size;
+
+            int width = input.GetLength(0);
+            int height = input.GetLength(1);
+
+            for (int x = sourceX, x2 = 0; x < xMax; x++, x2++)
+            {
+                for (int y = sourceY, y2 = 0; y < yMax; y++, y2++)
+                {
+                    context[x2, y2] = input[x, y];                    
+                }
+            }
+            return context;
+        }
+
+        public static T[,] GenericFilter<T>(this bool[,] input, int size, Func<bool[,], T> function, EdgeCondition edgeCondition = EdgeCondition.Valid, bool fillValue = false)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            T[,] result;
+            bool centeredContext = true;
+
+            switch (edgeCondition)
+            {
+                case EdgeCondition.Constant:
+                    result = new T[w, h];
+                    break;
+                case EdgeCondition.Valid:
+                    w -= (size - 1);
+                    h -= (size - 1);
+                    result = new T[w, h];
+                    centeredContext = false;
+                    break;
+                default:
+                    throw new NotImplementedException("Condition " + edgeCondition + " not supported yet");
+
+            }
+            for (int x=0; x< w; x++)
+            {
+                for (int y=0; y< h; y++)
+                {
+                    result[x, y] = function(
+                        centeredContext ? 
+                            input.GetCenteredContext(size, x, y, edgeCondition, fillValue) : 
+                            input.GetNonCenteredContext(size, x, y, edgeCondition));
+                }
+            }
+
+            return result;
+        }
+
+
+        public static T[,] GenericFilter<T>(this bool[,] input, int size, Func<int, int, bool[,], T> function, EdgeCondition edgeCondition, bool fillValue)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+
+            T[,] result;
+            bool centeredContext = true;
+
+            switch (edgeCondition)
+            {
+                case EdgeCondition.Constant:
+                    result = new T[w, h];
+                    break;
+                case EdgeCondition.Valid:
+                    w -= (size - 1);
+                    h -= (size - 1);
+                    result = new T[w, h];
+                    centeredContext = false;
+                    break;
+                default:
+                    throw new NotImplementedException("Condition " + edgeCondition + " not supported yet");
+
+            }
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    result[x, y] = function(x, y,
+                        centeredContext ?
+                            input.GetCenteredContext(size, x, y, edgeCondition, fillValue) :
+                            input.GetNonCenteredContext(size, x, y, edgeCondition));
+                }
+            }
+
+            return result;
+        }
         public static Coordinate[] ContextFilterToOffsets(bool[,] context)
         {
             int count = context.Count();

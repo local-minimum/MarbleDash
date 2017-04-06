@@ -49,6 +49,8 @@ public class RoomMaker : MonoBehaviour {
         SolidifyUncertain();
         Debug.Log("Rooms: Allocate walls");
         SnakeWalls();
+        Debug.Log("Rooms: Clean up reduntant walls");
+        CleanUpWalls();
     }
 
     [SerializeField]
@@ -201,10 +203,12 @@ public class RoomMaker : MonoBehaviour {
 
     int wallCount;
 
+    bool[,] walls;
+
     void SnakeWalls()
     {
         System.Random rnd = PlayerRunData.stats.lvlRnd;
-        bool[,] walls = new bool[size, size];
+        walls = new bool[size, size];
 
         for (int y = 0; y < size; y++)
         {
@@ -264,6 +268,101 @@ public class RoomMaker : MonoBehaviour {
         }
 
         wallCount = walls.Count();
+    }
+
+    void CleanUpWalls()
+    {
+
+        bool[,] wallsBefore = (bool[,]) walls.Clone();
+        walls.GenericFilter(5, WallBlockRemover, EdgeCondition.Constant, false);
+
+        foreach (Coordinate coord in wallsBefore.Zip(walls, (a, b) => a != b).ToCoordinates())
+        {
+            boardGrid.Free(coord, Occupancy.Wall);
+        }
+
+    }
+
+    bool WallBlockRemover(int x, int y, bool[,] context)
+    {
+        //TODO: Can be extended to minimize breaking up wall segments
+
+        if (!context[2, 2])
+        {
+            //Never add walls
+            return false;
+        } else
+        {
+            bool[,] center = context.GetCenteredContext(3, 2, 2);
+            int n = center.Count();
+            if (n < 4)
+            {
+                //Can't be wallblock
+                return true;
+            } else
+            {
+                bool[,] fourBlock = center.GenericFilter(2, ArrayRegions.All);
+
+                if (fourBlock.Any())
+                {
+                    Coordinate coord = new Coordinate();
+                    while (fourBlock.Any()) {
+                        
+                        //Exists  a wall block
+
+                        int toResolve = PlayerRunData.stats.lvlRnd.Range(0, fourBlock.Count()) + 1;
+                        if (fourBlock.Locate(toResolve, ref coord))
+                        {
+                            //Select which of the four corners of block to remove
+                            int piece = PlayerRunData.stats.lvlRnd.Range(0, 4);
+                            coord.x += piece % 2;
+                            coord.y += piece > 1 ? 1 : 0;
+                            //Offset and update
+                            center[coord.x, coord.y] = false;
+                            coord.x += x - 1;
+                            coord.y += y - 1;
+                            if (!walls[coord.x, coord.y])
+                            {
+                                Debug.LogError((GridPos)coord + " not true");
+                            }
+                            else {
+                                walls[coord.x, coord.y] = false;
+                            }
+                            fourBlock = center.GenericFilter(2, ArrayRegions.All);
+                        } else
+                        {
+                            Debug.LogError("Can't get " + toResolve + "th in " + fourBlock.Map(e => e ? 1 : 0).ToCSV());
+                            break;
+                        }
+                    }
+                    return center[1, 1];
+                } else
+                {
+                    //No wallblocks in center
+                    return true;
+                }
+            }
+        }
+    }
+
+
+    public void FillFreeSingleIslands()
+    {
+        Coordinate coord = new Coordinate();
+        int labels;
+        int[,] labeled = boardGrid.GetFilterHas(Occupancy.Wall).Invert().Label(out labels, Neighbourhood.Cross);
+        for (int i=1; i<labels+1; i++)
+        {
+            if (labeled.CountValue(i) == 1)
+            {
+                if (labeled.Locate(i, 1, ref coord)) {
+                    if (boardGrid.IsFree(coord))
+                    {
+                        boardGrid.Occupy(coord, Occupancy.Wall);
+                    }
+                }
+            }
+        }
     }
 
     static int BitCount(int val)

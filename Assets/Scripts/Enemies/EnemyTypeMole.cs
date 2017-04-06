@@ -299,7 +299,7 @@ public class EnemyTypeMole : Enemy {
 
     void SetUndergroundContextFromDistansMapAndPosition(int[,] distances)
     {
-        context = distances.GetContext(3, pos);
+        context = distances.GetCenteredContext(3, pos);
         contextPosition = pos;
 
         GridPos contextTarget = lastBurrow - pos + new GridPos(1, 1);

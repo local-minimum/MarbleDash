@@ -503,7 +503,7 @@ public class Enemy : MonoBehaviour {
 
     protected void SetContextFromDistanceMapAndPosition(int[,] distances)
     {
-        context = distances.GetContext(3, pos);
+        context = distances.GetCenteredContext(3, pos);
         contextPosition = pos;
 
         //Set those context that are occupied by others as inaccessible

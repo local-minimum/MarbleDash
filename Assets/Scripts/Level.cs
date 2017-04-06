@@ -202,6 +202,10 @@ public class Level : MonoBehaviour {
         ballPath.GeneratePath(previousLevel);
         Debug.Log("Level: Generate rooms");
         roomMaker.GenerateRooms();
+
+        Debug.Log("Level: Fill 1 sized rooms with wall");
+        roomMaker.FillFreeSingleIslands();
+
         Debug.Log("Level: Generate holes");
         ballPath.GeneratePathHoles();
         Debug.Log("Level: Generate boxes");
