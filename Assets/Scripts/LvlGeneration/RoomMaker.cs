@@ -375,11 +375,13 @@ public class RoomMaker : MonoBehaviour {
             bool[,] room = playerConnectivity.HasValue(label);
             bool[,] otherRooms = playerConnectivity.Zip(room, (a, b) => !b && a > 0);
             
-            bool[,] dilatedRoom = room.Zip(room.Dilate(Neighbourhood.Cross, EdgeCondition.Valid), walls, (r, d, w) => r || d && w);
+            bool[,] dilatedRoom = room.Dilate(Neighbourhood.Cross, EdgeCondition.Valid);
             
+          
             while (!dilatedRoom.Zip(otherRooms, (a, b) => a && b).Any())
             {
-                dilatedRoom = room.Zip(dilatedRoom.Dilate(Neighbourhood.Cross, EdgeCondition.Valid), walls, (r, d, w) => r || d && w);
+                
+                dilatedRoom = room.Zip(dilatedRoom, walls, (r, d, w) => r || d && w).Dilate(Neighbourhood.Cross, EdgeCondition.Valid);
             }
             Coordinate crawlSource = dilatedRoom.Zip(otherRooms, (a, b) => a && b).ToCoordinates().Shuffle().First();
             int[,] crawlMap = dilatedRoom.Distance(dilatedRoom.Edge().ToCoordinates().ToArray(), Neighbourhood.Cross);
