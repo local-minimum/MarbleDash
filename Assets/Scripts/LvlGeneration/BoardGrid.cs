@@ -229,6 +229,11 @@ public class BoardGrid : MonoBehaviour {
         return gridOccupancy.Count(occupancy);
     }
 
+    public int CountInvalid()
+    {
+        return gridOccupancy.CountUnflagged();
+    }
+
     int GetOccupancyFilter(params Occupancy[] occupancy)
     {
         int filt = 1 << (int)occupancy[0];
@@ -419,12 +424,20 @@ public class BoardGrid : MonoBehaviour {
     [SerializeField]
     bool drawGizmos = false;
 
+    [SerializeField]
+    Vector3 gizmoOffset;
+
+    [SerializeField]
+    Occupancy gizmoShowing;
+
     private void OnDrawGizmosSelected()
     {
         if (!drawGizmos)
         {
             return;
         }
+
+        bool[,] flagStatus = gridOccupancy.GetFilter(gizmoShowing);
 
         Gizmos.color = Color.red;
         for (int x=0; x<size; x++)
@@ -433,6 +446,8 @@ public class BoardGrid : MonoBehaviour {
             for (int y=0; y<size; y++)
             {
                 Gizmos.DrawWireSphere(GetWorldPosition(x, y), 10f / size);
+                Gizmos.DrawIcon(transform.TransformPoint(GetLocalPosition(x, y)) + gizmoOffset, flagStatus[x, y] ? "numberIcon_Y.png" : "numberIcon_N.png", true);
+
             }
 
         }

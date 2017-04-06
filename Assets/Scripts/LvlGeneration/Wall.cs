@@ -30,7 +30,7 @@ public class Wall : MonoBehaviour {
     void Generate()
     {
         Vector2 shape = board.TileShape;
-        context = board.GetOccupancyContext(pos, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory);
+        context = board.GetOccupancyContext(pos, walltypes);
         //board.DebugPosition(pos, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory);
             
         if (m == null)

@@ -227,9 +227,25 @@ namespace LocalMinimum.Arrays
             return count;
         }
 
+        public int CountUnflagged()
+        {
+            int count = 0;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (data[x, y]  == 0)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
         public bool[,] GetFilterNotAny(params T[] occupancy)
         {
-            bool[,] filter = new bool[width, height];
+            bool[,] filter = new bool[width, height];            
             int mask = GetOptionalMask(occupancy);
 
             for (int x = 0; x < width; x++)
@@ -317,10 +333,10 @@ namespace LocalMinimum.Arrays
                 throw new ArgumentException("At least one filter required");
             }
 
-            int mask = IndexToMask(EnumToInt(filter[0]));
-            for (int i = 1; i < filter.Length; i++)
+            int mask = 0;
+            for (int i = 0; i < filter.Length; i++)
             {
-                mask |= IndexToMask(EnumToInt(filter[1]));
+                mask |= IndexToMask(EnumToInt(filter[i]));
             }
 
             return mask;
