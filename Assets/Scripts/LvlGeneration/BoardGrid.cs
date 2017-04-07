@@ -208,9 +208,22 @@ public class BoardGrid : MonoBehaviour {
         return gridOccupancy.Has(pos, filt);
     }
 
+    public bool HasOccupancyAny(GridPos pos, params Occupancy[] filts)
+    {
+        return gridOccupancy.HasAny(pos, filts);
+    }
+
     public IEnumerable<GridPos> Find(Occupancy occupancy)
     {
         foreach(Coordinate c in gridOccupancy.Find(occupancy))
+        {
+            yield return c;
+        }
+    }
+
+    public IEnumerable<GridPos> FindAny(params Occupancy[] occupancy)
+    {
+        foreach(Coordinate c in gridOccupancy.FindAny(occupancy))
         {
             yield return c;
         }

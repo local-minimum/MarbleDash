@@ -171,22 +171,32 @@ public class RoomMaker : MonoBehaviour {
         }
     }
 
+    Dictionary<GridPos, Wall> activeWalls = new Dictionary<GridPos, Wall>();
+
     public void ConstructWalls()
     {
+
+        activeWalls.Clear();
+
         for (int i=0, l=wallParent.childCount; i<l; i++)
         {
             wallParent.GetChild(i).gameObject.SetActive(false);
         }
 
         int n = 0;
-        foreach(GridPos pos in boardGrid.Find(Occupancy.Wall))
+        foreach(GridPos pos in boardGrid.FindAny(Occupancy.Wall, Occupancy.WallBreakable))
         {
             Wall wall = GetWall(n);
-            wall.SetPosition(boardGrid, pos);
+            wall.SetPosition(this, boardGrid, pos);
             n++;
+            activeWalls[pos] = wall;
         }
-
+        
         Debug.Log(string.Format("Placed {0}, counted {1}, though I made {2} walls", n, boardGrid.Count(Occupancy.Wall), wallCount));
+    }
+    public Wall GetActiveWall(GridPos pos)
+    {
+        return activeWalls[pos];
     }
 
     Wall GetWall(int n)

@@ -10,10 +10,14 @@ public class Wall : MonoBehaviour {
     GridPos pos;
     BoardGrid board;
     Occupancy wallType;
+    RoomMaker roomMaker;
 
-    public void SetPosition(BoardGrid board, GridPos pos)
+    public void SetPosition(RoomMaker roomMaker, BoardGrid board, GridPos pos)
     {
+        GetComponent<MeshRenderer>().enabled = true;
+        GetComponent<MeshCollider>().enabled = true;
         gameObject.SetActive(true);
+        this.roomMaker = roomMaker;
         this.board = board;
         this.pos = pos;
         transform.localPosition = board.GetLocalPosition(pos);
@@ -55,6 +59,35 @@ public class Wall : MonoBehaviour {
         mc.sharedMesh = m;
         mc.convex = true;
 
+    }
+
+    void HurtWall(int amount)
+    {
+        if (wallType == Occupancy.WallBreakable)
+        {
+            DustMaker.instance.ShowerMe(transform);
+        }
+    }
+
+    void DestroyWall(int amount)
+    {
+        if (wallType == Occupancy.WallBreakable)
+        {
+            DustMaker.instance.ShowerMe(transform);
+            board.Free(pos, wallType);
+            Level.instance.ReconstructConnectivities(Level.ConnectivityTypes.AboveGround);
+            GetComponent<MeshRenderer>().enabled = false;
+            GetComponent<MeshCollider>().enabled = false;
+
+            foreach (GridPos neighbour in pos.GetNeighbours(LocalMinimum.Arrays.Neighbourhood.Cross))
+            {
+                //Debug.Log(neighbour + " is valid " + board.HasOccupancy(neighbour, Occupancy.Wall));
+                if (board.IsValidPosition(neighbour) && board.HasOccupancyAny(neighbour, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory))
+                {
+                    roomMaker.GetActiveWall(neighbour).Generate();
+                }
+            }
+        }
     }
 
     [SerializeField]

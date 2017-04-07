@@ -123,6 +123,12 @@ namespace LocalMinimum.Arrays
             return (data[x, y] & IndexToMask(EnumToInt(flag))) != 0;
         }
 
+        public bool HasAny(Coordinate coord, params T[] flags)
+        {
+            int mask = GetOptionalMask(flags);
+            return (data[coord.x, coord.y] & mask) != 0;
+        }
+
         public bool HasOnly(Coordinate coord, Enum flag)
         {
             int mask = IndexToMask(EnumToInt(flag));

@@ -439,7 +439,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 397086347}
-  m_Layer: 8
+  m_Layer: 11
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14578,7 +14578,7 @@ MonoBehaviour:
   heightOffset: -0.15
   drawGizmos: 1
   gizmoOffset: {x: 0, y: 2, z: 0}
-  gizmoShowing: 0
+  gizmoShowing: 5
 --- !u!114 &2025833199
 MonoBehaviour:
   m_ObjectHideFlags: 0
