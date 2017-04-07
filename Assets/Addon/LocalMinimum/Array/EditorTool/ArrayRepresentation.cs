@@ -85,7 +85,7 @@ namespace LocalMinimum.Arrays.Editor {
 
         public void Fill(int value)
         {
-            intRepresentation = intRepresentation.Fill(boolRepresentation, value);
+            intRepresentation = intRepresentation.FillInPlace(boolRepresentation, value);
             boolIsActive = false;
             UpdateEveryone();
         }
@@ -106,7 +106,7 @@ namespace LocalMinimum.Arrays.Editor {
 
         public void Invert()
         {
-            boolRepresentation = boolRepresentation.Invert();
+            boolRepresentation = boolRepresentation.Inverted();
             boolIsActive = true;
             UpdateEveryone();
         }

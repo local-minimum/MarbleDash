@@ -216,6 +216,9 @@ public class Level : MonoBehaviour {
         Debug.Log("Level: Calculate connectivity");
         ReconstructConnectivities(ConnectivityTypes.All);
 
+        //Connect rooms need happen here
+        roomMaker.BridgeIsolatedRooms(playerConnectivity, playerConnectivityLabels);
+
         //This is required to be last
         Debug.Log("Level: Generate path");
         enemySpawner.AllocatePlacesAndDecideEnemies();

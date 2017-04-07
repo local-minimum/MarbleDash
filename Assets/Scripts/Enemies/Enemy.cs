@@ -509,7 +509,7 @@ public class Enemy : MonoBehaviour {
         //Set those context that are occupied by others as inaccessible
         //but keep value for self position
         int centerVal = context[1, 1];
-        context = context.Zip(
+        context = context.ZipTwo(
             board.GetOccupancyContext(pos, Occupancy.Enemy, Occupancy.Player),
             (a, b) => b == 1 ? -1 : a);
         context[1, 1] = centerVal;

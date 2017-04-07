@@ -277,7 +277,7 @@ public class RoomMaker : MonoBehaviour {
         bool[,] wallsBefore = (bool[,]) walls.Clone();
         walls.GenericFilter(5, WallBlockRemover, EdgeCondition.Constant, false);
 
-        foreach (Coordinate coord in wallsBefore.Zip(walls, (a, b) => a != b).ToCoordinates())
+        foreach (Coordinate coord in wallsBefore.ZipTwo(walls, (a, b) => a != b).ToCoordinates())
         {
             boardGrid.Free(coord, Occupancy.Wall);
         }
@@ -351,7 +351,7 @@ public class RoomMaker : MonoBehaviour {
     {
         Coordinate coord = new Coordinate();
         int labels;
-        int[,] labeled = boardGrid.GetFilterHas(Occupancy.Wall).Invert().Label(out labels, Neighbourhood.Cross);
+        int[,] labeled = boardGrid.GetFilterHas(Occupancy.Wall).Inverted().Label(out labels, Neighbourhood.Cross);
         for (int i=1; i<labels+1; i++)
         {
             if (labeled.CountValue(i) == 1)
@@ -370,22 +370,95 @@ public class RoomMaker : MonoBehaviour {
     {
         //TODO: Validate that there's connection between all rooms not just loop
 
-        for (int label=1; label < count + 1; label++)
+        //All rooms are isloated to start
+        List<List<int>> roomGroups = new List<List<int>>();
+        for (int label = 1; label < count + 1; label++) {
+            roomGroups.Add(new List<int>() { label });
+        }
+        int nRooms = roomGroups.Count;
+        while (roomGroups.Count > 1)
         {
-            bool[,] room = playerConnectivity.HasValue(label);
-            bool[,] otherRooms = playerConnectivity.Zip(room, (a, b) => !b && a > 0);
+            Debug.Log(nRooms + " room groups");
+            bool[,] room = playerConnectivity.HasAnyValue(roomGroups[0].ToArray());
+            bool[,] otherRooms = playerConnectivity.ZipTwo(room, (a, b) => !b && a > 0);
             
-            bool[,] dilatedRoom = room.Dilate(Neighbourhood.Cross, EdgeCondition.Valid);
-            
-          
-            while (!dilatedRoom.Zip(otherRooms, (a, b) => a && b).Any())
-            {
-                
-                dilatedRoom = room.Zip(dilatedRoom, walls, (r, d, w) => r || d && w).Dilate(Neighbourhood.Cross, EdgeCondition.Valid);
-            }
-            Coordinate crawlSource = dilatedRoom.Zip(otherRooms, (a, b) => a && b).ToCoordinates().Shuffle().First();
-            int[,] crawlMap = dilatedRoom.Distance(dilatedRoom.Edge().ToCoordinates().ToArray(), Neighbourhood.Cross);
+            bool[,] dilatedRoom = room.Dilate(Neighbourhood.Cross, EdgeCondition.Constant);
 
+            int dilations = 1;
+            while (!dilatedRoom.ZipTwo(otherRooms, (a, b) => a && b).Any())
+            {
+
+                dilatedRoom = room.ZipThree(dilatedRoom, walls, (r, d, w) => r || d && w).Dilate(Neighbourhood.Cross, EdgeCondition.Constant);
+                dilations++;
+            
+                if (dilations > 10)
+                {
+                    throw new System.ArgumentException("Have dilated more than 10 times, should have found something");
+                }
+            }
+
+            //Makes a passage between areas
+            int[,] crawlMap = dilatedRoom.Distance(room.Edge().ToCoordinates().ToArray(), Neighbourhood.Cross);
+            GridPos crawlPoint = dilatedRoom.ZipThree(otherRooms, crawlMap, (d, o, c) => d && o && c > 0).ToCoordinates().Shuffle().First();
+
+            int distance = crawlMap[crawlPoint.x, crawlPoint.y];
+            int roomSourceID = playerConnectivity[crawlPoint.x, crawlPoint.y];
+            Debug.Log(dilatedRoom[crawlPoint.x, crawlPoint.y]);
+            Debug.Log(otherRooms[crawlPoint.x, crawlPoint.y]);
+            Debug.Log(distance);
+            Debug.Log(roomSourceID);
+
+            while (crawlMap[crawlPoint.x, crawlPoint.y] > 0)
+            {
+                bool foundDirection = false;
+                foreach (GridPos neighbour in crawlPoint.GetNeighbours(Neighbourhood.Cross))
+                {
+
+                    if (boardGrid.IsValidPosition(neighbour) && crawlMap[neighbour.x, neighbour.y] < distance)
+                    {
+                        distance = crawlMap[neighbour.x, neighbour.y];
+                        if (boardGrid.HasOccupancy(neighbour, Occupancy.Wall))
+                        {
+                            boardGrid.Free(neighbour, Occupancy.Wall);
+                            boardGrid.Occupy(neighbour, Occupancy.WallBreakable);
+                            Debug.Log("Making " + neighbour + " breakable");
+                        } else
+                        {
+                            Debug.Log(neighbour + " has no wall, this may be OK");
+                        }
+                        crawlPoint = neighbour;
+                        foundDirection = true;
+                        break;
+                    }
+                }
+                if (!foundDirection)
+                {
+                    throw new System.ArgumentException("No neighbour to " + crawlPoint + " is closer to target, should not be possible");
+                }
+            }
+
+            //Register room connections
+            bool madeConnection = false;
+            for (int i=1, l=roomGroups.Count; i<l; i++)
+            {
+                if (roomGroups[i].Contains(roomSourceID))
+                {
+                    madeConnection = true;
+                    roomGroups[0].AddRange(roomGroups[i]);
+                    roomGroups.RemoveAt(i);
+                    break;
+                }
+            }
+            if (!madeConnection)
+            {
+                throw new System.ArgumentException("Connectivity Map wrong because could not connect rooms that were connected");
+            }
+
+            if (nRooms <= roomGroups.Count)
+            {
+                throw new System.ArgumentException("Didn't make any connection, though should have");
+            }
+            nRooms--;
         }
     }
 

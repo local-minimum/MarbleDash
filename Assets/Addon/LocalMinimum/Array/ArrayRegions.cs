@@ -49,12 +49,14 @@ namespace LocalMinimum.Arrays
             int lastY = h - 1;
             bool doEight = neighbourhood == Neighbourhood.Eight;
             int[,] labels = new int[w, h];
+            bool[,] used = new bool[w, h];
+
             labelCount = 0;
             for (int x = 0; x < w; x++)
             {
                 for (int y = 0; y < h; y++)
                 {
-                    if (!input[x, y] || labels[x, y] > 0)
+                    if (used[x, y] || !input[x, y] || labels[x, y] > 0)
                     {
                         continue;
                     }
@@ -64,7 +66,7 @@ namespace LocalMinimum.Arrays
                     List<Coordinate> queue = new List<Coordinate>();
                     queue.Clear();
                     queue.Add(new Coordinate(x, y));
-                    input[x, y] = false;
+                    used[x, y] = true;
                     int index = 0;
                     int length = 1;
                     while (length > index)
@@ -76,62 +78,62 @@ namespace LocalMinimum.Arrays
 
                         labels[curX, curY] = labelCount;
 
-                        if (curX > 0 && input[curX - 1, curY])
+                        if (curX > 0 && input[curX - 1, curY] && !used[curX - 1, curY])
                         {
                             queue.Add(new Coordinate(curX - 1, curY));
-                            input[curX - 1, curY] = false;
+                            used[curX - 1, curY] = true;
                             length++;
                         }
 
-                        if (curY > 0 && input[curX, curY - 1])
+                        if (curY > 0 && input[curX, curY - 1] && !used[curX, curY - 1])
                         {
                             queue.Add(new Coordinate(curX, curY - 1));
-                            input[curX, curY - 1] = false;
+                            used[curX, curY - 1] = true;
                             length++;
                         }
 
-                        if (curX != lastX && input[curX + 1, curY])
+                        if (curX != lastX && input[curX + 1, curY] && !used[curX + 1, curY])
                         {
                             queue.Add(new Coordinate(curX + 1, curY));
-                            input[curX + 1, curY] = false;
+                            used[curX + 1, curY] = true;
                             length++;
                         }
 
-                        if (curY != lastY && input[curX, curY + 1])
+                        if (curY != lastY && input[curX, curY + 1] && !used[curX, curY + 1])
                         {
                             queue.Add(new Coordinate(curX, curY + 1));
-                            input[curX, curY + 1] = false;
+                            used[curX, curY + 1] = true;
                             length++;
                         }
 
                         if (doEight)
                         {
 
-                            if (curX > 0 && curY > 0 && input[curX - 1, curY - 1])
+                            if (curX > 0 && curY > 0 && input[curX - 1, curY - 1] && !used[curX - 1, curY - 1])
                             {
                                 queue.Add(new Coordinate(curX - 1, curY - 1));
-                                input[curX - 1, curY - 1] = false;
+                                used[curX - 1, curY - 1] = true;
                                 length++;
                             }
 
-                            if (curX > 0 && curY != lastY && input[curX - 1, curY + 1])
+                            if (curX > 0 && curY != lastY && input[curX - 1, curY + 1] && !used[curX - 1, curY + 1])
                             {
                                 queue.Add(new Coordinate(curX - 1, curY + 1));
-                                input[curX - 1, curY + 1] = false;
+                                used[curX - 1, curY + 1] = true;
                                 length++;
                             }
 
-                            if (curX != lastX && curY != lastY && input[curX + 1, curY + 1])
+                            if (curX != lastX && curY != lastY && input[curX + 1, curY + 1] && !used[curX + 1, curY + 1])
                             {
                                 queue.Add(new Coordinate(curX + 1, curY + 1));
-                                input[curX + 1, curY + 1] = false;
+                                used[curX + 1, curY + 1] = true;
                                 length++;
                             }
 
-                            if (curX != lastX && curY > 0 && input[curX + 1, curY - 1])
+                            if (curX != lastX && curY > 0 && input[curX + 1, curY - 1] && !used[curX + 1, curY - 1])
                             {
                                 queue.Add(new Coordinate(curX + 1, curY - 1));
-                                input[curX + 1, curY - 1] = false;
+                                used[curX + 1, curY - 1] = true;
                                 length++;
                             }
 
@@ -534,6 +536,29 @@ namespace LocalMinimum.Arrays
             return output;
         }
 
+        public static bool[,] HasAnyValue(this int[,] input, params int[] values)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            int l = values.Length;
+            bool[,] output = new bool[w, h];
+
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    for (int i = 0; i < l; i++)
+                    {
+                        if (values[i] == input[x, y])
+                        {
+                            output[x, y] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            return output;
+        }
 
         /// <summary>
         /// Converts a bolean filter array to list of coordinates of true values.
@@ -569,7 +594,7 @@ namespace LocalMinimum.Arrays
         /// <returns>int array with only fill value</returns>
         public static T[,] Fill<T>(int w, int h, T value)
         {
-            return new T[w, h].Fill(value);
+            return new T[w, h].FillInPlace(value);
         }
 
         /// <summary>
@@ -578,11 +603,10 @@ namespace LocalMinimum.Arrays
         /// <param name="input">the template array</param>
         /// <param name="value">Fill value</param>
         /// <returns>int array with only fill value</returns>
-        public static T[,] Fill<T>(this T[,] input, T value)
+        public static T[,] FillInPlace<T>(this T[,] input, T value)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);
-
             for (int x=0; x<w; x++)
             {
                 for (int y=0; y<h; y++)
@@ -600,7 +624,7 @@ namespace LocalMinimum.Arrays
         /// <param name="filter">Where to fill</param>
         /// <param name="value">fill value</param>
         /// <returns>updated data</returns>
-        public static int[,] Fill(this int[,] input, bool[,] filter, int value)
+        public static T[,] FillInPlace<T>(this T[,] input, bool[,] filter, T value)
         {
             int w = filter.GetLength(0);
             int h = filter.GetLength(1);
@@ -623,7 +647,7 @@ namespace LocalMinimum.Arrays
         /// </summary>
         /// <param name="input">the data</param>
         /// <returns>the inverted data</returns>
-        public static bool[,] Invert(this bool[,] input)
+        public static bool[,] Inverted(this bool[,] input)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);
@@ -643,6 +667,8 @@ namespace LocalMinimum.Arrays
 
             return inverted;
         }
+
+
 
         /// <summary>
         /// Maximum value in array
@@ -827,7 +853,7 @@ namespace LocalMinimum.Arrays
         /// <param name="input">Data</param>
         /// <param name="func">The function</param>
         /// <returns>Result</returns>
-        public static int[,] Map(this int[,] input, System.Func<int, int> func)
+        public static T[,] MapInPlace<T>(this T[,] input, System.Func<T, T> func)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);
@@ -850,11 +876,11 @@ namespace LocalMinimum.Arrays
         /// <param name="input">Data</param>
         /// <param name="func">The function</param>
         /// <returns>Result</returns>
-        public static int[,] Map(this bool[,] input, System.Func<bool, int> func)
+        public static TTarget[,] Map<TSource, TTarget>(this TSource[,] input, System.Func<TSource, TTarget> func)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);
-            int[,] output = new int[w, h];
+            TTarget[,] output = new TTarget[w, h];
 
             for (int x = 0; x < w; x++)
             {
@@ -869,162 +895,46 @@ namespace LocalMinimum.Arrays
         }
 
         /// <summary>
-        /// Elementwise application of a function
-        /// </summary>
-        /// <param name="input">Data</param>
-        /// <param name="func">The function</param>
-        /// <returns>Result</returns>
-        public static bool[,] Map(this int[,] input, System.Func<int, bool> func)
-        {
-            int w = input.GetLength(0);
-            int h = input.GetLength(1);
-            bool[,] result = new bool[w, h];
-
-            for (int x = 0; x < w; x++)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    result[x, y] = func(input[x, y]);
-
-                }
-            }
-            return result;
-
-        }
-
-        /// <summary>
         /// Apply function to corresponding elements and get result
         /// </summary>
         /// <param name="input">First array</param>
         /// <param name="other">Second array</param>
         /// <param name="func">function that takes two elements, one from each</param>
         /// <returns>Outpu of function</returns>
-        public static int[,] Zip(this int[,] input, int[,] other, System.Func<int, int, int> func)
+        public static TTarget[,] ZipTwo<TFirst, TSecond, TTarget>(this TFirst[,] input, TSecond[,] other, System.Func<TFirst, TSecond, TTarget> func)
         {
             int w = input.GetLength(0);
             int h = input.GetLength(1);
+            TTarget[,] output = new TTarget[w, h];
+            for (int x = 0; x < w; x++)
+            {
+                for (int y = 0; y < h; y++)
+                {
+                    output[x, y] = func(input[x, y], other[x, y]);
+
+                }
+            }
+            return output;
+        }
+
+
+        public static TTarget[,] ZipThree<TFirst, TSecond, TThird, TTarget>(this TFirst[,] input, TSecond[,] other, TThird[,] secondOther, System.Func<TFirst, TSecond, TThird, TTarget> func)
+        {
+            int w = input.GetLength(0);
+            int h = input.GetLength(1);
+            TTarget[,] output = new TTarget[w, h];
 
             for (int x = 0; x < w; x++)
             {
                 for (int y = 0; y < h; y++)
                 {
-                    input[x, y] = func(input[x, y], other[x, y]);
+                    output[x, y] = func(input[x, y], other[x, y], secondOther[x, y]);
 
                 }
             }
-            return input;
+            return output;
         }
 
-
-        /// <summary>
-        /// Apply function to corresponding elements and get result
-        /// </summary>
-        /// <param name="input">First array</param>
-        /// <param name="other">Second array</param>
-        /// <param name="func">function that takes two elements, one from each</param>
-        /// <returns>Outpu of function</returns>
-        public static int[,] Zip(this int[,] input, bool[,] other, System.Func<int, bool, int> func)
-        {
-            int w = input.GetLength(0);
-            int h = input.GetLength(1);
-
-            for (int x = 0; x < w; x++)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    input[x, y] = func(input[x, y], other[x, y]);
-
-                }
-            }
-            return input;
-        }
-
-        /// <summary>
-        /// Apply function to corresponding elements and get result
-        /// </summary>
-        /// <param name="input">First array</param>
-        /// <param name="other">Second array</param>
-        /// <param name="func">function that takes two elements, one from each</param>
-        /// <returns>Outpu of function</returns>
-        public static bool[,] Zip(this int[,] input, int[,] other, System.Func<int, int, bool> func)
-        {
-            int w = input.GetLength(0);
-            int h = input.GetLength(1);
-            bool[,] result = new bool[w, h];
-
-            for (int x = 0; x < w; x++)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    result[x, y] = func(input[x, y], other[x, y]);
-
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Apply function to corresponding elements and get result
-        /// </summary>
-        /// <param name="input">First array</param>
-        /// <param name="other">Second array</param>
-        /// <param name="func">function that takes two elements, one from each</param>
-        /// <returns>Outpu of function</returns>
-        public static bool[,] Zip(this int[,] input, bool[,] other, System.Func<int, bool, bool> func)
-        {
-            int w = input.GetLength(0);
-            int h = input.GetLength(1);
-            bool[,] result = new bool[w, h];
-
-            for (int x = 0; x < w; x++)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    result[x, y] = func(input[x, y], other[x, y]);
-
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Apply function to corresponding elements and get result
-        /// </summary>
-        /// <param name="input">First array</param>
-        /// <param name="other">Second array</param>
-        /// <param name="func">function that takes two elements, one from each</param>
-        /// <returns>Outpu of function</returns>
-        public static bool[,] Zip(this bool[,] input, bool[,] other, System.Func<bool, bool, bool> func)
-        {
-            int w = input.GetLength(0);
-            int h = input.GetLength(1);
-
-            for (int x = 0; x < w; x++)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    input[x, y] = func(input[x, y], other[x, y]);
-
-                }
-            }
-            return input;
-        }
-
-        public static bool[,] Zip(this bool[,] input, bool[,] other, bool[,] secondOther, System.Func<bool, bool, bool, bool> func)
-        {
-            int w = input.GetLength(0);
-            int h = input.GetLength(1);
-
-            for (int x = 0; x < w; x++)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    input[x, y] = func(input[x, y], other[x, y], secondOther[x, y]);
-
-                }
-            }
-            return input;
-        }
         public static List<Coordinate> Where<T>(this T[,] input, System.Func<T, bool> func)
         {
             List<Coordinate> coords = new List<Coordinate>();
