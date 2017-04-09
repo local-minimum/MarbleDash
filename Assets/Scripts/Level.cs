@@ -204,7 +204,7 @@ public class Level : MonoBehaviour {
         roomMaker.GenerateRooms();
 
         Debug.Log("Level: Fill 1 sized rooms with wall");
-        roomMaker.FillFreeSingleIslands();
+        //roomMaker.FillFreeSingleIslands();
 
         Debug.Log("Level: Generate holes");
         ballPath.GeneratePathHoles();
@@ -216,9 +216,13 @@ public class Level : MonoBehaviour {
         Debug.Log("Level: Calculate connectivity");
         ReconstructConnectivities(ConnectivityTypes.All);
 
-        //Connect rooms need happen here
-        roomMaker.BridgeIsolatedRooms(playerConnectivity, playerConnectivityLabels);
-
+        try {
+            //Connect rooms need happen here
+            roomMaker.BridgeIsolatedRooms(playerConnectivity, playerConnectivityLabels);
+        } catch (System.ArgumentException)
+        {
+            Debug.LogWarning("May have inaccessible room");
+        }
         //This is required to be last
         Debug.Log("Level: Generate path");
         enemySpawner.AllocatePlacesAndDecideEnemies();

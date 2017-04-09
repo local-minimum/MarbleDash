@@ -55,6 +55,10 @@ public class PlayerController : MonoBehaviour {
         groundLayer = LayerMask.NameToLayer("ground");
         destructableLayer = LayerMask.NameToLayer("destructables");
         destructable = GetComponent<Destructable>();
+        if (board == null)
+        {
+            board = GetComponentInParent<BoardController>();
+        }
         boardGrid = board.GetComponent<BoardGrid>();
     }
 
