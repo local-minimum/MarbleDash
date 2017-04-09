@@ -37,6 +37,7 @@ public class CoinBox : MonoBehaviour {
         }
         mr.material = mats[0];
 
+        dislodgeAngle = PlayerRunData.stats.lvlRnd.Range(dislodgeAngleMin, dislodgeAngleMax);
     }
 
     Level lvl;
@@ -56,79 +57,102 @@ public class CoinBox : MonoBehaviour {
     }
 
 
-    [SerializeField, Range(0, 20)]
     float dislodgeAngle = 12;
+
+    [SerializeField, Range(0, 20)]
+    float dislodgeAngleMin = 12;
+
+    [SerializeField, Range(0, 20)]
+    float dislodgeAngleMax = 12;
 
     [SerializeField, Range(0, 1)]
     float slideProbability = 0.75f;
 
+    bool inPlay = true;
+
     private void Lvl_OnTurnTick(PlayerController player, int turnIndex, float tickTime)
     {
-        Vector2 tilt = BoardController.instance.DelayedTilt;
-        GridPos target;
-        Debug.Log(tilt);
-        if (tilt.x > dislodgeAngle)
+        if (inPlay)
         {
-            if (tilt.y > dislodgeAngle)
+            Vector2 tilt = BoardController.instance.DelayedTilt;
+            GridPos target;
+
+            if (tilt.x > dislodgeAngle)
             {
-                target = pos.SouthEast;
-            } else if (tilt.y < -dislodgeAngle)
-            {
-                target = pos.NorthEast;
-            } else
-            {
-                target = pos.East;
+                if (tilt.y > dislodgeAngle)
+                {
+                    target = pos.SouthEast;
+                }
+                else if (tilt.y < -dislodgeAngle)
+                {
+                    target = pos.NorthEast;
+                }
+                else
+                {
+                    target = pos.East;
+                }
             }
-        } else if (tilt.x < -dislodgeAngle)
-        {
-            if (tilt.y > dislodgeAngle)
+            else if (tilt.x < -dislodgeAngle)
             {
-                target = pos.NorthWest;
-            }
-            else if (tilt.y < -dislodgeAngle)
-            {
-                target = pos.SouthWest;
+                if (tilt.y > dislodgeAngle)
+                {
+                    target = pos.NorthWest;
+                }
+                else if (tilt.y < -dislodgeAngle)
+                {
+                    target = pos.SouthWest;
+                }
+                else
+                {
+                    target = pos.West;
+                }
             }
             else
             {
-                target = pos.West;
+                if (tilt.y > dislodgeAngle)
+                {
+                    target = pos.North;
+                }
+                else if (tilt.y < -dislodgeAngle)
+                {
+                    target = pos.South;
+                }
+                else
+                {
+                    return;
+
+                }
             }
-        } else
-        {
-            if (tilt.y > dislodgeAngle)
+
+
+            BoardGrid board = BoardGrid.instance;
+
+            if (!board.IsValidPosition(target) || board.HasOccupancyAny(target, Occupancy.Obstacle, Occupancy.Enemy, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory) || Random.value > slideProbability)
             {
-                target = pos.North;
-            }
-            else if (tilt.y < -dislodgeAngle)
-            {
-                target = pos.South;
+                //Can't move there
             }
             else
             {
-                return;
+                board.Free(pos, Occupancy.Obstacle);
+                board.Occupy(target, Occupancy.Obstacle);
+                SetPosition(target);
+                lvl.EnqueueConnecitivityReconstruction();
+
+                pos = target;
+
+                if (board.HasOccupancy(target, Occupancy.Hole))
+                {
+                    //TODO: Drop box;
+                    gameObject.AddComponent<Rigidbody>();
+                    GetComponent<BoxCollider>().size = Vector3.one * 0.25f;
+                    inPlay = false;
+                }
             }
-        }
-
-        BoardGrid board = BoardGrid.instance;
-
-        if (!board.IsValidPosition(target) || board.HasOccupancyAny(target, Occupancy.Obstacle, Occupancy.Enemy, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory) || Random.value > slideProbability)
-        {
-            //Can't move there
         } else
         {
-            board.Free(pos, Occupancy.Obstacle);
-            board.Occupy(target, Occupancy.Obstacle);            
-            SetPosition(target);
-            lvl.EnqueueConnecitivityReconstruction();
-
-            pos = target;
-
-            if (board.HasOccupancy(target, Occupancy.Hole))
-            {
-                //TODO: Drop box;
-                gameObject.AddComponent<Rigidbody>();
-                GetComponent<BoxCollider>().size = Vector3.one * 0.25f;                
-            }
+            BoardGrid.instance.Free(pos, Occupancy.Obstacle);
+            Debug.Log("Coin box fell down hole");
+            Destroy(gameObject);
         }
     }
 

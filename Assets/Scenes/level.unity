@@ -311,6 +311,11 @@ Prefab:
       propertyPath: board
       value: 
       objectReference: {fileID: 2025833196}
+    - target: {fileID: 114646878873074178, guid: 15aef2543725d7949aba81194f634bc9,
+        type: 2}
+      propertyPath: forceMultiplier
+      value: 0.7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 15aef2543725d7949aba81194f634bc9, type: 2}
   m_IsPrefabParent: 0
@@ -17556,6 +17561,7 @@ MonoBehaviour:
   outerEulerAxis: {x: 1, y: 0, z: 0}
   innerEulerAxis: {x: 0, y: 1, z: 0}
   delay: 0.7
+  delayTiltWeight: 1
 --- !u!4 &2025833197
 Transform:
   m_ObjectHideFlags: 0
