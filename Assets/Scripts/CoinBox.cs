@@ -120,6 +120,15 @@ public class CoinBox : MonoBehaviour {
             board.Occupy(target, Occupancy.Obstacle);            
             SetPosition(target);
             lvl.EnqueueConnecitivityReconstruction();
+
+            pos = target;
+
+            if (board.HasOccupancy(target, Occupancy.Hole))
+            {
+                //TODO: Drop box;
+                gameObject.AddComponent<Rigidbody>();
+                GetComponent<BoxCollider>().size = Vector3.one * 0.25f;                
+            }
         }
     }
 
