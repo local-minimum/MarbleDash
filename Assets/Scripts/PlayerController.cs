@@ -154,7 +154,7 @@ public class PlayerController : MonoBehaviour {
         } else
         {
             onTile = offTile;
-            Debug.Log("Player not grounded");
+            //Debug.Log("Player not grounded");
         }
      
     }
