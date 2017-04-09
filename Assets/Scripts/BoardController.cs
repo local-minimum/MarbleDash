@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LocalMinimum;
 
-public class BoardController : MonoBehaviour {
+public class BoardController : Singleton<BoardController> {
 
     [SerializeField]
     Transform outerControl;
@@ -28,18 +29,40 @@ public class BoardController : MonoBehaviour {
 
     bool useGyro = false;
     KeyCode gyroToggle = KeyCode.G;
-    void Awake()
+    void Start()
     {
         if (SystemInfo.supportsGyroscope)
         {
             useGyro = true;
         }
     }
+
     public void Balance()
     {
         innerRotation = 0;
         outerRotation = 0;
     }
+
+    public Vector2 CurrentTilt
+    {
+        get
+        {
+            return new Vector2(innerRotation, outerRotation);
+        }
+    }
+
+    Vector2 delayedTiltIndicator = Vector2.zero;
+
+    public Vector2 DelayedTilt
+    {
+        get
+        {
+            return delayedTiltIndicator;
+        }
+    }
+
+    [SerializeField, Range(0, 2)]
+    float delayTiltWeight = 1;
 
     void Update() {
 
@@ -68,6 +91,8 @@ public class BoardController : MonoBehaviour {
 
         outerControl.localEulerAngles = outerEulerAxis * outerRotation;
         innerControl.localEulerAngles = innerEulerAxis * innerRotation;
+
+        delayedTiltIndicator = (delayTiltWeight * delayedTiltIndicator + CurrentTilt * Time.deltaTime) / (delayTiltWeight + Time.deltaTime);
     }
 
     Vector2 ClassicControl()

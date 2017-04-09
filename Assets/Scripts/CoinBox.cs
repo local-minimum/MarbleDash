@@ -39,6 +39,90 @@ public class CoinBox : MonoBehaviour {
 
     }
 
+    Level lvl;
+
+    private void OnEnable()
+    {
+        if (lvl == null)
+        {
+            lvl = Level.instance;
+        }
+        lvl.OnTurnTick += Lvl_OnTurnTick;
+    }
+
+    private void OnDisable()
+    {
+        lvl.OnTurnTick -= Lvl_OnTurnTick;
+    }
+
+
+    [SerializeField, Range(0, 20)]
+    float dislodgeAngle = 12;
+
+    [SerializeField, Range(0, 1)]
+    float slideProbability = 0.75f;
+
+    private void Lvl_OnTurnTick(PlayerController player, int turnIndex, float tickTime)
+    {
+        Vector2 tilt = BoardController.instance.DelayedTilt;
+        GridPos target;
+        Debug.Log(tilt);
+        if (tilt.x > dislodgeAngle)
+        {
+            if (tilt.y > dislodgeAngle)
+            {
+                target = pos.SouthEast;
+            } else if (tilt.y < -dislodgeAngle)
+            {
+                target = pos.NorthEast;
+            } else
+            {
+                target = pos.East;
+            }
+        } else if (tilt.x < -dislodgeAngle)
+        {
+            if (tilt.y > dislodgeAngle)
+            {
+                target = pos.NorthWest;
+            }
+            else if (tilt.y < -dislodgeAngle)
+            {
+                target = pos.SouthWest;
+            }
+            else
+            {
+                target = pos.West;
+            }
+        } else
+        {
+            if (tilt.y > dislodgeAngle)
+            {
+                target = pos.North;
+            }
+            else if (tilt.y < -dislodgeAngle)
+            {
+                target = pos.South;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        BoardGrid board = BoardGrid.instance;
+
+        if (!board.IsValidPosition(target) || board.HasOccupancyAny(target, Occupancy.Obstacle, Occupancy.Enemy, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory) || Random.value > slideProbability)
+        {
+            //Can't move there
+        } else
+        {
+            board.Free(pos, Occupancy.Obstacle);
+            board.Occupy(target, Occupancy.Obstacle);            
+            SetPosition(target);
+            lvl.EnqueueConnecitivityReconstruction();
+        }
+    }
+
     GridPos pos;
 
     public void SetPosition(GridPos pos)

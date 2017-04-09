@@ -132,6 +132,37 @@ namespace LocalMinimum.Grid
             }
         }
 
+        public GridPos NorthWest
+        {
+            get
+            {
+                return new GridPos(x - 1, y - 1);
+            }
+        }
+
+        public GridPos SouthWest
+        {
+            get
+            {
+                return new GridPos(x - 1, y + 1);
+            }
+        }
+
+        public GridPos SouthEast {
+            get
+            {
+                return new GridPos(x + 1, y + 1);
+            }
+        }
+
+        public GridPos NorthEast
+        {
+            get
+            {
+                return new GridPos(x + 1, y - 1);
+            }
+        }
+
         public static int TaxiCabDistance(GridPos a, GridPos b)
         {
             return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);

@@ -158,6 +158,10 @@ public class Level : MonoBehaviour {
                 {
                     OnTurnTick(ball, turnIndex, turnTime);
                 }
+                if (requireRonstructAfterTick)
+                {
+                    ReconstructConnectivities(ConnectivityTypes.AboveGround);
+                }
                 yield return new WaitForSeconds(turnTime);
                 turnIndex++;
             }
@@ -231,6 +235,13 @@ public class Level : MonoBehaviour {
     }
 
     public enum ConnectivityTypes { All, AboveGround, SolidGround};
+
+    bool requireRonstructAfterTick;
+
+    public void EnqueueConnecitivityReconstruction()
+    {
+        requireRonstructAfterTick = true;
+    }
 
     public void ReconstructConnectivities(ConnectivityTypes connectivityTypes)
     {
