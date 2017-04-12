@@ -205,6 +205,7 @@ public class Enemy : MonoBehaviour {
     {
 
     }
+
     protected struct ModeStruct
     {
         public EnemyMode mode;
@@ -256,7 +257,7 @@ public class Enemy : MonoBehaviour {
         }
 
         UpdateCoolDown(turnIndex);
-        InvokeSelectedModeExecution(turnTime, player);
+        GetActionFunction(turnTime, player);
 
         previousBehaviour = behaviour;
         //Debug.Log(behaviour);
@@ -267,50 +268,40 @@ public class Enemy : MonoBehaviour {
         lastModeInvocation[behaviour] = turnId;
     }
 
-    void InvokeSelectedModeExecution(float turnTime, PlayerController player)
+    public System.Func<PlayerController, int, float, EnemyMode> GetActionFunction(float turnTime, PlayerController player)
     {
         //Debug.Log(behaviour);
 
         switch (behaviour)
         {
             case EnemyMode.None:
-                break;
+                return null;
             case EnemyMode.Standing:
-                ExecuteStanding(player, turnTime);
-                break;
+                return ExecuteStanding;
             case EnemyMode.Patroling:
-                ExecutePatroling(player, turnTime);
-                break;
+                return ExecutePatroling;
             case EnemyMode.Walking:
-                ExecuteWalking(player, turnTime);
-                break;
+                return ExecuteWalking;
             case EnemyMode.Hunting:
-                ExecuteHunt(player, turnTime);
-                break;
+                return ExecuteHunt;
             case EnemyMode.Homing:
-                ExecuteHoming(player, turnTime);
-                break;
+                return ExecuteHoming;
             case EnemyMode.Haste:
-                ExecutHaste(player, turnTime);
-                break;
+                return ExecutHaste;
             case EnemyMode.Attack1:
-                ExecuteAttack1(player, turnTime);
-                break;
+                return ExecuteAttack1;
             case EnemyMode.Attack2:
-                ExecuteAttack2(player, turnTime);
-                break;
+                return ExecuteAttack2;
             case EnemyMode.Attack3:
-                ExecuteAttack3(player, turnTime);
-                break;
+                return ExecuteAttack3;
             case EnemyMode.Attack4:
-                ExecuteAttack4(player, turnTime);
-                break;
+                return ExecuteAttack4;
             case EnemyMode.Attack5:
-                ExecuteAttack5(player, turnTime);
-                break;
+                return ExecuteAttack5;
             case EnemyMode.Hiding:
-                ExecuteHiding(player, turnTime);
-                break;
+                return ExecuteHiding;
+            default:
+                return null;
 
         }
     }
@@ -390,38 +381,38 @@ public class Enemy : MonoBehaviour {
 
     #region EnemyModeExecutions
 
-    protected virtual GridPos ExecuteHiding(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteHiding(PlayerController player, int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual GridPos ExecuteAttack2(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteAttack2(PlayerController player, int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual GridPos ExecuteAttack3(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteAttack3(PlayerController player, int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual GridPos ExecuteAttack4(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteAttack4(PlayerController player, int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual GridPos ExecuteAttack5(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteAttack5(PlayerController player, int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual GridPos ExecutHaste(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecutHaste(PlayerController player, int turnIndex, float turnTime)
     {
 
         throw new System.NotImplementedException();
     }
 
-    protected virtual GridPos ExecuteHoming(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteHoming(PlayerController player, int turnIndex, float turnTime)
     {
         if (player.Grounded)
         {
@@ -430,7 +421,8 @@ public class Enemy : MonoBehaviour {
         }
         SetContextFromDistanceMapAndPosition(player.enemyDistancesEight);
 
-        return SelectContextDirectionAndMove(turnTime);
+        SelectContextDirectionAndMove(turnTime);
+        return EnemyMode.Homing;
     }
 
     protected GridPos SelectContextDirectionAndMove(float turnTime)
@@ -460,7 +452,7 @@ public class Enemy : MonoBehaviour {
     protected int clearWalkTargetsAtLength = 5;
 
 
-    protected virtual GridPos ExecuteWalking(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteWalking(PlayerController player, int turnIndex, float turnTime)
     {
         if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count && pos != targetCheckpoints[activeTargetIndex])
         {
@@ -498,7 +490,8 @@ public class Enemy : MonoBehaviour {
 
         SetContextFromDistanceMapAndPosition(targetDistanceMap);
 
-        return SelectContextDirectionAndMove(turnTime);
+        SelectContextDirectionAndMove(turnTime);
+        return EnemyMode.Walking;
     }
 
     protected void SetContextFromDistanceMapAndPosition(int[,] distances)
@@ -515,15 +508,16 @@ public class Enemy : MonoBehaviour {
         context[1, 1] = centerVal;
     }
 
-    protected virtual GridPos ExecuteStanding(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteStanding(PlayerController player, int turnIndex, float turnTime)
     {
-        return pos;
+        return EnemyMode.Standing;
     }
 
-    protected virtual GridPos ExecuteHunt(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteHunt(PlayerController player, int turnIndex, float turnTime)
     {
         //Default implementation doesn't separate the two with regards to execution
-        return ExecuteHoming(player, turnTime);        
+        ExecuteHoming(player, turnIndex, turnTime);
+        return EnemyMode.Hunting;
     }
 
     int[,] DirectionFilteredContext(int[,] context, GridPos direction)
@@ -543,7 +537,7 @@ public class Enemy : MonoBehaviour {
         return context;
     }
 
-    protected virtual GridPos ExecutePatroling(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecutePatroling(PlayerController player, int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
@@ -555,10 +549,11 @@ public class Enemy : MonoBehaviour {
             behaviour = EnemyMode.Standing;
             return new GridPos(0, 0);
         }
+        //offsets[Random.Range(0, offsets.Length)];
         return offsets[Random.Range(0, offsets.Length)];
     }
 
-    protected virtual GridPos ExecuteAttack1(PlayerController player, float turnTime)
+    protected virtual EnemyMode ExecuteAttack1(PlayerController player, int turnIndex, float turnTime)
     {
        
         StartCoroutine(LookTowards((player.onTile - pos).NineDirection));
@@ -568,7 +563,7 @@ public class Enemy : MonoBehaviour {
             StartCoroutine(DelayAttackTrigger(attackDelay));
         }
 
-        return pos;
+        return EnemyMode.Attack1;
     }
     #endregion
 
