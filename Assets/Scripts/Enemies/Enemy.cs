@@ -218,7 +218,7 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    public void Lvl_OnTurnTick(PlayerController player, int turnIndex, float turnTime)
+    public void SelectActionBehaviour(PlayerController player, int turnIndex, float turnTime)
     {
         attackedThisTurn = false;
         if (!ForceBehaviourSequence())
@@ -257,7 +257,6 @@ public class Enemy : MonoBehaviour {
         }
 
         UpdateCoolDown(turnIndex);
-        GetActionFunction(turnTime, player);
 
         previousBehaviour = behaviour;
         //Debug.Log(behaviour);
@@ -268,10 +267,15 @@ public class Enemy : MonoBehaviour {
         lastModeInvocation[behaviour] = turnId;
     }
 
-    public System.Func<PlayerController, int, float, EnemyMode> GetActionFunction(float turnTime, PlayerController player)
+    public virtual int GetActionDuration()
+    {
+        return 1;
+    }
+
+    public System.Func<PlayerController, int, float, EnemyMode> GetActionFunction()
     {
         //Debug.Log(behaviour);
-
+        
         switch (behaviour)
         {
             case EnemyMode.None:
@@ -451,6 +455,7 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     protected int clearWalkTargetsAtLength = 5;
 
+    protected Coordinate target;
 
     protected virtual EnemyMode ExecuteWalking(PlayerController player, int turnIndex, float turnTime)
     {
@@ -477,7 +482,7 @@ public class Enemy : MonoBehaviour {
         } else
         {
             //New target
-            Coordinate target = GetPossibleTargetsInMyRegion(preferredWalkTargetDistance, pos);
+            target = GetPossibleTargetsInMyRegion(preferredWalkTargetDistance, pos);
             if (activeTargetIndex >= clearWalkTargetsAtLength - 1)
             {
                 targetCheckpoints.Clear();

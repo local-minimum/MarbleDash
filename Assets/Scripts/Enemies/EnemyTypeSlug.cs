@@ -24,19 +24,18 @@ public class EnemyTypeSlug : Enemy {
     [SerializeField, Range(0, 1)]
     float slimeColorIntensity = 0.75f;
 
-    protected override GridPos ExecuteWalking(PlayerController player, float turnTime)
+    protected override EnemyMode ExecuteWalking(PlayerController player, int turnIndex, float turnTime)
     {
         if (didWalkThisTurn)
         {
             didWalkThisTurn = false;
-            return pos;
         }
         else {
             didWalkThisTurn = true;
-            GridPos walkToPos = base.ExecuteWalking(player, turnTimeMultiplier * turnTime);
-            StartCoroutine(DelaySlimeUpdate(walkToPos, turnTimeMultiplier * turnTime));
-            return walkToPos;
+            base.ExecuteWalking(player, turnIndex, turnTimeMultiplier * turnTime);
+            StartCoroutine(DelaySlimeUpdate(target, turnTimeMultiplier * turnTime));
         }
+        return EnemyMode.Walking;
     }
 
     float timeBeforeUnslime = 0.3f;

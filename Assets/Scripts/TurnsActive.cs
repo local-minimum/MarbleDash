@@ -13,7 +13,7 @@ public abstract class TurnsActive<T> : MonoBehaviour
     Dictionary<T, int> totalSelectionsActions = new Dictionary<T, int>();
     Dictionary<T, int> recentSelectionActionSelections = new Dictionary<T, int>();
 
-    T _currentAction;
+    protected T _currentAction;
     bool _anyAction;
 
     public int continiousTurnsCurrentAction
@@ -84,7 +84,7 @@ public abstract class TurnsActive<T> : MonoBehaviour
 
     void OnEnable()
     {
-        if (lvl != null)
+        if (lvl == null)
         {
             lvl = Level.instance;
         }
@@ -113,6 +113,8 @@ public abstract class TurnsActive<T> : MonoBehaviour
         _anyAction = false;
 
     }
+    
+
 
     private void Lvl_OnTurnTick(PlayerController player, int turnIndex, float tickTime)
     {
@@ -122,33 +124,69 @@ public abstract class TurnsActive<T> : MonoBehaviour
         if (isRespondingToTicks)
         {
 
-            System.Func<PlayerController, int, float, T> func = SelectAction(out remainingTicks);
+            System.Func<PlayerController, int, float, T> func = SelectAction(player, turnIndex, tickTime, out remainingTicks);
             if (func != null)
             {
                 T nextAction = func(player, turnIndex, tickTime);
-                if (_anyAction)
+                if (_anyAction && ContinuedSelection(nextAction))
                 {
                     recentSelectionActionSelections[nextAction]++;
-                } else
+                }
+                else
                 {
                     recentSelectionActionSelections[nextAction] = 1;
                 }
-                totalSelectionsActions[nextAction]++;
+
+                if (totalSelectionsActions.ContainsKey(nextAction))
+                {
+                    totalSelectionsActions[nextAction]++;
+                }
+                else
+                {
+                    totalSelectionsActions[nextAction] = 1;
+                }
+
                 _currentAction = nextAction;
                 _anyAction = true;
+
                 recentTurnsActions[_currentAction] = 1;
-                totalTurnsActions[_currentAction]++;
+
+                if (totalTurnsActions.ContainsKey(_currentAction))
+                {
+                    totalTurnsActions[_currentAction]++;
+                }
+                else
+                {
+                    totalTurnsActions[_currentAction] = 1;
+                }
+            }
+            else
+            {
+                _anyAction = false;
             }
         }
         else
         {
-            recentTurnsActions[_currentAction]++;
-            totalTurnsActions[_currentAction]++;
+            if (recentTurnsActions.ContainsKey(_currentAction)) {
+                recentTurnsActions[_currentAction]++;
+            } else
+            {
+                recentTurnsActions[_currentAction] = 1;
+            }
+            if (totalTurnsActions.ContainsKey(_currentAction))
+            {
+                totalTurnsActions[_currentAction]++;
+            } else
+            {
+                totalTurnsActions[_currentAction] = 1;
+            }
         }
     }
 
+    protected abstract bool ContinuedSelection(T newlySelected);
+
     public abstract bool Interrupt(bool force);
 
-    public abstract System.Func<PlayerController, int, float, T> SelectAction(out int turns);
+    public abstract System.Func<PlayerController, int, float, T> SelectAction(PlayerController player, int turnIndex, float tickTime, out int turns);
 
 }

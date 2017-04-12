@@ -145,9 +145,6 @@ namespace LocalMinimum.Arrays
             int xMax = sourceX + size;
             int yMax = sourceY + size;
 
-            int width = input.GetLength(0);
-            int height = input.GetLength(1);
-
             for (int x = sourceX, x2 = 0; x < xMax; x++, x2++)
             {
                 for (int y = sourceY, y2 = 0; y < yMax; y++, y2++)

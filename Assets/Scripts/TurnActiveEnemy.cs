@@ -17,8 +17,15 @@ public class TurnActiveEnemy : TurnsActive<EnemyMode>
         throw new NotImplementedException();
     }
 
-    public override Func<PlayerController, int, float, EnemyMode> SelectAction(out int turns)
+    public override Func<PlayerController, int, float, EnemyMode> SelectAction(PlayerController player, int turnIndex, float tickTime, out int turns)
     {
-        throw new NotImplementedException();
+        _enemy.SelectActionBehaviour(player, turnIndex, tickTime);
+        turns = _enemy.GetActionDuration();
+        return _enemy.GetActionFunction();
+    }
+
+    protected override bool ContinuedSelection(EnemyMode newlySelected)
+    {
+        return newlySelected == _currentAction;
     }
 }
