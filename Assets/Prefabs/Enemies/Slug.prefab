@@ -26,6 +26,7 @@ GameObject:
   - component: {fileID: 33232770084699686}
   - component: {fileID: 23885578299295734}
   - component: {fileID: 65992410625208718}
+  - component: {fileID: 114985920417517614}
   m_Layer: 11
   m_Name: Slug
   m_TagString: Untagged
@@ -248,3 +249,14 @@ MonoBehaviour:
   turnTimeMultiplier: 1.75
   slimedColor: {r: 0.60784805, g: 0.6985294, b: 0.041089963, a: 1}
   slimeColorIntensity: 0.75
+--- !u!114 &114985920417517614
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1950357925343116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee79fb385c3e2f429d5cce9e411772d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

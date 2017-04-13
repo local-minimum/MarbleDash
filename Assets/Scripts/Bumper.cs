@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using LocalMinimum.Grid;
+using LocalMinimum.TurnBased;
 
 public class Bumper : MonoBehaviour {
 
@@ -32,21 +33,21 @@ public class Bumper : MonoBehaviour {
         gameObject.SetActive(true);
     }
 
-    Level lvl;
+    TurnsManager turnManager;
 
     private void OnEnable()
     {
-        lvl = Level.instance;
-        lvl.OnTurnTick += Instance_OnTurnTick;
+        turnManager = TurnsManager.instance;
+        turnManager.OnTurnTick += HanldeTurnTick;
 
     }
 
     private void OnDisable()
     {
-        lvl.OnTurnTick -= Instance_OnTurnTick;
+        turnManager.OnTurnTick -= HanldeTurnTick;
     }
 
-    private void Instance_OnTurnTick(PlayerController player, int turnId, float tickTime)
+    private void HanldeTurnTick(int turnId, float tickTime)
     {
         if (playerRB && bumpOnTurn)
         {

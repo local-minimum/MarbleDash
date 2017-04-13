@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 54552586301795578}
   - component: {fileID: 95217785068371550}
   - component: {fileID: 114462557831289960}
+  - component: {fileID: 114769679179480416}
   m_Layer: 11
   m_Name: ProtoEnemy
   m_TagString: Untagged
@@ -333,6 +334,7 @@ MonoBehaviour:
   gizmosTargetSize: 0.3
   gizmosTargetColor: {r: 1, g: 0, b: 1, a: 1}
   gizmosEnemyToTargetColor: {r: 0, g: 1, b: 1, a: 1}
+  gizmosEntireDistanceMap: 0
 --- !u!114 &114761515697560430
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -342,5 +344,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 98d01a16414094d469cba8c5d1a2598f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114769679179480416
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1485900632619008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee79fb385c3e2f429d5cce9e411772d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

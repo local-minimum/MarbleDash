@@ -109,7 +109,7 @@ public class EnemyTypeMole : Enemy {
     [SerializeField, Range(2, 5)]
     int allowHunting = 2;
 
-    protected override EnemyMode ExecuteAttack1(PlayerController player, int turnIndex, float turnTime)
+    protected override EnemyMode ExecuteAttack1(int turnIndex, float turnTime)
     {
         int distToBurrow = GridPos.ChessBoardDistance(lastBurrow, pos);
         int distToPlayer = GridPos.ChessBoardDistance(player.onTile, pos);
@@ -131,14 +131,14 @@ public class EnemyTypeMole : Enemy {
             {
                 Debug.Log("hunt, dist to burrows " + distToBurrow);
                 StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
-                ExecuteHunt(player, turnIndex, turnTime);
+                ExecuteHunt(turnIndex, turnTime);
             } else
             {
                 Debug.Log("give up hunting because " + distToBurrow + " >= " + allowHunting);
                 hasAttacked = true;
                 behaviour = EnemyMode.Hiding;
                 StartCoroutine(delayTransitionToNone(turnTime * 0.1f));
-                ExecuteHiding(player, turnIndex, turnTime);
+                ExecuteHiding(turnIndex, turnTime);
             }
         }
 
@@ -182,7 +182,7 @@ public class EnemyTypeMole : Enemy {
         }
     }
 
-    protected override EnemyMode ExecuteAttack2(PlayerController player, int turnIndex, float turnTime)
+    protected override EnemyMode ExecuteAttack2(int turnIndex, float turnTime)
     {
         transform.localPosition = board.GetLocalPosition(pos) + attack2Offset;
         underground = false;
@@ -201,7 +201,7 @@ public class EnemyTypeMole : Enemy {
         behaviour = EnemyMode.None;
     }
 
-    protected override EnemyMode ExecuteHiding(PlayerController player, int turnIndex, float turnTime)
+    protected override EnemyMode ExecuteHiding(int turnIndex, float turnTime)
     {
         if (inHole)
         {
@@ -214,19 +214,19 @@ public class EnemyTypeMole : Enemy {
                 targetCheckpoints.Add(lastBurrow);
             }
             behaviour = EnemyMode.Walking;
-            ExecuteWalking(player, turnIndex, turnTime);
+            ExecuteWalking(turnIndex, turnTime);
         }
         return EnemyMode.Hiding;
     }
 
-    protected override EnemyMode ExecuteWalking(PlayerController player, int turnIndex, float turnTime)
+    protected override EnemyMode ExecuteWalking(int turnIndex, float turnTime)
     {
 
         //Debug.Log(string.Format("Mole in hole {0} and previously {1}", inHole, previousBehaviour));
         if (inHole && previousBehaviour == EnemyMode.Walking)
         {
             behaviour = EnemyMode.Hiding;
-            ExecuteHiding(player, turnIndex, turnTime);
+            ExecuteHiding(turnIndex, turnTime);
             return EnemyMode.Walking;
         }
 

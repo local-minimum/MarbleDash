@@ -20,6 +20,8 @@ public class Enemy : MonoBehaviour {
     protected EnemyTier activeTier;
     protected int activeTierIndex;
 
+    protected PlayerController player;
+
     public void SetTier(int tier)
     {
         activeTier = tiers[tier];
@@ -193,11 +195,13 @@ public class Enemy : MonoBehaviour {
     void Awake()
     {
         lvl = Level.instance;
+        player = PlayerController.instance;
     }
 
     private void Start()
     {
         anim = GetComponent<Animator>();
+        
         Setup();
     }
 
@@ -218,7 +222,7 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-    public void SelectActionBehaviour(PlayerController player, int turnIndex, float turnTime)
+    public void SelectActionBehaviour(int turnIndex, float turnTime)
     {
         attackedThisTurn = false;
         if (!ForceBehaviourSequence())
@@ -272,7 +276,7 @@ public class Enemy : MonoBehaviour {
         return 1;
     }
 
-    public System.Func<PlayerController, int, float, EnemyMode> GetActionFunction()
+    public System.Func<int, float, EnemyMode> GetActionFunction()
     {
         //Debug.Log(behaviour);
         
@@ -385,38 +389,38 @@ public class Enemy : MonoBehaviour {
 
     #region EnemyModeExecutions
 
-    protected virtual EnemyMode ExecuteHiding(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteHiding(int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual EnemyMode ExecuteAttack2(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteAttack2(int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual EnemyMode ExecuteAttack3(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteAttack3(int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual EnemyMode ExecuteAttack4(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteAttack4(int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual EnemyMode ExecuteAttack5(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteAttack5(int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
 
-    protected virtual EnemyMode ExecutHaste(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecutHaste(int turnIndex, float turnTime)
     {
 
         throw new System.NotImplementedException();
     }
 
-    protected virtual EnemyMode ExecuteHoming(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteHoming(int turnIndex, float turnTime)
     {
         if (player.Grounded)
         {
@@ -457,7 +461,7 @@ public class Enemy : MonoBehaviour {
 
     protected Coordinate target;
 
-    protected virtual EnemyMode ExecuteWalking(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteWalking(int turnIndex, float turnTime)
     {
         if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count && pos != targetCheckpoints[activeTargetIndex])
         {
@@ -513,15 +517,15 @@ public class Enemy : MonoBehaviour {
         context[1, 1] = centerVal;
     }
 
-    protected virtual EnemyMode ExecuteStanding(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteStanding(int turnIndex, float turnTime)
     {
         return EnemyMode.Standing;
     }
 
-    protected virtual EnemyMode ExecuteHunt(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteHunt(int turnIndex, float turnTime)
     {
         //Default implementation doesn't separate the two with regards to execution
-        ExecuteHoming(player, turnIndex, turnTime);
+        ExecuteHoming(turnIndex, turnTime);
         return EnemyMode.Hunting;
     }
 
@@ -542,7 +546,7 @@ public class Enemy : MonoBehaviour {
         return context;
     }
 
-    protected virtual EnemyMode ExecutePatroling(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecutePatroling(int turnIndex, float turnTime)
     {
         throw new System.NotImplementedException();
     }
@@ -558,7 +562,7 @@ public class Enemy : MonoBehaviour {
         return offsets[Random.Range(0, offsets.Length)];
     }
 
-    protected virtual EnemyMode ExecuteAttack1(PlayerController player, int turnIndex, float turnTime)
+    protected virtual EnemyMode ExecuteAttack1(int turnIndex, float turnTime)
     {
        
         StartCoroutine(LookTowards((player.onTile - pos).NineDirection));

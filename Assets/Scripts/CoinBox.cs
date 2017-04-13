@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LocalMinimum.TurnBased;
 using LocalMinimum.Grid;
 
 public class CoinBox : MonoBehaviour {
@@ -41,19 +42,22 @@ public class CoinBox : MonoBehaviour {
     }
 
     Level lvl;
-
+    TurnsManager turnManger;
+    
     private void OnEnable()
     {
         if (lvl == null)
         {
             lvl = Level.instance;
+            turnManger = TurnsManager.instance;
         }
-        lvl.OnTurnTick += Lvl_OnTurnTick;
+
+        turnManger.OnTurnTick += HandleTurnTick;
     }
 
     private void OnDisable()
     {
-        lvl.OnTurnTick -= Lvl_OnTurnTick;
+        turnManger.OnTurnTick -= HandleTurnTick;
     }
 
 
@@ -70,7 +74,7 @@ public class CoinBox : MonoBehaviour {
 
     bool inPlay = true;
 
-    private void Lvl_OnTurnTick(PlayerController player, int turnIndex, float tickTime)
+    private void HandleTurnTick(int turnIndex, float tickTime)
     {
         if (inPlay)
         {

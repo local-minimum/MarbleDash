@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using LocalMinimum.TurnBased;
 
 public class TurnActiveEnemy : TurnsActive<EnemyMode>
 {
@@ -17,9 +18,9 @@ public class TurnActiveEnemy : TurnsActive<EnemyMode>
         throw new NotImplementedException();
     }
 
-    public override Func<PlayerController, int, float, EnemyMode> SelectAction(PlayerController player, int turnIndex, float tickTime, out int turns)
+    public override Func<int, float, EnemyMode> SelectAction(int turnIndex, float tickTime, out int turns)
     {
-        _enemy.SelectActionBehaviour(player, turnIndex, tickTime);
+        _enemy.SelectActionBehaviour(turnIndex, tickTime);
         turns = _enemy.GetActionDuration();
         return _enemy.GetActionFunction();
     }

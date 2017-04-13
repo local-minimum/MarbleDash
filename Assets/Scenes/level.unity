@@ -17537,6 +17537,7 @@ GameObject:
   - component: {fileID: 2025833202}
   - component: {fileID: 2025833201}
   - component: {fileID: 2025833203}
+  - component: {fileID: 2025833204}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -17671,8 +17672,6 @@ MonoBehaviour:
   enemyConnectivityLabelsEight: 0
   enemyHolesLabels: 0
   dropHeight: 7
-  turnTime: 0.7
-  firstTickDelay: 2
   enterStoreEach: 7
   gizmoOffset: {x: 0.2, y: 1.2, z: 0.2}
   gizmoContent: 0
@@ -17722,6 +17721,19 @@ MonoBehaviour:
   - {fileID: 114482099822191838, guid: 2f22a1440fc46d94f8bc5959fff2e294, type: 2}
   - {fileID: 114636755649396160, guid: 53a7024dec89b0442816e21e6bc2aafc, type: 2}
   enemyParent: {fileID: 2043342521}
+--- !u!114 &2025833204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2025833195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13bd5fa7f34b5dd4ca029ffd16dee215, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnTime: 0.5
+  firstTickDelay: 2
 --- !u!1 &2043342520
 GameObject:
   m_ObjectHideFlags: 0

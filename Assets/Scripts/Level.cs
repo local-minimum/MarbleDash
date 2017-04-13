@@ -3,26 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using LocalMinimum.Arrays;
 using LocalMinimum.Grid;
+using LocalMinimum.TurnBased;
+using LocalMinimum;
 using System.Linq;
 
-public delegate void TurnTick(PlayerController player, int turnIndex, float tickTime);
 public delegate void NewLevel();
 
-public class Level : MonoBehaviour {
-
-    static Level _instance;
-
-    public static Level instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = FindObjectOfType<Level>();
-            }
-            return _instance;
-        }
-    }
+public class Level : Singleton<Level> {
 
     static int _playerLevel;
     public static int playerLevel
@@ -33,7 +20,6 @@ public class Level : MonoBehaviour {
         }
     }
 
-    public event TurnTick OnTurnTick;
     public event NewLevel OnNewLevel;
 
     [SerializeField]
@@ -90,94 +76,29 @@ public class Level : MonoBehaviour {
     [SerializeField, Range(0, 10)]
     float dropHeight = 0.5f;
 
-    [SerializeField, Range(0, 2)]
-    float turnTime;
-
-    static bool makeTurns = false;
-
     public static bool LevelRunning
     {
         get
         {
-            return makeTurns;
-        }
-    }
-
-    [SerializeField, Range(0, 10)]
-    float firstTickDelay = 2f;
-
-    private void Awake()
-    {
-        if (_instance == null || _instance == this)
-        {
-            _instance = this;
-        } else
-        {
-            Destroy(gameObject);
+            return TurnsManager.instance.MakingTurns;
         }
     }
 
     void Start () {
         _playerLevel = LayerMask.NameToLayer("player");
-        StartCoroutine(TurnTicker());
         Generate();
         Implement();
 	}
 
-    private void OnDestroy()
-    {
-        if (_instance == this)
-        {
-            _instance = null;
-        }
-    }
-
-    bool ticking;
-
-    IEnumerator<WaitForSeconds> TurnTicker()
-    {
-        ticking = makeTurns;
-        int turnIndex = 0;
-        while (true)
-        {
-            if (makeTurns == false)
-            {
-                ticking = false;
-                yield return new WaitForSeconds(Mathf.Min(0.1f, turnTime));
-            } else if (ticking == false) {
-                ticking = true;
-                if (firstTickDelay > 0)
-                {
-                    yield return new WaitForSeconds(firstTickDelay);
-                }
-                turnIndex = 0;
-            }
-            else
-            {
-                if (OnTurnTick != null)
-                {
-                    OnTurnTick(ball, turnIndex, turnTime);
-                }
-                if (requireRonstructAfterTick)
-                {
-                    ReconstructConnectivities(ConnectivityTypes.AboveGround);
-                }
-                yield return new WaitForSeconds(turnTime);
-                turnIndex++;
-            }
-        }
-    }
-
     public void StopTheMotion() 
     {
-        makeTurns = false;
-        ticking = false;
+        TurnsManager.instance.MakingTurns = false;
         PlayerController.instance.Freeze();
     }
 
     public void StartTheMotion()
     {
-        makeTurns = true;
+        TurnsManager.instance.MakingTurns = true;
         PlayerController.instance.Thaw();
     }
 
@@ -271,7 +192,7 @@ public class Level : MonoBehaviour {
 
     public void Implement()
     {
-        makeTurns = false;
+        TurnsManager.instance.MakingTurns = false;
 
         Debug.Log("Level: Viscera cleanup");
         Splatterer.instance.CleanupSplatter();
@@ -298,7 +219,7 @@ public class Level : MonoBehaviour {
         }
 
         
-        makeTurns = true;
+        TurnsManager.instance.MakingTurns = true;
     }
 
     public void DropBall()
