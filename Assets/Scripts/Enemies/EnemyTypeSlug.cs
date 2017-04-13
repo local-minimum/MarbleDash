@@ -33,7 +33,7 @@ public class EnemyTypeSlug : Enemy {
         else {
             didWalkThisTurn = true;
             base.ExecuteWalking(turnIndex, turnTimeMultiplier * turnTime);
-            StartCoroutine(DelaySlimeUpdate(target, turnTimeMultiplier * turnTime));
+            StartCoroutine(DelaySlimeUpdate(pos, turnTimeMultiplier * turnTime));
         }
         return EnemyMode.Walking;
     }
