@@ -230,7 +230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tiers:
   - difficulty: 1
-    firstLevel: 4
+    firstLevel: 1
     availableModes: 020000000800000009000000
     startHealthMin: 5
     startHealthMax: 5
@@ -251,7 +251,6 @@ MonoBehaviour:
   preferredWalkTargetDistance: 7
   clearWalkTargetsAtLength: 5
   attackDelay: 0.4
-  jumpFractionDuration: 0.8
   heightCurve:
     serializedVersion: 2
     m_Curve:
@@ -332,3 +331,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee79fb385c3e2f429d5cce9e411772d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gridNormalOffset: 0
