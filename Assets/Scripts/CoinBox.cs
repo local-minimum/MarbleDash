@@ -155,7 +155,6 @@ public class CoinBox : MonoBehaviour {
         board.Free(pos, Occupancy.Obstacle);
         board.Occupy(target, Occupancy.Obstacle);
         lvl.EnqueueConnecitivityReconstruction();
-        Debug.Log(turnsActive.GetMostRecentSelections(BoxStates.Sliding));
 
         if (turnsActive.GetMostRecentSelections(BoxStates.Sliding) < 1)
         {
@@ -165,6 +164,7 @@ public class CoinBox : MonoBehaviour {
         else {
             TurnsMover.instance.Move(turnsActive, pos, target, sliding, slideTurn, 0f, 0f, MoveCallback);
         }
+
         pos = target;
         return BoxStates.Sliding;
     }

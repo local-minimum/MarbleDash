@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using LocalMinimum.Grid;
+using LocalMinimum.TurnBased;
 
 public class EnemyTypeSlug : Enemy {
 
@@ -13,7 +14,7 @@ public class EnemyTypeSlug : Enemy {
 
     List<BoardTile> slimedTiles = new List<BoardTile>();
      
-    bool didWalkThisTurn;
+    //bool didWalkThisTurn;
 
     [SerializeField, Range(0, 2)]
     float turnTimeMultiplier = 1.75f;
@@ -24,17 +25,45 @@ public class EnemyTypeSlug : Enemy {
     [SerializeField, Range(0, 1)]
     float slimeColorIntensity = 0.75f;
 
+    [SerializeField]
+    int moveTurns = 5;
+
+    [SerializeField]
+    int moveTurnsDiagonal = 7;
+
+    public override int GetActionDuration()
+    {
+        if (behaviour == EnemyMode.Walking)
+        {
+            return GridPos.TaxiCabDistance(pos, next) == 1 ? moveTurns : moveTurnsDiagonal;
+        }
+        return base.GetActionDuration();
+    }
+
     protected override EnemyMode ExecuteWalking(int turnIndex, float turnTime)
     {
-        if (didWalkThisTurn)
+        if (isAtCheckpoint)
         {
-            didWalkThisTurn = false;
+            ActivateNextWalkTarget();
+
         }
-        else {
-            didWalkThisTurn = true;
-            base.ExecuteWalking(turnIndex, turnTimeMultiplier * turnTime);
-            StartCoroutine(DelaySlimeUpdate(pos, turnTimeMultiplier * turnTime));
+        else if (hasMoreCheckpoints)
+        {
+            activeTargetIndex++;
+            SetTargetDistances(activeTargetIndex);
         }
+        else
+        {
+            AddNewWalkTarget();
+        }
+
+        SetContextFromDistanceMapAndPosition(targetDistanceMap);
+        next = GetNextPosition();
+
+        int turns = GetActionDuration();
+        TurnsMover.instance.Move(turnsActive, pos, next, planarCurve, turns, null);
+        pos = next;
+        StartCoroutine(DelaySlimeUpdate(pos, turnTime *  turns * 0.75f));
         return EnemyMode.Walking;
     }
 
@@ -66,6 +95,7 @@ public class EnemyTypeSlug : Enemy {
         
     }
 
+    /*
     protected override bool ForceBehaviourSequence()
     {
         if (didWalkThisTurn)
@@ -75,7 +105,7 @@ public class EnemyTypeSlug : Enemy {
         else {
             return base.ForceBehaviourSequence();
         }
-    }
+    }*/
 
 
     protected override void OnDrawGizmosSelected()

@@ -161,7 +161,19 @@ public class Level : Singleton<Level> {
 
     public void EnqueueConnecitivityReconstruction()
     {
-        requireRonstructAfterTick = true;
+        if (!requireRonstructAfterTick)
+        {
+            TurnsManager.instance.SetActionAfterTickEvents(ReconstructConnectivities);
+            requireRonstructAfterTick = true;
+        }
+    }
+
+    public void ReconstructConnectivities()
+    {
+
+        ReconstructConnectivities(ConnectivityTypes.All);
+        requireRonstructAfterTick = false;
+        
     }
 
     public void ReconstructConnectivities(ConnectivityTypes connectivityTypes)

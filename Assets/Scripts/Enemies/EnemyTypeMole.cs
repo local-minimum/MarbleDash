@@ -294,7 +294,7 @@ public class EnemyTypeMole : Enemy {
 
             SetContextFromDistanceMapAndPosition(targetDistanceMap);
         }
-        SelectContextDirectionAndMove(turnTime);
+        next = GetNextPosition();
         return EnemyMode.Walking;
     }
 

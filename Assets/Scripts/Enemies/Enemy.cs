@@ -191,11 +191,13 @@ public class Enemy : MonoBehaviour {
 
    
     protected Animator anim;
+    protected TurnActiveEnemy turnsActive;
 
     void Awake()
     {
         lvl = Level.instance;
         player = PlayerController.instance;
+        turnsActive = GetComponent<TurnActiveEnemy>();
     }
 
     private void Start()
@@ -420,6 +422,8 @@ public class Enemy : MonoBehaviour {
         throw new System.NotImplementedException();
     }
 
+    protected GridPos next;
+
     protected virtual EnemyMode ExecuteHoming(int turnIndex, float turnTime)
     {
         if (player.Grounded)
@@ -429,11 +433,11 @@ public class Enemy : MonoBehaviour {
         }
         SetContextFromDistanceMapAndPosition(player.enemyDistancesEight);
 
-        SelectContextDirectionAndMove(turnTime);
+        next = GetNextPosition();
         return EnemyMode.Homing;
     }
 
-    protected GridPos SelectContextDirectionAndMove(float turnTime)
+    protected GridPos GetNextPosition()
     {
         //Debug.Log(context.ToCSV());
         if (context.All(-1))
@@ -448,7 +452,7 @@ public class Enemy : MonoBehaviour {
 
         GridPos offset = SelectMoveOffset(valid);
         GridPos next = pos + offset;
-        Move(offset, turnTime);
+        //Move(offset, turnTime);
         //Debug.Log(string.Format("From {0} with {1} to {2}", pos, offset, pos + offset));
         return next;
     }
@@ -461,45 +465,70 @@ public class Enemy : MonoBehaviour {
 
     protected Coordinate target;
 
+    protected void ActivateNextWalkTarget()
+    {
+        //TODO: Maybe more stuck testing like not having approached target for several rounds
+
+        GridPos target = targetCheckpoints[activeTargetIndex];
+
+        if (lvl.enemyConnectivityEight[pos.x, pos.y] != lvl.enemyConnectivityEight[target.x, target.y])
+        {
+            activeTargetIndex++;
+        }
+
+        if (targetDistanceMap == null)
+        {
+            SetTargetDistances(activeTargetIndex);
+        }
+    }
+
+    protected void AddNewWalkTarget()
+    {
+        //New target
+        target = GetPossibleTargetsInMyRegion(preferredWalkTargetDistance, pos);
+        if (activeTargetIndex >= clearWalkTargetsAtLength - 1)
+        {
+            targetCheckpoints.Clear();
+        }
+        targetCheckpoints.Add(pos);
+        targetCheckpoints.Add(target);
+        activeTargetIndex = targetCheckpoints.Count - 1;
+        SetTargetDistances(activeTargetIndex);
+    }
+
+    protected bool isAtCheckpoint
+    {
+        get
+        {
+            return targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count && pos != targetCheckpoints[activeTargetIndex];
+        }
+    }
+
+    protected bool hasMoreCheckpoints
+    {
+        get
+        {
+            return targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count - 1;
+        }
+    }
+
     protected virtual EnemyMode ExecuteWalking(int turnIndex, float turnTime)
     {
-        if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count && pos != targetCheckpoints[activeTargetIndex])
+        if (isAtCheckpoint)
         {
-            //TODO: Maybe more stuck testing like not having approached target for several rounds
+            ActivateNextWalkTarget();
 
-            GridPos target = targetCheckpoints[activeTargetIndex];
-
-            if (lvl.enemyConnectivityEight[pos.x, pos.y] != lvl.enemyConnectivityEight[target.x, target.y])
-            {
-                activeTargetIndex++;
-            }
-
-            if (targetDistanceMap == null)
-            {
-                SetTargetDistances(activeTargetIndex);
-            }
-
-        } else if (targetCheckpoints != null && activeTargetIndex < targetCheckpoints.Count - 1)
+        } else if (hasMoreCheckpoints)
         {
             activeTargetIndex++;            
             SetTargetDistances(activeTargetIndex);
         } else
         {
-            //New target
-            target = GetPossibleTargetsInMyRegion(preferredWalkTargetDistance, pos);
-            if (activeTargetIndex >= clearWalkTargetsAtLength - 1)
-            {
-                targetCheckpoints.Clear();
-            }
-            targetCheckpoints.Add(pos);
-            targetCheckpoints.Add(target);
-            activeTargetIndex = targetCheckpoints.Count - 1;
-            SetTargetDistances(activeTargetIndex);
+            AddNewWalkTarget();
         }
 
         SetContextFromDistanceMapAndPosition(targetDistanceMap);
-
-        SelectContextDirectionAndMove(turnTime);
+        next = GetNextPosition();
         return EnemyMode.Walking;
     }
 
@@ -652,10 +681,10 @@ public class Enemy : MonoBehaviour {
     float jumpFractionDuration = 0.8f;
 
     [SerializeField]
-    AnimationCurve heightCurve;
+    protected AnimationCurve heightCurve;
 
     [SerializeField]
-    AnimationCurve planarCurve;
+    protected AnimationCurve planarCurve;
 
     [SerializeField]
     protected Vector3 jumpHeightAxis = Vector3.forward;
