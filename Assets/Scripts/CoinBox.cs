@@ -123,7 +123,8 @@ public class CoinBox : MonoBehaviour {
             }
             else
             {
-                turns = 2;
+                slideTurn = Mathf.CeilToInt(slideTurnBase * GridPos.TaxiCabDistance(pos, target));
+                turns = slideTurn;
                 return Sliding;
             }
         } else
@@ -143,6 +144,12 @@ public class CoinBox : MonoBehaviour {
 
     TurnsActive<BoxStates> turnsActive;
 
+
+    [SerializeField]
+    float slideTurnBase = 1.5f;
+
+    int slideTurn = 2;
+
     public BoxStates Sliding(int turnIndex, float tickTime)
     {
         board.Free(pos, Occupancy.Obstacle);
@@ -152,11 +159,11 @@ public class CoinBox : MonoBehaviour {
 
         if (turnsActive.GetMostRecentSelections(BoxStates.Sliding) < 1)
         {
-            TurnsMover.instance.Move(turnsActive, pos, target, planarStart, 2, 0.05f, 0f, MoveCallback);
+            TurnsMover.instance.Move(turnsActive, pos, target, planarStart, slideTurn, 0.05f, 0f, MoveCallback);
 
         }
         else {
-            TurnsMover.instance.Move(turnsActive, pos, target, sliding, 2, 0f, 0f, MoveCallback);
+            TurnsMover.instance.Move(turnsActive, pos, target, sliding, slideTurn, 0f, 0f, MoveCallback);
         }
         pos = target;
         return BoxStates.Sliding;
