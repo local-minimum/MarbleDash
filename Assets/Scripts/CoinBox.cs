@@ -37,30 +37,14 @@ public class CoinBox : MonoBehaviour {
             mats[i] = Instantiate(MaterialSequencePrefabs[i]);
         }
         mr.material = mats[0];
-
+        lvl = Level.instance;
+        board = BoardGrid.instance;
         dislodgeAngle = PlayerRunData.stats.lvlRnd.Range(dislodgeAngleMin, dislodgeAngleMax);
     }
 
     Level lvl;
     TurnsManager turnManger;
     
-    private void OnEnable()
-    {
-        if (lvl == null)
-        {
-            lvl = Level.instance;
-            turnManger = TurnsManager.instance;
-        }
-
-        turnManger.OnTurnTick += HandleTurnTick;
-    }
-
-    private void OnDisable()
-    {
-        turnManger.OnTurnTick -= HandleTurnTick;
-    }
-
-
     float dislodgeAngle = 12;
 
     [SerializeField, Range(0, 20)]
@@ -74,12 +58,16 @@ public class CoinBox : MonoBehaviour {
 
     bool inPlay = true;
 
-    private void HandleTurnTick(int turnIndex, float tickTime)
+    GridPos target;
+    BoardGrid board;
+
+    public System.Func<int, float, BoxStates> SelectAction(int turnIndex, float tickTime, out int turns)
     {
+        turns = 1;
+
         if (inPlay)
         {
             Vector2 tilt = BoardController.instance.DelayedTilt;
-            GridPos target;
 
             if (tilt.x > dislodgeAngle)
             {
@@ -123,42 +111,60 @@ public class CoinBox : MonoBehaviour {
                 }
                 else
                 {
-                    return;
+                    return Staying;
 
                 }
             }
 
-
-            BoardGrid board = BoardGrid.instance;
 
             if (!board.IsValidPosition(target) || board.HasOccupancyAny(target, Occupancy.Obstacle, Occupancy.Enemy, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory) || Random.value > slideProbability)
             {
-                //Can't move there
+                return Staying;
             }
             else
             {
-                board.Free(pos, Occupancy.Obstacle);
-                board.Occupy(target, Occupancy.Obstacle);
-                SetPosition(target);
-                lvl.EnqueueConnecitivityReconstruction();
-
-                pos = target;
-
-                if (board.HasOccupancy(target, Occupancy.Hole))
-                {
-                    //TODO: Drop box;
-                    gameObject.AddComponent<Rigidbody>();
-                    GetComponent<BoxCollider>().size = Vector3.one * 0.25f;
-                    inPlay = false;
-                }
+                return Sliding;
             }
         } else
-        {
+        {            
             BoardGrid.instance.Free(pos, Occupancy.Obstacle);
             Debug.Log("Coin box fell down hole");
-            Destroy(gameObject);
+            Destroy(gameObject, 0.5f);
+            return Breaking;
         }
     }
+
+    public BoxStates Sliding(int turnIndex, float tickTime)
+    {
+
+        board.Free(pos, Occupancy.Obstacle);
+        board.Occupy(target, Occupancy.Obstacle);
+        SetPosition(target);
+        lvl.EnqueueConnecitivityReconstruction();
+
+        pos = target;
+
+        if (board.HasOccupancy(target, Occupancy.Hole))
+        {
+            //TODO: Drop box;
+            gameObject.AddComponent<Rigidbody>();
+            GetComponent<BoxCollider>().size = Vector3.one * 0.25f;
+            inPlay = false;
+        }
+        return BoxStates.Sliding;
+    }
+
+    public BoxStates Staying(int turnIndex, float tickTime)
+    {
+        return BoxStates.Standing;
+    }
+
+    public BoxStates Breaking(int turnIndex, float tickTime)
+    {
+        return BoxStates.Breaking;
+    }
+
+
 
     GridPos pos;
 
@@ -196,7 +202,8 @@ public class CoinBox : MonoBehaviour {
 
     void Break(int amount)
     {
-
+        inPlay = false;
+        GetComponent<TurnActiveBox>().Interrupt(true);
         PlayerRunData.stats.boxesBroken++;
 
         if (Random.value < lootProbability)
