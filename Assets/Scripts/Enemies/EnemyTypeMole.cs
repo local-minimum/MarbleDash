@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LocalMinimum.Grid;
 using LocalMinimum.Collections;
 using LocalMinimum.Arrays;
+using LocalMinimum.TurnBased;
 using UnityEngine;
 using System.Linq;
 
@@ -295,6 +296,9 @@ public class EnemyTypeMole : Enemy {
             SetContextFromDistanceMapAndPosition(targetDistanceMap);
         }
         next = GetNextPosition();
+        int turns = GetActionDuration();
+        TurnsMover.instance.Move(turnsActive, pos, next, planarCurve, turns, null);
+        pos = next;
         return EnemyMode.Walking;
     }
 
