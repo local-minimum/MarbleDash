@@ -112,7 +112,7 @@ namespace LocalMinimum.TurnBased
                 turnsActive.transform.position = grid.GetWorldPosition(
 
                     Vector3.Lerp(localSpaceSource, localSpaceTarget, planarAnimation.Evaluate(progress)) +
-                    normal * normalAnimation.Evaluate(progress) * normalHeight
+                    normal * (turnsActive.gridNormalOffset + normalAnimation.Evaluate(progress) * normalHeight)
                     );
 
                 if (debugMe)
@@ -135,7 +135,7 @@ namespace LocalMinimum.TurnBased
             turnsActive.transform.position = grid.GetWorldPosition(
 
                 Vector3.Lerp(localSpaceSource, localSpaceTarget, planarAnimation.Evaluate(progress)) +
-                normal * normalAnimation.Evaluate(progress) * normalHeight
+                normal * (turnsActive.gridNormalOffset + normalAnimation.Evaluate(progress) * normalHeight)
                 );
 
             if (debugMe)

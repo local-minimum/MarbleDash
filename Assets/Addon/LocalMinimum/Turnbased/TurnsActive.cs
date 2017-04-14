@@ -10,6 +10,7 @@ namespace LocalMinimum.TurnBased
         bool IsRespondingToTicks { get; }
         bool Interrupt(bool force);
         Transform transform { get; }
+        float gridNormalOffset { get; }
     }
 
     public abstract class TurnsActive<T> : MonoBehaviour, ITurnsActive
@@ -22,6 +23,11 @@ namespace LocalMinimum.TurnBased
         Dictionary<T, int> recentTurnsActions = new Dictionary<T, int>();
         Dictionary<T, int> totalSelectionsActions = new Dictionary<T, int>();
         Dictionary<T, int> recentSelectionActionSelections = new Dictionary<T, int>();
+
+        [SerializeField]
+        float _gridNormalOffset;
+
+        public float gridNormalOffset { get { return _gridNormalOffset; } }
 
         protected T _currentAction;
         bool _anyAction;

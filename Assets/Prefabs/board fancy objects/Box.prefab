@@ -107,6 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6af6a1ed1c07d246a4078ea2754fb21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gridNormalOffset: 0.5
 --- !u!114 &114541136596201582
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -145,7 +146,7 @@ MonoBehaviour:
   placementOffset: {x: 0, y: 0, z: 0.5}
   dislodgeAngleMin: 1.5
   dislodgeAngleMax: 5.5
-  slideProbability: 0.75
+  slideProbability: 0.25
   planarStart:
     serializedVersion: 2
     m_Curve:

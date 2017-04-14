@@ -24,9 +24,6 @@ public class CoinBox : MonoBehaviour {
 
     MeshRenderer mr;
 
-    [SerializeField]
-    Vector3 placementOffset;
-
     private void Awake()
     {
         destructable = GetComponent<Destructable>();
@@ -192,7 +189,7 @@ public class CoinBox : MonoBehaviour {
 
     public void SetPosition(GridPos pos)
     {
-        transform.localPosition = BoardGrid.instance.GetLocalPosition(pos) + placementOffset;
+        transform.localPosition = BoardGrid.instance.GetLocalPosition(pos) + BoardGrid.instance.Normal * turnsActive.gridNormalOffset;
         mr.material = mats[0];
 
         this.pos = pos;
