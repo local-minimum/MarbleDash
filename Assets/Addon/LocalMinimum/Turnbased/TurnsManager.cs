@@ -14,6 +14,13 @@ namespace LocalMinimum.TurnBased
         [SerializeField, Range(0, 2)]
         float turnTime;
 
+        public float TurnTime {
+            get
+            {
+                return turnTime;
+            }
+        }
+
         [SerializeField, Range(0, 10)]
         float firstTickDelay = 2f;
 
@@ -43,6 +50,10 @@ namespace LocalMinimum.TurnBased
 
         void Start()
         {
+            if (turnTime == 0)
+            {
+                turnTime = 1;
+            }
             StartCoroutine(TurnTicker());
         }
 

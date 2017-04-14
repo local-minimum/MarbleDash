@@ -4,11 +4,12 @@ using UnityEngine;
 using System.Linq;
 using LocalMinimum.Grid;
 using LocalMinimum.Arrays;
+using LocalMinimum.TurnBased;
 
 public enum Occupancy { Free, BallPathSource, BallPathTarget, BallPath, Wall, WallBreakable, WallIllusory, Hole, Obstacle, Enemy, Player, NoGrip};
 
 [ExecuteInEditMode]
-public class BoardGrid : MonoBehaviour {
+public class BoardGrid : MonoBehaviour, IGridder {
 
     [SerializeField]
     Transform target;
@@ -70,14 +71,8 @@ public class BoardGrid : MonoBehaviour {
 
     void Start() {
         gridOccupancy = new BitMaskArray<Occupancy>(size);
-        /*
-        targetSize = target.InverseTransformVector(target.GetComponent<Collider>().bounds.size);
-        targetLocalOffset = Vector3.forward * targetSize.z;
-        targetSize.x = Mathf.Abs(targetSize.x);
-        targetSize.y = Mathf.Abs(targetSize.y);
-        targetSize.z = 0;
-        targetLocalOffset = targetLocalOffset - targetSize / 2f;
-        */
+        TurnsMover.instance.SetGrid(this);
+
     }
 
     public Vector2 TileShape
@@ -101,6 +96,64 @@ public class BoardGrid : MonoBehaviour {
     public Vector3 GetLocalPosition(GridPos pos)
     {
         return GetLocalPosition(pos.x, pos.y);
+    }
+
+    public Vector3 Position(GridPos pos, Space space)
+    {
+        if (space == Space.Self)
+        {
+            return GetLocalPosition(pos);
+        } else
+        {
+            return GetWorldPosition(pos);
+        }
+    }
+
+    public GridPos Coordinate(Vector3 position, Space space)
+    {
+        if (space == Space.World)
+        {
+            position = transform.InverseTransformPoint(position);
+        }
+
+        position -= targetLocalOffset;
+
+        return new GridPos(
+            Mathf.RoundToInt(position.x / targetSize.x - 0.5f),
+            Mathf.RoundToInt(position.y / targetSize.y - 0.5f));
+
+    }
+
+    public Vector3 GetWorldPosition(Vector3 position)
+    {
+        return target.TransformPoint(position);
+    }
+
+    public int Width
+    {
+        get
+        {
+            return size;
+        }
+    }
+
+    public int Height
+    {
+        get
+        {
+            return size;
+        }
+    }
+
+    [SerializeField]
+    Vector3 boardLocalNormal;
+
+    public Vector3 Normal
+    {
+        get
+        {
+            return boardLocalNormal;
+        }
     }
 
     public Vector3 GetWorldPosition(GridPos pos)
@@ -450,7 +503,7 @@ public class BoardGrid : MonoBehaviour {
 
     private void OnDrawGizmosSelected()
     {
-        if (!drawGizmos)
+        if (!drawGizmos || gridOccupancy == null)
         {
             return;
         }

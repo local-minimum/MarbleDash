@@ -738,7 +738,7 @@ public class Enemy : MonoBehaviour {
         int targetRegion = lvl.enemyConnectivityEight[pos.x, pos.y];
         int[,] distanceToMe = lvl.enemyConnectivityEight.HasValue(targetRegion).Distance(pos, Neighbourhood.Eight);
         preferredDistance = Mathf.Min(distanceToMe.Max(), preferredDistance);
-        return distanceToMe.Where(e => e >= preferredDistance).ToArray().Shuffle().First();
+        return distanceToMe.Where(e => e >= preferredDistance).ToArray().Shuffle(PlayerRunData.stats.lvlRnd).First();
 
     }
 

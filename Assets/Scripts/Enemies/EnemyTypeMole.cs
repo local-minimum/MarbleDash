@@ -240,7 +240,7 @@ public class EnemyTypeMole : Enemy {
             if (preferred.Length > 0)
             {
                 underground = true;
-                target = preferred.Shuffle().First();
+                target = preferred.Shuffle(PlayerRunData.stats.lvlRnd).First();
                 //Debug.Log("Player based selection");
             }
             else {
@@ -258,7 +258,7 @@ public class EnemyTypeMole : Enemy {
                     if (preferred.Length > 0)
                     {
                         underground = false;
-                        target = preferred.Shuffle().First();
+                        target = preferred.Shuffle(PlayerRunData.stats.lvlRnd).First();
                         selectedHole = true;
                         //Debug.Log("Proximity selection");
                     }
@@ -269,7 +269,7 @@ public class EnemyTypeMole : Enemy {
                 {
                     //Redoing hole filtering is indeed neccesary incase attempted nearby hole without finding one
                     preferred = lvl.boardHoles.Where(e => e != pos && !claimedBurrows.Contains(e)).ToArray();    
-                    target = preferred.Shuffle().First();
+                    target = preferred.Shuffle(PlayerRunData.stats.lvlRnd).First();
                     underground = true;
                     //Debug.Log("Random hole");
                 }

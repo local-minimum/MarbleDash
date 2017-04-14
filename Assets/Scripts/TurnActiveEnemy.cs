@@ -15,6 +15,11 @@ public class TurnActiveEnemy : TurnsActive<EnemyMode>
 
     public override bool Interrupt(bool force)
     {
+        if (base.Interrupt(force))
+        {
+            return true;
+        }
+
         throw new NotImplementedException();
     }
 

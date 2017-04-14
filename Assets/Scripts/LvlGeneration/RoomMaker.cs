@@ -409,7 +409,7 @@ public class RoomMaker : MonoBehaviour {
 
             //Makes a passage between areas
             int[,] crawlMap = dilatedRoom.Distance(room.Edge().ToCoordinates().ToArray(), Neighbourhood.Cross);
-            GridPos crawlPoint = dilatedRoom.ZipThree(otherRooms, crawlMap, (d, o, c) => d && o && c > 0).ToCoordinates().Shuffle().First();
+            GridPos crawlPoint = dilatedRoom.ZipThree(otherRooms, crawlMap, (d, o, c) => d && o && c > 0).ToCoordinates().Shuffle(PlayerRunData.stats.lvlRnd).First();
 
             int distance = crawlMap[crawlPoint.x, crawlPoint.y];
             int roomSourceID = playerConnectivity[crawlPoint.x, crawlPoint.y];

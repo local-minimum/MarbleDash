@@ -38,7 +38,7 @@ public class BoxPlacer : MonoBehaviour {
         Debug.Log("Boxes: Clearing");
         positions.Clear();
         Debug.Log("Boxes: Finding free positions and shuffle");
-        GridPos[] freePositions = board.Find(Occupancy.Free).ToArray().Shuffle();
+        GridPos[] freePositions = board.Find(Occupancy.Free).ToArray().Shuffle(PlayerRunData.stats.lvlRnd);
         int boxes = Mathf.Min(PlayerRunData.stats.lvlRnd.Range(minBoxes, maxBoxes), freePositions.Length);
         if (boxes > 0) {
             Debug.Log(string.Format("Boxes: Taking {0} boxes from {1} available positions", boxes, freePositions.Length));

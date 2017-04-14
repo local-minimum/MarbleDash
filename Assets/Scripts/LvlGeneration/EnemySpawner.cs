@@ -187,7 +187,7 @@ public class EnemySpawner : MonoBehaviour {
             .FindIsOnlyAny(Occupancy.Free, Occupancy.BallPath)
             .Where(e => GridPos.ChessBoardDistance(e, playerDrop) >= minSpawnDistanceFromPlayerDrop)
             .ToArray()
-            .Shuffle();
+            .Shuffle(PlayerRunData.stats.lvlRnd);
 
         for (int i = 0, l = toSpawn.Count; i < l; i++)
         {

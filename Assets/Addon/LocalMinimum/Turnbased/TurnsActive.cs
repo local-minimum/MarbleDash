@@ -4,7 +4,15 @@ using UnityEngine;
 
 namespace LocalMinimum.TurnBased
 {
-    public abstract class TurnsActive<T> : MonoBehaviour
+    public interface ITurnsActive
+    {
+        void ForceInterrupt();
+        bool IsRespondingToTicks { get; }
+        bool Interrupt(bool force);
+        Transform transform { get; }
+    }
+
+    public abstract class TurnsActive<T> : MonoBehaviour, ITurnsActive
     {
 
         TurnsManager turnsManager;
@@ -43,7 +51,7 @@ namespace LocalMinimum.TurnBased
 
         public int GetTotalSelections(T action)
         {
-            if (totalSelectionsActions.ContainsKey(action))
+            if (!totalSelectionsActions.ContainsKey(action))
             {
                 return 0;
             }
@@ -52,16 +60,26 @@ namespace LocalMinimum.TurnBased
 
         public int GetMostRecentSelections(T action)
         {
-            if (recentSelectionActionSelections.ContainsKey(action))
+            if (!recentSelectionActionSelections.ContainsKey(action))
             {
                 return 0;
             }
             return recentSelectionActionSelections[action];
         }
 
+        public int GetMostRecentSelections()
+        {
+            if (!recentSelectionActionSelections.ContainsKey(_currentAction))
+            {
+                return 0;
+            }
+            return recentSelectionActionSelections[_currentAction];
+
+        }
+
         public int GetTotalTurns(T action)
         {
-            if (totalTurnsActions.ContainsKey(action))
+            if (!totalTurnsActions.ContainsKey(action))
             {
                 return 0;
             }
@@ -70,14 +88,23 @@ namespace LocalMinimum.TurnBased
 
         public int GetMostRecentTurns(T action)
         {
-            if (recentTurnsActions.ContainsKey(action))
+            if (!recentTurnsActions.ContainsKey(action))
             {
                 return 0;
             }
             return recentTurnsActions[action];
         }
 
-        bool isRespondingToTicks
+        public int GetMostRecentTurns()
+        {
+            if (!recentTurnsActions.ContainsKey(_currentAction))
+            {
+                return 0;
+            }
+            return recentTurnsActions[_currentAction];
+        }
+
+        public bool IsRespondingToTicks
         {
             get
             {
@@ -101,9 +128,9 @@ namespace LocalMinimum.TurnBased
             turnsManager.OnTurnTick -= OnTurnTick;
         }
 
-        public void ForceFreeze()
+        public void ForceInterrupt()
         {
-            if (!isRespondingToTicks)
+            if (!IsRespondingToTicks)
             {
                 Interrupt(true);
                 NoAction();
@@ -121,7 +148,7 @@ namespace LocalMinimum.TurnBased
 
             remainingTicks--;
 
-            if (isRespondingToTicks)
+            if (IsRespondingToTicks)
             {
 
                 System.Func<int, float, T> func = SelectAction(turnIndex, tickTime, out remainingTicks);
@@ -188,7 +215,9 @@ namespace LocalMinimum.TurnBased
 
         protected abstract bool ContinuedSelection(T newlySelected);
 
-        public abstract bool Interrupt(bool force);
+        public virtual bool Interrupt(bool force) {
+            return TurnsMover.instance.InterruptMove(GetComponent<ITurnsActive>());
+        }
 
         public abstract System.Func<int, float, T> SelectAction(int turnIndex, float tickTime, out int turns);
 

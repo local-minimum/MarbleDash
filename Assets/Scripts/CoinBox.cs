@@ -40,6 +40,7 @@ public class CoinBox : MonoBehaviour {
         lvl = Level.instance;
         board = BoardGrid.instance;
         dislodgeAngle = PlayerRunData.stats.lvlRnd.Range(dislodgeAngleMin, dislodgeAngleMax);
+        turnsActive = GetComponent<TurnsActive<BoxStates>>();
     }
 
     Level lvl;
@@ -73,11 +74,11 @@ public class CoinBox : MonoBehaviour {
             {
                 if (tilt.y > dislodgeAngle)
                 {
-                    target = pos.SouthEast;
+                    target = pos.NorthEast;
                 }
                 else if (tilt.y < -dislodgeAngle)
                 {
-                    target = pos.NorthEast;
+                    target = pos.SouthEast;
                 }
                 else
                 {
@@ -117,12 +118,15 @@ public class CoinBox : MonoBehaviour {
             }
 
 
-            if (!board.IsValidPosition(target) || board.HasOccupancyAny(target, Occupancy.Obstacle, Occupancy.Enemy, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory) || Random.value > slideProbability)
+            if (!board.IsValidPosition(target) || 
+                board.HasOccupancyAny(target, Occupancy.Obstacle, Occupancy.Enemy, Occupancy.Wall, Occupancy.WallBreakable, Occupancy.WallIllusory) || 
+                turnsActive.MostRecentAction != BoxStates.Sliding && Random.value > slideProbability)
             {
                 return Staying;
             }
             else
             {
+                turns = 2;
                 return Sliding;
             }
         } else
@@ -134,16 +138,35 @@ public class CoinBox : MonoBehaviour {
         }
     }
 
+    [SerializeField]
+    AnimationCurve planarStart;
+
+    [SerializeField]
+    AnimationCurve sliding;
+
+    TurnsActive<BoxStates> turnsActive;
+
     public BoxStates Sliding(int turnIndex, float tickTime)
     {
-
         board.Free(pos, Occupancy.Obstacle);
         board.Occupy(target, Occupancy.Obstacle);
-        SetPosition(target);
         lvl.EnqueueConnecitivityReconstruction();
+        Debug.Log(turnsActive.GetMostRecentSelections(BoxStates.Sliding));
 
+        if (turnsActive.GetMostRecentSelections(BoxStates.Sliding) < 1)
+        {
+            TurnsMover.instance.Move(turnsActive, pos, target, planarStart, 2, 0.05f, 0f, MoveCallback);
+
+        }
+        else {
+            TurnsMover.instance.Move(turnsActive, pos, target, sliding, 2, 0f, 0f, MoveCallback);
+        }
         pos = target;
+        return BoxStates.Sliding;
+    }
 
+    public void MoveCallback()
+    {        
         if (board.HasOccupancy(target, Occupancy.Hole))
         {
             //TODO: Drop box;
@@ -151,7 +174,6 @@ public class CoinBox : MonoBehaviour {
             GetComponent<BoxCollider>().size = Vector3.one * 0.25f;
             inPlay = false;
         }
-        return BoxStates.Sliding;
     }
 
     public BoxStates Staying(int turnIndex, float tickTime)
@@ -202,8 +224,7 @@ public class CoinBox : MonoBehaviour {
 
     void Break(int amount)
     {
-        inPlay = false;
-        GetComponent<TurnActiveBox>().Interrupt(true);
+        inPlay = false;        
         PlayerRunData.stats.boxesBroken++;
 
         if (Random.value < lootProbability)
@@ -232,6 +253,7 @@ public class CoinBox : MonoBehaviour {
             transform.localScale.z * 1.1f);
 
         GetComponent<Collider>().enabled = false;
+        turnsActive.ForceInterrupt();
         Destroy(gameObject, .5f);
     }
 }

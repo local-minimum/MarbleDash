@@ -27,6 +27,6 @@ public class TurnActiveBox : TurnsActive<BoxStates> {
 
     public override bool Interrupt(bool force)
     {
-        return true;
+        return base.Interrupt(force);
     }
 }
