@@ -5,6 +5,7 @@ using System.Linq;
 using LocalMinimum.Grid;
 using LocalMinimum.Arrays;
 using LocalMinimum.Collections;
+using LocalMinimum.TurnBased;
 
 public enum EnemyMode {None, Standing, Walking, Patroling, Hunting, Tracking, Homing, Haste,
     Attack1, Attack2, Attack3, Attack4, Attack5, Hiding};
@@ -275,7 +276,16 @@ public class Enemy : MonoBehaviour {
 
     public virtual int GetActionDuration()
     {
-        return 1;
+        if (behaviour == EnemyMode.Hunting)
+        {
+            return 2;
+        } else if (IsAttacking)
+        {
+            return 3;
+        } else 
+        {
+            return 4;
+        }
     }
 
     public System.Func<int, float, EnemyMode> GetActionFunction()
@@ -434,6 +444,9 @@ public class Enemy : MonoBehaviour {
         SetContextFromDistanceMapAndPosition(player.enemyDistancesEight);
 
         next = GetNextPosition();
+        int turns = GetActionDuration();
+        TurnsMover.instance.Move(turnsActive, pos, next, planarCurve, turns, null);
+        pos = next;
         return EnemyMode.Homing;
     }
 
@@ -452,7 +465,6 @@ public class Enemy : MonoBehaviour {
 
         GridPos offset = SelectMoveOffset(valid);
         GridPos next = pos + offset;
-        //Move(offset, turnTime);
         //Debug.Log(string.Format("From {0} with {1} to {2}", pos, offset, pos + offset));
         return next;
     }
@@ -529,6 +541,9 @@ public class Enemy : MonoBehaviour {
 
         SetContextFromDistanceMapAndPosition(targetDistanceMap);
         next = GetNextPosition();
+        int turns = GetActionDuration();
+        TurnsMover.instance.Move(turnsActive, pos, next, planarCurve, turns, null);
+        pos = next;
         return EnemyMode.Walking;
     }
 
@@ -618,20 +633,6 @@ public class Enemy : MonoBehaviour {
         behaviour = EnemyMode.None;
     }
 
-    protected virtual void Move(GridPos offset, float maxTime)
-    {
-        board.Free(pos, Occupancy.Enemy);
-        pos += offset;
-        if (!board.HasOccupancy(pos, Occupancy.Enemy))
-        {
-            board.Occupy(pos, Occupancy.Enemy);
-            StartCoroutine(JumpToPos(maxTime, board.GetLocalPosition(pos), offset.NineDirection));
-        } else
-        {
-            pos -= offset;
-            board.Occupy(pos, Occupancy.Enemy);
-        }
-    }
 
     public virtual bool AllowsAttack(ContactPoint[] contactPoints, int attack, out int reflectedDamage, out int bodyPart)
     {
@@ -666,6 +667,7 @@ public class Enemy : MonoBehaviour {
 
     public virtual void KilledEffect(int amount)
     {
+        turnsActive.ForceInterrupt();
         FloatTextManager.ShowText(transform, amount.ToString());
         attackedThisTurn = true;
         PlayerRunData.stats.damageDealt += amount;
@@ -675,10 +677,9 @@ public class Enemy : MonoBehaviour {
         EnemySpawner.instance.iDied(this);
         Destroy(gameObject, 0.1f);
         Debug.Log("Killed " + name);
+
     }
 
-    [SerializeField, Range(0, 1)]
-    float jumpFractionDuration = 0.8f;
 
     [SerializeField]
     protected AnimationCurve heightCurve;
@@ -738,28 +739,6 @@ public class Enemy : MonoBehaviour {
             }
             transform.localRotation = target;
         }
-    }
-
-
-    protected IEnumerator JumpToPos(float maxTime, Vector3 targetPos, Direction lookDirection)
-    {
-        float startTime = Time.timeSinceLevelLoad;
-        float duration = maxTime * jumpFractionDuration;
-        float progress = 0;
-        Vector3 startPos = board.GetLocalPosition(pos) + localPlacementOffset;
-
-        yield return StartCoroutine(LookTowards(lookDirection));
-
-        targetPos += localPlacementOffset;
-        while (progress < 1)
-        {
-            progress = (Time.timeSinceLevelLoad - startTime) / duration;
-            transform.localPosition = Vector3.Lerp(startPos, targetPos, planarCurve.Evaluate(progress)) + jumpHeightAxis * heightCurve.Evaluate(progress);
-            yield return new WaitForSeconds(0.016f);
-        }
-
-        transform.localPosition = targetPos; 
-
     }
 
     protected virtual Coordinate GetPossibleTargetsInMyRegion(int preferredDistance, Coordinate pos)

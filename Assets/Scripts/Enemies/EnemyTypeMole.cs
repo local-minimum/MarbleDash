@@ -341,13 +341,6 @@ public class EnemyTypeMole : Enemy {
     [SerializeField]
     Vector3 hidingOffset;
 
-    protected override void Move(GridPos offset, float maxTime)
-    {
-        jumpHeightAxis = new Vector3(Mathf.Abs(jumpHeightAxis.x), Mathf.Abs(jumpHeightAxis.y), Mathf.Abs(jumpHeightAxis.z)) * (underground ? -1f : 1);
-        localPlacementOffset = underground ? undergroundOffset : Vector3.forward;
-        base.Move(offset, maxTime);
-    }
-
     void OnDestroy()
     {
         pos = new GridPos(-1, -1);

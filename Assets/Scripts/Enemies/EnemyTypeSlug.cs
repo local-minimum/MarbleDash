@@ -13,11 +13,6 @@ public class EnemyTypeSlug : Enemy {
     int trailLengthPerTier = 1;
 
     List<BoardTile> slimedTiles = new List<BoardTile>();
-     
-    //bool didWalkThisTurn;
-
-    [SerializeField, Range(0, 2)]
-    float turnTimeMultiplier = 1.75f;
 
     [SerializeField]
     Color slimedColor;
@@ -94,19 +89,6 @@ public class EnemyTypeSlug : Enemy {
         addTile.Slime(slimedColor, slimeColorIntensity);
         
     }
-
-    /*
-    protected override bool ForceBehaviourSequence()
-    {
-        if (didWalkThisTurn)
-        {            
-            return true;
-        }
-        else {
-            return base.ForceBehaviourSequence();
-        }
-    }*/
-
 
     protected override void OnDrawGizmosSelected()
     {

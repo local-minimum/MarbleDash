@@ -20,7 +20,7 @@ public class TurnActiveEnemy : TurnsActive<EnemyMode>
             return true;
         }
 
-        throw new NotImplementedException();
+        return !_enemy.IsAttacking;
     }
 
     public override Func<int, float, EnemyMode> SelectAction(int turnIndex, float tickTime, out int turns)

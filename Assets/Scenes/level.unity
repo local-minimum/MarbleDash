@@ -17734,7 +17734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13bd5fa7f34b5dd4ca029ffd16dee215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turnTime: 0.5
+  turnTime: 0.25
   firstTickDelay: 2
 --- !u!114 &2025833205
 MonoBehaviour:
