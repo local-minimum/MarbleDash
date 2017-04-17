@@ -25,7 +25,7 @@ namespace LocalMinimum.TurnBased
         Dictionary<T, int> recentSelectionActionSelections = new Dictionary<T, int>();
 
         [SerializeField]
-        float _gridNormalOffset;
+        protected float _gridNormalOffset;
 
         public float gridNormalOffset { get { return _gridNormalOffset; } }
 

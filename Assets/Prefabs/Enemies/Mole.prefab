@@ -318,7 +318,8 @@ MonoBehaviour:
   minimumHolesInLevel: 3
   allowHunting: 2
   attack2Offset: {x: 0, y: 0, z: 0.75}
-  undergroundOffset: {x: 0, y: 0, z: -0.6}
+  undergroundNormalHeight: 0.1
+  undergroundOffset: -0.75
   hidingOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &114836275757688858
 MonoBehaviour:

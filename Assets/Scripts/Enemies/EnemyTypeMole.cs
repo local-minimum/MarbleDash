@@ -297,7 +297,9 @@ public class EnemyTypeMole : Enemy {
         }
         next = GetNextPosition();
         int turns = GetActionDuration();
-        TurnsMover.instance.Move(turnsActive, pos, next, planarCurve, turns, null);
+        turnsActive.SetNewNormalOffset(underground ? undergroundOffset : attack2Offset.z);
+
+        TurnsMover.instance.Move(turnsActive, pos, next, planarCurve, heightCurve, underground ? undergroundNormalHeight : 1, turns, null);
         pos = next;
         return EnemyMode.Walking;
     }
@@ -340,7 +342,10 @@ public class EnemyTypeMole : Enemy {
     }
 
     [SerializeField]
-    Vector3 undergroundOffset;
+    float undergroundNormalHeight;
+
+    [SerializeField]
+    float undergroundOffset;
 
     [SerializeField]
     Vector3 hidingOffset;

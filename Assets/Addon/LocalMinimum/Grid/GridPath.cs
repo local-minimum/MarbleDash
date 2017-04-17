@@ -74,12 +74,20 @@ namespace LocalMinimum.Grid
         {
             bool sought = data[source.x, source.y];
             GridPos cur = source;
+            int w = data.GetLength(0);
+            int h = data.GetLength(1);
+
             while (cur != target)
             {
                 cur += (target - cur).NineNormalized;
-                if (data[cur.x, cur.y] != sought)
+                if (cur.x < 0 || cur.x >= w || cur.y < 0 || cur.y >= 1)
                 {
-                    return false;
+                    break;
+                }
+
+                if (data[cur.x, cur.y] == sought)
+                {
+                    return true;
                 }
             }
             return true;

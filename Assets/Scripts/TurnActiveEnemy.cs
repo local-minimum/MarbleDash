@@ -8,6 +8,11 @@ public class TurnActiveEnemy : TurnsActive<EnemyMode>
 {
     Enemy _enemy;
 
+    public void SetNewNormalOffset(float offset)
+    {
+        _gridNormalOffset = offset;
+    }
+
     void Awake()
     {
         _enemy = GetComponent<Enemy>();
